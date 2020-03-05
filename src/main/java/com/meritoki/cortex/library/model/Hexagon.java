@@ -15,12 +15,6 @@ public class Hexagon extends Node<Object> {
 
 	@JsonIgnore
 	private static Logger logger = LogManager.getLogger(Hexagon.class.getName());
-
-	@JsonIgnore
-	private static double Gamma = 0.80;
-	@JsonIgnore
-	private static double IntensityMax = 255;
-
 	@JsonIgnore
 	public List<Cell> cellList = new ArrayList<>();
 	@JsonProperty
@@ -53,8 +47,6 @@ public class Hexagon extends Node<Object> {
 	protected Map<String, List<Concept>> conceptListMap = new HashMap<>();
 	@JsonProperty
 	protected LinkedList<Integer> correctList = new LinkedList<>();
-	@JsonProperty
-	private double threshold = 0.90;
 
 
 	@JsonIgnore
