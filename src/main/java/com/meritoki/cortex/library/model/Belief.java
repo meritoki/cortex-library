@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

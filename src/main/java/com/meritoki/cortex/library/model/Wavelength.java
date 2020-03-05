@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 public enum Wavelength {
 	SHORT,

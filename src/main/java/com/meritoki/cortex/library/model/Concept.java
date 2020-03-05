@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;

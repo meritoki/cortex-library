@@ -1,6 +1,6 @@
-package com.meritoki.vision.library;
+package com.meritoki.cortex.library;
 
-import com.meritoki.vision.library.model.Network;
+import com.meritoki.cortex.library.model.Network;
 
 public class Main {
 	public static void main(String[] args) {

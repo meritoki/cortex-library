@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +70,7 @@ public class Level {
 	}
 	
 	@JsonIgnore
-	public void propagate(int type, Concept concept) {
+	public void propagate(int type, Concept concept, boolean flag) {
 		Hexagon h = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
@@ -81,7 +81,7 @@ public class Level {
             for(Node n : nodeList) {
             	coincidence.list.addAll(n.coincidence.list);
             }
-            h.addCoincidence(coincidence, concept);
+            h.addCoincidence(coincidence, concept,flag);
 		}
 	}
 	
@@ -122,46 +122,6 @@ public class Level {
 		}
 		this.sortDescendingList(conceptList);
 //		logger.debug("getConceptList() conceptList="+conceptList);
-		return conceptList;
-	}
-	
-	@JsonIgnore
-	public List<Concept> getPredictionConceptList() {
-		List<Concept> conceptList = new ArrayList<>();
-		Hexagon hexagon = null;
-		List<Concept> cList = null;
-		Integer count = 0;
-		this.conceptCountMap = new HashMap<>();
-		for (Map.Entry<String,Hexagon> entry : this.hexagonMap.entrySet()) {
-			hexagon = entry.getValue();
-			cList = null;
-//			logger.info("hexagon.getCorrectPercentage()="+hexagon.getCorrectPercentage());
-			if(hexagon.getCorrectPercentage()>=0.00 && hexagon.prediction != null) {
-				cList = hexagon.conceptListMap.get(hexagon.prediction.toString());
-			}
-			if(cList != null) {
-				for(Concept c: cList) {
-					count = this.conceptCountMap.get(c.toString());
-					count = (count != null)?count:0;
-					this.conceptCountMap.put(c.toString(), count+1);
-				}
-			}
-		}
-		Integer total = this.getTotal(this.conceptCountMap);
-		String value;
-		Integer dividend;
-		Double quotient;
-		Concept concept = null;
-		for (Map.Entry<String,Integer> entry : this.conceptCountMap.entrySet()) {
-			value = entry.getKey();
-			dividend = entry.getValue();
-			quotient = (total>0)?(double)dividend/(double)total:0;
-			concept = new Concept(value);
-			concept.rank = quotient;
-			conceptList.add(concept);
-		}
-		this.sortDescendingList(conceptList);
-//		logger.debug("getPredictionConceptList() conceptList="+conceptList);
 		return conceptList;
 	}
 	

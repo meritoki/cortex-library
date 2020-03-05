@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -109,7 +109,7 @@ public class Network {
 	@JsonIgnore
 	public void setConcept(Concept concept) {
 		for (Level level : this.levelList) {
-			level.propagate(0, concept);
+			level.propagate(0, concept, true);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class Network {
 		Level level = this.getInputLevel();
 		List<Hexagon> hexagonList = level.getHexagonList();
 		for (Hexagon hexagon : hexagonList) {
-			hexagon.addCoincidence(hexagon.getCoincidence(this.type), concept);
+			hexagon.addCoincidence(hexagon.getCoincidence(this.type), concept, false);
 		}
 	}
 
@@ -266,7 +266,11 @@ public class Network {
 			if (i == 0) {
 				level.input(this.type, concept);
 			} else {
-				level.propagate(0, concept);
+				if(i == size-1) {
+					level.propagate(0, concept, true);
+				} else {
+					level.propagate(0, concept, false);
+				}
 			}
 		}
 	}
@@ -338,7 +342,7 @@ public class Network {
 						h.longConeArray[i].input(Color.black.getRGB());
 					}
 				}
-				h.addCoincidence(h.getCoincidence(this.type), concept);
+				h.addCoincidence(h.getCoincidence(this.type), concept ,false);
 			}
 			this.propagate(concept);
 		}
@@ -383,7 +387,7 @@ public class Network {
 						h.longConeArray[i].input(Color.black.getRGB());
 					}
 				}
-				h.addCoincidence(h.getCoincidence(this.type), concept);
+				h.addCoincidence(h.getCoincidence(this.type), concept, false);
 			}
 			this.propagate(concept);
 		}
@@ -391,76 +395,6 @@ public class Network {
 
 	}
 
-//	public Belief process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
-//		logger.info("processing...");
-//		Belief belief = null;
-//		int size = this.getLevelStack().size();
-//		Level level = (size > 0) ? this.getLevelStack().get(size - 1) : null;
-//		if (level != null && image != null) {
-//			for (Hexagon h : level.getHexagonList()) {
-//				if (sleep > 0) {
-//					graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
-//							(int) h.npoints);
-//				}
-//				h.initCells();
-//				for (int i = 0; i < h.SIDES; i++) {
-//					if (h.shortConeArray[i] != null && h.shortConeArray[i].point != null && h.mediumConeArray[i] != null
-//							&& h.mediumConeArray[i].point != null && h.longConeArray[i] != null
-//							&& h.longConeArray[i].point != null && (int) h.shortConeArray[i].point.x > 0
-//							&& (int) h.shortConeArray[i].point.x < (image.getWidth() * scale)
-//							&& (int) h.shortConeArray[i].point.y > 0
-//							&& (int) h.shortConeArray[i].point.y < (image.getHeight() * scale)) {
-//						h.shortConeArray[i].input(image.getRGB((int) (h.shortConeArray[i].point.x * scale),
-//								(int) (h.shortConeArray[i].point.y * scale)));
-//						h.mediumConeArray[i].input(image.getRGB((int) (h.mediumConeArray[i].point.x * scale),
-//								(int) (h.mediumConeArray[i].point.y * scale)));
-//						h.longConeArray[i].input(image.getRGB((int) (h.longConeArray[i].point.x * scale),
-//								(int) (h.longConeArray[i].point.y * scale)));
-//					} else {
-//						h.shortConeArray[i].input(Color.black.getRGB());
-//						h.mediumConeArray[i].input(Color.black.getRGB());
-//						h.longConeArray[i].input(Color.black.getRGB());
-//					}
-//				}
-//				h.addCoincidence(h.getCoincidence(this.type), concept);
-//			}
-//
-//			for (int i = size - 1; i >= 0; i--) {
-//				level = this.getLevelStack().get(i);
-//				level.propagate(concept);
-//			}
-//
-//			if (concept == null) {
-//				List<Concept> conceptList = this.getLevelStack().get(this.getIndex()).getCoincidenceConceptList();
-//				concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
-//				if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
-//					belief = new Belief(concept, new Point(this.x, this.y));
-////					this.beliefList.add(belief);
-//				}
-////				double width = 13;
-////				double height = 13;
-////				if (sleep > 0) {
-////					for (Belief b : this.beliefList) {
-////						if (b.concept.value.equals("white"))
-////							graphics2D.setColor(Color.RED);
-////						if (b.concept.value.equals("human"))
-////							graphics2D.setColor(Color.GREEN);
-////						if (b.concept.value.equals("ladder"))
-////							graphics2D.setColor(Color.BLUE);
-////						if (b.concept.value.equals("house"))
-////							graphics2D.setColor(Color.YELLOW);
-////						if (b.concept.value.equals("tree"))
-////							graphics2D.setColor(Color.PINK);
-////						double newX = b.point.x - width / 2.0;
-////						double newY = b.point.y - height / 2.0;
-////						Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, width, height);
-////						graphics2D.draw(ellipse);
-////					}
-////				}
-//			}
-//		}
-//		return belief;
-//	}
 
 	@JsonIgnore
 	public LinkedList<Hexagon> getHexagonList(Map<String, Hexagon> hexagonMap) {
@@ -683,4 +617,76 @@ public class Network {
 //			hexagon.setCenter(new Point(x, y));
 //		}
 //	}
+//}
+
+
+//public Belief process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
+//	logger.info("processing...");
+//	Belief belief = null;
+//	int size = this.getLevelStack().size();
+//	Level level = (size > 0) ? this.getLevelStack().get(size - 1) : null;
+//	if (level != null && image != null) {
+//		for (Hexagon h : level.getHexagonList()) {
+//			if (sleep > 0) {
+//				graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
+//						(int) h.npoints);
+//			}
+//			h.initCells();
+//			for (int i = 0; i < h.SIDES; i++) {
+//				if (h.shortConeArray[i] != null && h.shortConeArray[i].point != null && h.mediumConeArray[i] != null
+//						&& h.mediumConeArray[i].point != null && h.longConeArray[i] != null
+//						&& h.longConeArray[i].point != null && (int) h.shortConeArray[i].point.x > 0
+//						&& (int) h.shortConeArray[i].point.x < (image.getWidth() * scale)
+//						&& (int) h.shortConeArray[i].point.y > 0
+//						&& (int) h.shortConeArray[i].point.y < (image.getHeight() * scale)) {
+//					h.shortConeArray[i].input(image.getRGB((int) (h.shortConeArray[i].point.x * scale),
+//							(int) (h.shortConeArray[i].point.y * scale)));
+//					h.mediumConeArray[i].input(image.getRGB((int) (h.mediumConeArray[i].point.x * scale),
+//							(int) (h.mediumConeArray[i].point.y * scale)));
+//					h.longConeArray[i].input(image.getRGB((int) (h.longConeArray[i].point.x * scale),
+//							(int) (h.longConeArray[i].point.y * scale)));
+//				} else {
+//					h.shortConeArray[i].input(Color.black.getRGB());
+//					h.mediumConeArray[i].input(Color.black.getRGB());
+//					h.longConeArray[i].input(Color.black.getRGB());
+//				}
+//			}
+//			h.addCoincidence(h.getCoincidence(this.type), concept);
+//		}
+//
+//		for (int i = size - 1; i >= 0; i--) {
+//			level = this.getLevelStack().get(i);
+//			level.propagate(concept);
+//		}
+//
+//		if (concept == null) {
+//			List<Concept> conceptList = this.getLevelStack().get(this.getIndex()).getCoincidenceConceptList();
+//			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
+//			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
+//				belief = new Belief(concept, new Point(this.x, this.y));
+////				this.beliefList.add(belief);
+//			}
+////			double width = 13;
+////			double height = 13;
+////			if (sleep > 0) {
+////				for (Belief b : this.beliefList) {
+////					if (b.concept.value.equals("white"))
+////						graphics2D.setColor(Color.RED);
+////					if (b.concept.value.equals("human"))
+////						graphics2D.setColor(Color.GREEN);
+////					if (b.concept.value.equals("ladder"))
+////						graphics2D.setColor(Color.BLUE);
+////					if (b.concept.value.equals("house"))
+////						graphics2D.setColor(Color.YELLOW);
+////					if (b.concept.value.equals("tree"))
+////						graphics2D.setColor(Color.PINK);
+////					double newX = b.point.x - width / 2.0;
+////					double newY = b.point.y - height / 2.0;
+////					Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, width, height);
+////					graphics2D.draw(ellipse);
+////				}
+////			}
+//		}
+//	}
+//	return belief;
 //}

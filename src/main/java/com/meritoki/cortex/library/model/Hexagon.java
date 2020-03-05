@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,12 +41,6 @@ public class Hexagon extends Node<Object> {
 	public double[] xpoints = null;
 	@JsonProperty
 	public double[] ypoints = null;
-	@JsonProperty
-	public Coincidence previousPrediction = null;
-	@JsonProperty
-	public Coincidence prediction = null;
-	@JsonProperty
-	public Coincidence previousCoincidence = null;
 	@JsonProperty
 	protected List<Coincidence> coincidenceList = new LinkedList<>();
 	@JsonProperty
@@ -187,45 +181,9 @@ public class Hexagon extends Node<Object> {
 		}
 	}
 	
-//	public void initCoincidence() {
-//		this.brightnessCoincidence = this.getCoincidence(Network.BRIGHTNESS);
-//		this.redCoincidence = this.getCoincidence(Network.RED);
-//		this.greenCoincidence = this.getCoincidence(Network.GREEN);
-//		this.blueCoincidence = this.getCoincidence(Network.BLUE);
-//	}
-	
 	public Coincidence getCoincidence() {
 		return this.coincidence;
 	}
-
-//	@JsonIgnore
-//	public Coincidence getCoincidence(int type) {
-//		logger.info("getCoincidence("+type+")");
-//		Coincidence coincidence = new Coincidence();
-//		int value = 0;
-//		for (int i = 0; i < SIDES; i++) {
-//			switch(type) {
-//			case Network.BRIGHTNESS: {
-//				value = (shortConeArray[i].blue + mediumConeArray[i].green + longConeArray[i].red) / 3;
-//				break;
-//			}
-//			case Network.RED: {
-//				value = longConeArray[i].red;
-//				break;
-//			}
-//			case Network.GREEN: {
-//				value = mediumConeArray[i].green;
-//				break;
-//			}
-//			case Network.BLUE: {
-//				value = shortConeArray[i].blue;
-//				break;
-//			}
-//			}
-//			coincidence.addInteger(value);
-//		}
-//		return coincidence;
-//	}
 	
 	public void setCoincidence(Coincidence coincidence) {
 		this.coincidence = coincidence;
@@ -241,7 +199,7 @@ public class Hexagon extends Node<Object> {
 	 * @param threshold
 	 */
 	@JsonIgnore
-	public void addCoincidence(Coincidence coincidence, Concept concept) {
+	public void addCoincidence(Coincidence coincidence, Concept concept, boolean flag) {
 //		logger.info(this.getData());
 		Coincidence c = null;
 		Integer count = 0;
@@ -255,11 +213,10 @@ public class Hexagon extends Node<Object> {
 					buffer = c;
 				}
 			}
-			if (buffer != null) {
+			if (flag && buffer != null) {
 				count = this.coincidenceCountMap.get(buffer.toString());
 				count = (count == null) ? 0 : count;
 				this.coincidenceCountMap.put(buffer.toString(), count + 1);
-				this.previousCoincidence = this.coincidence;
 				this.coincidence = buffer;
 				List<Concept> conceptList = this.conceptListMap.get(this.coincidence.toString());
 				if (conceptList == null) {
@@ -273,21 +230,9 @@ public class Hexagon extends Node<Object> {
 				// the matched coincidence in the future.
 				this.coincidenceList.add(coincidence);
 			} else {
-				this.previousCoincidence = this.coincidence;
 				this.coincidence = coincidence;
 				this.coincidenceList.add(this.coincidence);
 			}
-
-			if (this.previousPrediction != null) {
-				if (this.previousPrediction.equals(this.coincidence)) {
-					correctList.add(1);
-				} else {
-					correctList.add(0);
-				}
-			}
-			this.previousPrediction = this.prediction;
-			this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
-			this.purgeCorrectList();
 		}
 		if (this.coincidenceList.size() > this.buffer) {//this.getFrequencyMax() + this.buffer) {
 			this.purgeCoincidenceList();
@@ -299,17 +244,6 @@ public class Hexagon extends Node<Object> {
 		while (this.correctList.size() > 7) {
 			this.correctList.pop();
 		}
-	}
-
-	@JsonIgnore
-	public double getCorrectPercentage() {
-		int oneCount = 0;
-		for (Integer i : this.correctList) {
-			oneCount += i;
-		}
-//		logger.info("getCorrectPercentage() oneCount="+oneCount);
-//		logger.info("getCorrectPercentage() this.correctList.size()="+this.correctList.size());
-		return (this.correctList.size() > 0) ? (double)oneCount / (double)this.correctList.size() : 0;
 	}
 
 	@JsonIgnore
@@ -328,42 +262,6 @@ public class Hexagon extends Node<Object> {
 			}
 		}
 		return coincidence;
-	}
-
-	/**
-	 * Function builds a map of maps. Two
-	 * 
-	 * @param aCoincidence
-	 * @param bCoincidence
-	 */
-	@JsonIgnore
-	public Coincidence predictCoincidence(Coincidence aCoincidence, Coincidence bCoincidence) {
-		String a = (aCoincidence != null) ? aCoincidence.toString() : "[]";
-		String b = (bCoincidence != null) ? bCoincidence.toString() : "[]";
-		String ab = a + "," + b;
-		Integer bCount = (coincidenceCountMap.get(b) == null) ? 0 : coincidenceCountMap.get(b);
-		Integer aCount = (coincidenceCountMap.get(a) == null) ? 0 : coincidenceCountMap.get(a);
-		Integer abCount = (this.coincidenceUnionCountMap.get(ab) == null) ? 0
-				: this.coincidenceUnionCountMap.get(ab);
-//		aCount += 1;
-//		this.coincidenceFrequencyMap.put(a, aCount);
-		abCount += 1;
-		this.coincidenceUnionCountMap.put(ab, abCount);
-		double total = (double) this.getTotal(this.coincidenceCountMap);
-		double aProbability = (total > 0) ? (double) aCount / total : 0;
-		double bProbability = (total > 0) ? (double) bCount / total : 0;
-		total = (double) this.getTotal(this.coincidenceUnionCountMap);
-		double abProbability = (total > 0) ? (double) abCount / total : 0;
-		double aGivenB = (bProbability > 0) ? (double) abProbability / (double) bProbability : 0;
-		if (aGivenB > this.threshold) {
-//			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A|B)=" + aGivenB);
-			Map<String, Double> aMap = (this.coincidenceConditionalMap.get(b) == null) ? new HashMap<String, Double>()
-					: this.coincidenceConditionalMap.get(b);
-			aMap.put(a, aGivenB);
-			this.coincidenceConditionalMap.put(b, aMap);
-		}
-
-		return this.getConditionalCoincidence(aCoincidence);
 	}
 
 	@JsonIgnore
@@ -427,68 +325,6 @@ public class Hexagon extends Node<Object> {
 			intArray[i] = (int) array[i];
 		}
 		return intArray;
-	}
-
-	/**
-	 * Function converts wavelength to RGB value
-	 */
-	@JsonIgnore
-	public static int[] waveLengthToRGB(double Wavelength) {
-		double factor;
-		double Red, Green, Blue;
-
-		if ((Wavelength >= 380) && (Wavelength < 440)) {
-			Red = -(Wavelength - 440) / (440 - 380);
-			Green = 0.0;
-			Blue = 1.0;
-		} else if ((Wavelength >= 440) && (Wavelength < 490)) {
-			Red = 0.0;
-			Green = (Wavelength - 440) / (490 - 440);
-			Blue = 1.0;
-		} else if ((Wavelength >= 490) && (Wavelength < 510)) {
-			Red = 0.0;
-			Green = 1.0;
-			Blue = -(Wavelength - 510) / (510 - 490);
-		} else if ((Wavelength >= 510) && (Wavelength < 580)) {
-			Red = (Wavelength - 510) / (580 - 510);
-			Green = 1.0;
-			Blue = 0.0;
-		} else if ((Wavelength >= 580) && (Wavelength < 645)) {
-			Red = 1.0;
-			Green = -(Wavelength - 645) / (645 - 580);
-			Blue = 0.0;
-		} else if ((Wavelength >= 645) && (Wavelength < 781)) {
-			Red = 1.0;
-			Green = 0.0;
-			Blue = 0.0;
-		} else {
-			Red = 0.0;
-			Green = 0.0;
-			Blue = 0.0;
-		}
-		;
-
-		// Let the intensity fall off near the vision limits
-
-		if ((Wavelength >= 380) && (Wavelength < 420)) {
-			factor = 0.3 + 0.7 * (Wavelength - 380) / (420 - 380);
-		} else if ((Wavelength >= 420) && (Wavelength < 701)) {
-			factor = 1.0;
-		} else if ((Wavelength >= 701) && (Wavelength < 781)) {
-			factor = 0.3 + 0.7 * (780 - Wavelength) / (780 - 700);
-		} else {
-			factor = 0.0;
-		}
-		;
-
-		int[] rgb = new int[3];
-
-		// Don't want 0^x = 1 for x <> 0
-		rgb[0] = Red == 0.0 ? 0 : (int) Math.round(IntensityMax * Math.pow(Red * factor, Gamma));
-		rgb[1] = Green == 0.0 ? 0 : (int) Math.round(IntensityMax * Math.pow(Green * factor, Gamma));
-		rgb[2] = Blue == 0.0 ? 0 : (int) Math.round(IntensityMax * Math.pow(Blue * factor, Gamma));
-
-		return rgb;
 	}
 
 	@JsonIgnore

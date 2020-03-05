@@ -1,4 +1,4 @@
-package com.meritoki.vision.library.model;
+package com.meritoki.cortex.library.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -160,7 +160,7 @@ public class Group {
 		this.red.propagate(concept);
 		this.green.propagate(concept);
 		this.blue.propagate(concept);
-		this.level.propagate(0,concept);
+		this.level.propagate(0,concept,true);
 		if (concept == null) {
 			List<Concept> conceptList = this.level.getCoincidenceConceptList();
 			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
@@ -205,7 +205,7 @@ public class Group {
 		this.red.propagate(concept);
 		this.green.propagate(concept);
 		this.blue.propagate(concept);
-		this.level.propagate(0,concept);
+		this.level.propagate(0,concept, true);
 		if (concept == null) {
 			List<Concept> conceptList = this.level.getCoincidenceConceptList();
 			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
