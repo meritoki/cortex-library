@@ -287,39 +287,39 @@ public class Network {
 		return level;
 	}
 	
-	public Concept scan(BufferedImage image, double scale, int interval, Concept concept) {
-//		logger.info("processing...");
-		int width = image.getWidth();
-		int height = image.getHeight();
-//		System.out.println(width+" "+height);
-		Map<Concept,Integer> conceptMap = new HashMap<>();
-		for(int w = 0; w< width;w+=interval) {
-			for(int n=0;n < height;n+=interval) {
-				this.setOrigin(w, n);
-				this.update();
-//				System.out.println(w+" "+n);
-				concept = this.process(image, scale, concept);
-				Integer integer = conceptMap.get(concept);
-				if(integer == null) {
-					integer = 0;
-				}
-				conceptMap.put(concept, integer+1);
-			}
-		}
-		
-		int max = 0;
-		for (Map.Entry<Concept, Integer> entry : conceptMap.entrySet()) {
-		    Concept key = entry.getKey();
-		    Integer value = entry.getValue();
-		    if(value > max) {
-		    	max = value;
-		    	concept = key;
-		    }
-		}
-		return concept;
-	}
+//	public Concept scan(BufferedImage image, double scale, int interval, Concept concept) {
+////		logger.info("processing...");
+//		int width = image.getWidth();
+//		int height = image.getHeight();
+////		System.out.println(width+" "+height);
+//		Map<Concept,Integer> conceptMap = new HashMap<>();
+//		for(int w = 0; w< width;w+=interval) {
+//			for(int n=0;n < height;n+=interval) {
+//				this.setOrigin(w, n);
+//				this.update();
+////				System.out.println(w+" "+n);
+//				concept = this.process(image, scale, concept);
+//				Integer integer = conceptMap.get(concept);
+//				if(integer == null) {
+//					integer = 0;
+//				}
+//				conceptMap.put(concept, integer+1);
+//			}
+//		}
+//		
+//		int max = 0;
+//		for (Map.Entry<Concept, Integer> entry : conceptMap.entrySet()) {
+//		    Concept key = entry.getKey();
+//		    Integer value = entry.getValue();
+//		    if(value > max) {
+//		    	max = value;
+//		    	concept = key;
+//		    }
+//		}
+//		return concept;
+//	}
 	
-	public Concept process(BufferedImage image, double scale, Concept concept) {
+	public List<Concept> process(BufferedImage image, double scale, Concept concept) {
 		Belief belief = null;
 		int size = this.getLevelList().size();
 		Level level = this.getInputLevel();
@@ -347,16 +347,16 @@ public class Network {
 			this.propagate(concept);
 		}
 		
-		if (concept == null) {
-			List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
-			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
-//			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
-//				belief = new Belief(concept, new Point(this.x, this.y));
-//			}
-//			System.out.println(concept);
-		}
+//		if (concept == null) {
+//			List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
+//			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
+////			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
+////				belief = new Belief(concept, new Point(this.x, this.y));
+////			}
+////			System.out.println(concept);
+//		}
 		
-		return concept;
+		return this.getRootLevel().getCoincidenceConceptList();
 	}
 
 	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
