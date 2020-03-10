@@ -47,8 +47,6 @@ public class Hexagon extends Node<Object> {
 	protected Map<String, List<Concept>> conceptListMap = new HashMap<>();
 	@JsonProperty
 	protected LinkedList<Integer> correctList = new LinkedList<>();
-
-
 	@JsonIgnore
 	public static final int LIMIT = 4096;
 
