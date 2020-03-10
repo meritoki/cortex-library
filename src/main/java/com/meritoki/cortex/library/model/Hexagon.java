@@ -50,7 +50,7 @@ public class Hexagon extends Node<Object> {
 
 
 	@JsonIgnore
-	public int buffer = 32;
+	public static final int LIMIT = 4096;
 
 	public Hexagon() {
 		super("");
@@ -226,7 +226,7 @@ public class Hexagon extends Node<Object> {
 				this.coincidenceList.add(this.coincidence);
 			}
 		}
-		if (this.coincidenceList.size() > this.buffer) {//this.getFrequencyMax() + this.buffer) {
+		if (this.coincidenceList.size() > LIMIT) {//this.getFrequencyMax() + this.buffer) {
 			this.purgeCoincidenceList();
 		}
 	}
