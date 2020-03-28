@@ -15,7 +15,7 @@ public class Coincidence {
 	@JsonProperty
 	public List<Integer> list = new ArrayList<>();
 	@JsonProperty
-	public double threshold = 0.999;
+	public double threshold = 0.95;
 	@JsonProperty
 	public double quotient = 0;
 

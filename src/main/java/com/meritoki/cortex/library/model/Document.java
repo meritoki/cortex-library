@@ -14,7 +14,7 @@ public class Document {
 	public Group group = null;
 	
 	public Document() {
-		this.network = new Network();
+		this.network = new Network(Network.BRIGHTNESS, 0, 0, 7, 1, 0);
 		this.group = new Group();
 	}
 	
