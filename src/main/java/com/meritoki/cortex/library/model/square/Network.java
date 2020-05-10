@@ -33,14 +33,8 @@ import com.meritoki.cortex.library.model.square.Square;
 public class Network {
 	
 	public static void main(String[] args) {
-//		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
 		Network n = new Network(Network.BRIGHTNESS, 0,0,9,1,0);
 		n.load();
-//		for (Map.Entry<String, Square> entry : squareMap.entrySet()) {
-//			String key = entry.getKey();
-//			Square value = entry.getValue();
-//			System.out.println(key+" "+value.getCenter()+" "+value.getRadius());
-//		}
 	}
 
 	@JsonIgnore
@@ -167,7 +161,6 @@ public class Network {
 		logger.info("load() this.length=" + this.length);
 		Map<String, Square> squareMap = getSquareMap(-1, new Point(this.x, this.y), this.dimension, this.length,
 				this.padding);
-		System.out.println(squareMap);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(squareMap.size());
 		if (this.depth == 0) {
 			this.depth = depth;
@@ -190,24 +183,17 @@ public class Network {
 		int exponent = 0;
 		for (int i = 1; i < depth; i++) {
 			logger.debug("load() i=" + i);
-			if (i % 3 == 0) {
-				exponent+=2;
-			}
-			logger.debug("load() %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% exponent=" + exponent);
+			exponent = i;
+			logger.debug("load() exponent=" + exponent);
 			squareMap = this.getLastLevel().getSquareMap();
+			System.out.println("squareMap.size()="+squareMap.size());
 			level = new Level();
 			squareList = new LinkedList<>();
 			squareStack = new LinkedList<>();
 			squareStack.push(squareMap.get(this.x + "," + this.y));
 			while (!squareStack.isEmpty()) {
 				square = squareStack.pop();
-				LinkedList<Square> list = null;
-				if (i % 2 == 1) {
-					list = getGroupOneSquareList(squareMap, square.getX(), square.getY(), exponent); // get list for x, y
-				} else {
-					list = getGroupZeroSquareList(squareMap, square.getX(), square.getY(), exponent); // get list for x,
-					// y
-				}
+				LinkedList<Square> list = getGroupZeroSquareList(squareMap, square.getX(), square.getY(), exponent); // get list for x,
 				for (Square s : list) {
 					if (!squareList.contains(s)) {
 						squareList.add(s);
@@ -215,47 +201,37 @@ public class Network {
 					}
 				}
 			}
-			System.out.println("*****************************************");
+//			System.out.println("*****************************************");
 			for (Square m : squareList) {
 				square = this.squareMap.get(i + ":" + m);
 				if (square == null) {
 					square = new Square(m);
 					this.squareMap.put(i + ":" + square, square);
 				}
-				List<Square> list = null;
-				if (i % 2 == 1) {
-					list = this.getGroupZeroSquareList(squareMap, square.getX(), square.getY(), exponent);
-				} else {
-					list = this.getGroupOneSquareList(squareMap, square.getX(), square.getY(), exponent);
-				}
-				System.out.println("square="+square);
+				List<Square> list = this.getGroupZeroSquareList(squareMap, square.getX(), square.getY(), exponent-1);
+//				System.out.println("square="+square);
 				for (Square n : list) {
-					System.out.println("children="+n);
+//					System.out.println("children="+n);
 					square.addChild(n);
 				}
 				square.setData(i + ":" + square);
 				level.addSquare(square);
 			}
 			this.addLevel(level);
-			System.out.println("=========================================================");
+//			System.out.println("=========================================================");
 		}
-////		if (logger.isDebugEnabled()) {
 			level = this.getLastLevel();
 			Square h = level.getSquareList().get(0);
 			Node.printTree(h, " ");
-//			
-//			for(Level l: this.levelList) {
-//				System.out.println(l);
-//			}
-////		}
 	}
 
 	@JsonIgnore
 	public LinkedList<Square> getGroupZeroSquareList(Map<String, Square> squareMap, int x, int y, int exponent) {
-		System.out.println("getGroupZeroSquareList("+squareMap+","+x+", "+y+", "+exponent+")");
+//		System.out.println("getGroupZeroSquareList("+squareMap.size()+", "+x+", "+y+", "+exponent+")");
 		LinkedList<Square> squareList = new LinkedList<>();
 		Square h = null;
 		int multiplier = (int) Math.pow(2, exponent);
+		System.out.println("multiplier="+multiplier);
 		// (0,0)
 		h = squareMap.get((x) + "," + (y));
 		if (h != null) {
@@ -301,54 +277,7 @@ public class Network {
 		if (h != null) {
 			squareList.push(h);
 		}
-		System.out.println("getGroupZeroSquareList(squareMap,"+x+", "+y+", "+exponent+") squareList="+squareList);
-		return squareList;
-	}
-
-	@JsonIgnore
-	public LinkedList<Square> getGroupOneSquareList(Map<String, Square> squareMap, int x, int y, int exponent) {
-		System.out.println("getGroupOneSquareList("+squareMap+","+x+", "+y+", "+exponent+")");
-		LinkedList<Square> squareList = new LinkedList<>();
-		Square h = null;
-		int multiplier = (int) Math.pow(2, exponent);
-		h = squareMap.get((x) + "," + (y));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x) + "," + (y + (2 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x + (2 * multiplier)) + "," + (y + (2 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x + (2 * multiplier)) + "," + (y));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x + (2 * multiplier)) + "," + (y - (2 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x) + "," + (y - (2 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x - (2 * multiplier)) + "," + (y - (2 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
-		}
-		h = squareMap.get((x - (2 * multiplier)) + "," + (y));
-		if (h != null) {
-			squareList.push(h);
-		}
-
-		h = squareMap.get((x - (2 * multiplier)) + "," + (y + (2 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
-		}
-		System.out.println("getGroupOneSquareList(squareMap,"+x+", "+y+", "+exponent+") squareList="+squareList);
+//		System.out.println("getGroupZeroSquareList(squareMap,"+x+", "+y+", "+exponent+") squareList="+squareList);
 		return squareList;
 	}
 
