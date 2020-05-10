@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.cortex.library.model.square;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,10 +11,19 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class Hexagon extends Node<Object> {
+import com.meritoki.cortex.library.model.Cell;
+import com.meritoki.cortex.library.model.Coincidence;
+import com.meritoki.cortex.library.model.Concept;
+import com.meritoki.cortex.library.model.Cone;
+import com.meritoki.cortex.library.model.Node;
+import com.meritoki.cortex.library.model.Point;
+import com.meritoki.cortex.library.model.Wavelength;
+import com.meritoki.cortex.library.model.hexagon.Hexagon;
 
+public class Square extends Node<Object>{
 	@JsonIgnore
 	private static Logger logger = LogManager.getLogger(Hexagon.class.getName());
+	public static final int SIDES = 4;
 	@JsonIgnore
 	public List<Cell> cellList = new ArrayList<>();
 	@JsonProperty
@@ -26,9 +35,9 @@ public class Hexagon extends Node<Object> {
 	@JsonProperty
 	public Point center = new Point(0, 0);
 	@JsonProperty
-	public int radius;
+	public double radius;
 	@JsonIgnore
-	private int rotation = 90;
+	private int rotation = 45;
 	@JsonProperty
 	public double npoints;
 	@JsonProperty
@@ -50,11 +59,11 @@ public class Hexagon extends Node<Object> {
 	@JsonIgnore
 	public static final int LIMIT = 4096;
 
-	public Hexagon() {
+	public Square() {
 		super("");
 	}
 
-	public Hexagon(Hexagon hexagon) {
+	public Square(Square hexagon) {
 		super(hexagon.getX() + "," + hexagon.getY());
 		this.x = hexagon.getX();
 		this.y = hexagon.getY();
@@ -67,7 +76,7 @@ public class Hexagon extends Node<Object> {
 		initCells();
 	}
 
-	public Hexagon(int x, int y, Point center, int radius) {
+	public Square(int x, int y, Point center, double radius) {
 		super(x + "," + y);
 		this.x = x;
 		this.y = y;
@@ -83,8 +92,8 @@ public class Hexagon extends Node<Object> {
 	@Override
 	public boolean equals(Object o) {
 		boolean flag = false;
-		if (o instanceof Hexagon) {
-			Hexagon hexagon = (Hexagon) o;
+		if (o instanceof Square) {
+			Square hexagon = (Square) o;
 			flag = hexagon.getX() == this.getX() && hexagon.getY() == this.getY();
 		}
 		return flag;
@@ -101,7 +110,7 @@ public class Hexagon extends Node<Object> {
 	}
 
 	@JsonIgnore
-	public int getRadius() {
+	public double getRadius() {
 		return radius;
 	}
 

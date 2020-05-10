@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.meritoki.cortex.library.model.hexagon.Network;
+
 public class Node<T> {
 
 	@JsonIgnore
@@ -26,7 +28,7 @@ public class Node<T> {
 	public Coincidence greenCoincidence = new Coincidence(6);
 	public Coincidence blueCoincidence = new Coincidence(6);
 	@JsonIgnore
-	public static final int SIDES = 6;
+	public static final int SIDES = 4;
 	@JsonIgnore
 	public Cone[] shortConeArray = new Cone[SIDES];
 	@JsonIgnore
