@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.cortex.library.model.hexagon;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -16,6 +16,11 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.meritoki.cortex.library.model.Belief;
+import com.meritoki.cortex.library.model.Concept;
+import com.meritoki.cortex.library.model.Node;
+import com.meritoki.cortex.library.model.Point;
+
 /**
  * In Network, hexagons are referenced by level and relative coordinates, i.e.
  * 0:00, 4:00
@@ -24,6 +29,18 @@ import org.codehaus.jackson.annotate.JsonProperty;
  *
  */
 public class Network {
+	
+	public static void main(String[] args) {
+		Network n = new Network(Network.BRIGHTNESS, 0,0,13,1,0);
+		n.load();
+//		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
+//		
+//		for (Map.Entry<String, Square> entry : squareMap.entrySet()) {
+//			String key = entry.getKey();
+//			Square value = entry.getValue();
+//			System.out.println(key+" "+value.getCenter()+" "+value.getRadius());
+//		}
+	}
 
 	@JsonIgnore
 	private static Logger logger = LogManager.getLogger(Network.class.getName());
@@ -87,11 +104,11 @@ public class Network {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public int getX() {
 		return this.x;
 	}
-	
+
 	public int getY() {
 		return this.y;
 	}
@@ -109,9 +126,9 @@ public class Network {
 
 	@JsonIgnore
 	public Level peekLevel() {
-		Level level = this.levelList.peek();
+		Level level = this.levelList.get(this.levelList.size()-1);
 		logger.info("peekLevel() level=" + level);
-		return this.levelList.peek();
+		return level;
 	}
 
 	@JsonIgnore
@@ -147,7 +164,7 @@ public class Network {
 		logger.info("load() this.hexagonMap=" + this.hexagonMap);
 		logger.info("load() this.size=" + this.size);
 		logger.info("load() this.radius=" + this.radius);
-		Map<String, Hexagon> hexagonMap = getHexgonMap(-1, new Point(this.x, this.y), this.size, this.radius,
+		Map<String, Hexagon> hexagonMap = getHexagonMap(-1, new Point(this.x, this.y), this.size, this.radius,
 				this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(hexagonMap.size());
 		if (this.depth == 0) {
@@ -184,9 +201,9 @@ public class Network {
 				hexagon = hexagonStack.pop();
 				LinkedList<Hexagon> list = null;
 				if (i % 2 == 1) {
-					list = getOneHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent); // get list for x, y
+					list = getGroupOneHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent); // get list for x, y
 				} else {
-					list = getZeroHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent); // get list for x,
+					list = getGroupZeroHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent); // get list for x,
 					// y
 				}
 				for (Hexagon h : list) {
@@ -204,9 +221,9 @@ public class Network {
 				}
 				List<Hexagon> list = null;
 				if (i % 2 == 1) {
-					list = this.getZeroHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent);
+					list = this.getGroupZeroHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent);
 				} else {
-					list = this.getOneHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent - 1);
+					list = this.getGroupOneHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent - 1);
 				}
 				for (Hexagon n : list) {
 					hexagon.addChild(n);
@@ -217,10 +234,97 @@ public class Network {
 			this.addLevel(level);
 		}
 //		if (logger.isDebugEnabled()) {
-//			level = this.peekLevel();
-//			Hexagon h = level.getHexagonList().get(0);
-//			Node.printTree(h, " ");
+			level = this.peekLevel();
+			Hexagon h = level.getHexagonList().get(0);
+			Node.printTree(h, " ");
 //		}
+	}
+
+	@JsonIgnore
+	public LinkedList<Hexagon> getGroupZeroHexagonList(Map<String, Hexagon> hexagonMap, int x, int y, int exponent) {
+		LinkedList<Hexagon> hexagonList = new LinkedList<>();
+		Hexagon h = null;
+		int multiplier = (int) Math.pow(3, exponent);
+		// (0,0)
+		h = hexagonMap.get((x) + "," + (y));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (+3,-3)
+		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y - (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (+3,0)
+		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (0,+3)
+		h = hexagonMap.get((x) + "," + (y + (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (-3,+3)
+		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y + (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (-3,0)
+		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (0,-3)
+		h = hexagonMap.get((x) + "," + (y - (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+	
+		return hexagonList;
+	}
+
+	@JsonIgnore
+	public LinkedList<Hexagon> getGroupOneHexagonList(Map<String, Hexagon> hexagonMap, int x, int y, int exponent) {
+		LinkedList<Hexagon> hexagonList = new LinkedList<>();
+		Hexagon h = null;
+		int multiplier = (int) Math.pow(3, exponent);
+		// (0,0)
+		h = hexagonMap.get((x) + "," + (y));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (+3,-6)
+		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y - (2 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (+6,-3)
+		h = hexagonMap.get((x + (2 * multiplier)) + "," + (y - (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (+3,+3)
+		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y + (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (-3,+6)
+		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y + (2 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (-6,+3)
+		h = hexagonMap.get((x - (2 * multiplier)) + "," + (y + (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		// (-3,-3)
+		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y - (1 * multiplier)));
+		if (h != null) {
+			hexagonList.push(h);
+		}
+		return hexagonList;
 	}
 
 	/**
@@ -274,7 +378,7 @@ public class Network {
 			if (i == 0) {
 				level.input(this.type, concept);
 			} else {
-				if(i == size-1) {
+				if (i == size - 1) {
 					level.propagate(0, concept, true);
 				} else {
 					level.propagate(0, concept, false);
@@ -294,7 +398,7 @@ public class Network {
 		Level level = (size > 0) ? this.getLevelList().get(0) : null;
 		return level;
 	}
-	
+
 //	public Concept scan(BufferedImage image, double scale, int interval, Concept concept) {
 ////		logger.info("processing...");
 //		int width = image.getWidth();
@@ -326,7 +430,7 @@ public class Network {
 //		}
 //		return concept;
 //	}
-	
+
 	public List<Concept> process(BufferedImage image, double scale, Concept concept) {
 		Belief belief = null;
 		int size = this.getLevelList().size();
@@ -350,11 +454,11 @@ public class Network {
 						h.longConeArray[i].input(Color.black.getRGB());
 					}
 				}
-				h.addCoincidence(h.getCoincidence(this.type), concept ,false);
+				h.addCoincidence(h.getCoincidence(this.type), concept, false);
 			}
 			this.propagate(concept);
 		}
-		
+
 //		if (concept == null) {
 //			List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
 //			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
@@ -363,7 +467,7 @@ public class Network {
 ////			}
 ////			System.out.println(concept);
 //		}
-		
+
 		return this.getRootLevel().getCoincidenceConceptList();
 	}
 
@@ -399,10 +503,8 @@ public class Network {
 			}
 			this.propagate(concept);
 		}
-		
 
 	}
-
 
 	@JsonIgnore
 	public LinkedList<Hexagon> getHexagonList(Map<String, Hexagon> hexagonMap) {
@@ -414,94 +516,7 @@ public class Network {
 	}
 
 	@JsonIgnore
-	public LinkedList<Hexagon> getZeroHexagonList(Map<String, Hexagon> hexagonMap, int x, int y, int exponent) {
-		LinkedList<Hexagon> hexagonList = new LinkedList<>();
-		Hexagon h = null;
-		int multiplier = (int) Math.pow(3, exponent);
-		// (0,0)
-		h = hexagonMap.get((x) + "," + (y));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (+3,-3)
-		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (+3,0)
-		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (0,+3)
-		h = hexagonMap.get((x) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (-3,+3)
-		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (-3,0)
-		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (0,-3)
-		h = hexagonMap.get((x) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-
-		return hexagonList;
-	}
-
-	@JsonIgnore
-	public LinkedList<Hexagon> getOneHexagonList(Map<String, Hexagon> hexagonMap, int x, int y, int exponent) {
-		LinkedList<Hexagon> hexagonList = new LinkedList<>();
-		Hexagon h = null;
-		int multiplier = (int) Math.pow(3, exponent);
-		// (0,0)
-		h = hexagonMap.get((x) + "," + (y));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (+3,-6)
-		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y - (2 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (+6,-3)
-		h = hexagonMap.get((x + (2 * multiplier)) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (+3,+3)
-		h = hexagonMap.get((x + (1 * multiplier)) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (-3,+6)
-		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y + (2 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (-6,+3)
-		h = hexagonMap.get((x - (2 * multiplier)) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		// (-3,-3)
-		h = hexagonMap.get((x - (1 * multiplier)) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			hexagonList.push(h);
-		}
-		return hexagonList;
-	}
-
-	@JsonIgnore
-	public static Map<String, Hexagon> getHexgonMap(int level, Point origin, int size, int radius, int padding) {
+	public static Map<String, Hexagon> getHexagonMap(int level, Point origin, int size, int radius, int padding) {
 		Map<String, Hexagon> hexagonMap = new HashMap<>();
 		double radians = Math.toRadians(30);
 		double xOff = Math.cos(radians) * (radius + padding);
@@ -524,6 +539,34 @@ public class Network {
 		}
 		return hexagonMap;
 	}
+
+//	public static Map<String, Square> getSquareMap(int level, Point origin, int dimension, int length, int padding) {
+//		Map<String, Square> squareMap = new HashMap<>();
+//		int half = dimension/2;
+////		double radians = Math.toRadians(45);
+////		double xOff = Math.cos(radians) * (radius + padding);
+////		double yOff = Math.sin(radians) * (radius + padding);
+//		Square square = null;
+//		double xLeg = (length/2)-(padding/2);
+//		double yLeg = xLeg;
+//		double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
+//		for (int row = 0; row < dimension; row++) {
+////			int cols = dimension - java.lang.Math.abs(row - half);
+//			for (int column = 0; column < dimension; column++) {
+//				int xPosition = column - half;
+//				int yPosition = row - half;
+//				System.out.println(xPosition+" "+yPosition);
+//				double x = (origin.x + (xPosition * length) );
+//				double y = (origin.y + (yPosition * length));
+//				square = new Square(xPosition,yPosition, new Point(x,y),radius);
+//				if (level > -1)
+//					squareMap.put(level + ":" + xPosition + "," + yPosition, square);
+//				else
+//					squareMap.put(xPosition + "," + yPosition, square);
+//			}
+//		}
+//		return squareMap;
+//	}
 
 	@JsonIgnore
 	public int getDepth(int value) {
@@ -626,7 +669,6 @@ public class Network {
 //		}
 //	}
 //}
-
 
 //public Belief process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
 //	logger.info("processing...");

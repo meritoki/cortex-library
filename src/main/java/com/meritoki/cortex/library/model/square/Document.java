@@ -1,10 +1,7 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.cortex.library.model.square;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-
-import com.meritoki.cortex.library.model.Group;
-import com.meritoki.cortex.library.model.Network;
 
 public class Document {
 

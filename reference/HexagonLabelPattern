@@ -1,0 +1,168 @@
++0,+0
++1,-1
++1,+0
++0,+1
+-1,+1
+-1,+0
++0,-1
+
+Centroids of next level have labels 
+
+0,0
+-1,-1| -2,-2| -3,-3
++2,-1| +4,-2| +6,-3
+-2,+1| -4,+2| -6,+3 
++1,+1| +2,+2| +3,+3
+-1,+2| -2,+4| -3,+6
++1,-2| +2,-4| +3,-6
+
+
++3,-3
+0,-3
+
+Need to find matrix on top of the matrix
+
+NW->SE
+(+1,+1)
+-3,-3|-2,-2|-1,-1|+0,+0|+1,+1|+2,+2|+3,+3
+Function(+2,-1)
+-1,-4|+0,-3|+1,-2|+2,-1|+3,+0|+4,+1|
+Function(+2,-1)
++1,-5|+2,-4|+3,-3|+4,-2|+5,-1|+6,+0
+
+Algorithem starts with 0,0
+Then adds hexagons to a stack. 
+Each hexagon in the stack calls the same perimeter algorithm and makes a node.
+
+Find relation between level and perimeter, otherwise cannot create 
+network of nodes where levels converge hexagons
+
+
+Figure out multiplier concept correctly
+3^0 = 1
+3^1 = 3
+3^2 = 9
+
+Level 0
+All
+
+Level 1
+Group 1 - exponent 0
+Group 0 - exponent 0
+
+Level 2
+Group 2 - Group 0 w/ exponent 1
+Group 1 - Group 1 w/ exponent 0
+
+Level 3
+Group 3 - Group 1 w/ exponent 1
+Group 2 - Group 0 w/ exponent 1
+
+Level 4
+Group 4 - Group 0 w/ exponent 2 
+Group 3 - Group 1 w/ exponent 1
+
+if(i%2==1) {
+	
+} else {
+
+}
+
+
+Group 0 - exponent 0
++0,+0
++1,-1
+-1,+1
++0,+1
++1,+0
+-1,+0
++0,-1
+
+Group 1 - exponent 0
++0,+0
++1,+1
+-1,-1
++1,-2
++2,-1
+-2,+1
+-1,+2
+
+Group 2 
+Group 2 - 2 
+Group 0 w/ exponent 1
++0,+0
++3,-3
+-3,+3
++0,+3
++3,+0
+-3,+0
++0,-3
+
+Group 3
+Group (3 - 2)
+Group 1 -> exponent 1
++0,+0
++3,+3
+-3,-3
++3,-6
++6,-3
+-6,+3
+-3,+6
+
+Group 4
+Group (4 - 4)
+Group 0 -> exponent 2
++0,+0
++9,-9
+-9,+9
++0,+9
++9,+0
+-9,+0
++0,-9
+
+Group 5
+Group (5 - 4) 
+Group 1 -> exponent 2
++0,+0
++9,+9
+-9,-9
++9,-18
++18,-9
+-18,+9
+-9,+18                                                                   
+
+Each Center Label Pair Can be input into a function that produces
+the hexagons around it.
+Case (+1,-5)
++2,-6
++2,-5
++1,-4
++0,-4
++0,-5
++1,-6
+
+How to iterate?
+
+Start w/ 0,0
+int i = 0;
+i=1
+0,0 + (i*1,i*1)
+0,0 - (i*1,i*1)
+
+
+public List<Hexgon> perimeter(int x,int y) {
+	List<Hexagon> hexagonList = new LinkedList<>();
+	hexagonList.add(hexagonMap.get(x,y));
+	
+
+}
+
+
+
+
+Positive
+Negative
+
+Not all heaxagon counts will converge to one hexagon
+
+

@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.cortex.library.model.hexagon;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +11,10 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.meritoki.cortex.library.model.Coincidence;
+import com.meritoki.cortex.library.model.Concept;
+import com.meritoki.cortex.library.model.Node;
 
 /**
  * In a level, hexagons are always referenced by their relative coordinates, i.e. 0,0
