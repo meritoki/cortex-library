@@ -152,7 +152,7 @@ public class Network {
 	}
 	
 	public void propagate(Concept concept) {
-//		logger.info("propogate(" + concept + ")");
+		logger.info("propogate(" + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {

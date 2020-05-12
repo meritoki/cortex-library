@@ -14,7 +14,7 @@ public class Document {
 	
 	public Document() {
 		this.network = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
-		this.group = new Group(Group.HEXAGONAL);
+		this.group = new Group(Group.SQUARED);
 	}
 	
 	@JsonIgnore

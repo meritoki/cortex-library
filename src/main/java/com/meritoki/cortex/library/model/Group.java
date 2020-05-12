@@ -39,7 +39,7 @@ public class Group {
 	@JsonProperty
 	private int dimension = 13;
 	@JsonProperty
-	private int length = 10;
+	private int length = 2;
 	@JsonProperty
 	private int padding = 0;
 	@JsonProperty
@@ -60,6 +60,7 @@ public class Group {
 		this.type = type;
 		switch(this.type) {
 		case HEXAGONAL: {
+			logger.info("HEXAGONAL");
 			this.brightness = new Hexagonal(Network.BRIGHTNESS, x,y,size,radius,padding);
 			this.red = new Hexagonal(Network.RED, x,y,size,radius,padding);
 			this.green = new Hexagonal(Network.GREEN, x,y,size,radius,padding);
@@ -72,6 +73,7 @@ public class Group {
 			break;
 		}
 		case SQUARED: {
+			logger.info("SQUARED");
 			this.brightness = new Squared(Network.BRIGHTNESS, x,y,dimension,length,padding);
 			this.red = new Squared(Hexagonal.RED, x,y,dimension,length,padding);
 			this.green = new Squared(Hexagonal.GREEN, x,y,dimension,length,padding);
@@ -99,10 +101,9 @@ public class Group {
 	public int getY() {
 		return this.y;
 	}
-
 	
 	public Level getLevel() {
-		return level;
+		return this.level;
 	}
 	
 	@JsonIgnore
@@ -184,58 +185,58 @@ public class Group {
 
 	}
 	
-	public void scan(BufferedImage image, double scale, Concept concept) {
-		logger.info("processing...");
-		int width = image.getWidth();
-		int height = image.getHeight();
-		for(int w = 0; w< width;w++) {
-			for(int n=0;n < height;n++) {
-				this.setOrigin(w, n);
-				this.update();
-				this.process(image, scale, concept);
-			}
-		}
-	}
+//	public void scan(BufferedImage image, double scale, Concept concept) {
+//		logger.info("processing...");
+//		int width = image.getWidth();
+//		int height = image.getHeight();
+//		for(int w = 0; w< width;w++) {
+//			for(int n=0;n < height;n++) {
+//				this.setOrigin(w, n);
+//				this.update();
+//				this.process(image, scale, concept);
+//			}
+//		}
+//	}
 	
-	public void process(BufferedImage image, double scale, Concept concept) {
-		Belief belief = null;
-		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
-		for (Shape h : hexagonList) {
-			for (int i = 0; i < h.sides; i++) {
-				if (h.shortConeArray[i] != null 
-						&& h.mediumConeArray[i] != null
-						&& h.longConeArray[i] != null
-						&& (int) h.xpoints[i] > 0
-						&& (int) h.xpoints[i] < (image.getWidth() * scale)
-						&& (int) h.ypoints[i] > 0
-						&& (int) h.ypoints[i] < (image.getHeight() * scale)) {
-					h.shortConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-							(int) (h.ypoints[i] * scale)));
-					h.mediumConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-							(int) (h.ypoints[i] * scale)));
-					h.longConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-							(int) (h.ypoints[i] * scale)));
-				} else {
-					h.shortConeArray[i].input(Color.black.getRGB());
-					h.mediumConeArray[i].input(Color.black.getRGB());
-					h.longConeArray[i].input(Color.black.getRGB());
-				}
-			}
-		}
-		this.brightness.propagate(concept);
-		this.red.propagate(concept);
-		this.green.propagate(concept);
-		this.blue.propagate(concept);
-		this.level.propagate(0,concept,true);
-		if (concept == null) {
-			List<Concept> conceptList = this.level.getCoincidenceConceptList();
-			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
-			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
-				belief = new Belief(concept, new Point(this.x, this.y));
-				this.beliefList.add(belief);
-			}
-		}
-	}
+//	public void process(BufferedImage image, double scale, Concept concept) {
+//		Belief belief = null;
+//		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
+//		for (Shape h : hexagonList) {
+//			for (int i = 0; i < h.sides; i++) {
+//				if (h.shortConeArray[i] != null 
+//						&& h.mediumConeArray[i] != null
+//						&& h.longConeArray[i] != null
+//						&& (int) h.xpoints[i] > 0
+//						&& (int) h.xpoints[i] < (image.getWidth() * scale)
+//						&& (int) h.ypoints[i] > 0
+//						&& (int) h.ypoints[i] < (image.getHeight() * scale)) {
+//					h.shortConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
+//							(int) (h.ypoints[i] * scale)));
+//					h.mediumConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
+//							(int) (h.ypoints[i] * scale)));
+//					h.longConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
+//							(int) (h.ypoints[i] * scale)));
+//				} else {
+//					h.shortConeArray[i].input(Color.black.getRGB());
+//					h.mediumConeArray[i].input(Color.black.getRGB());
+//					h.longConeArray[i].input(Color.black.getRGB());
+//				}
+//			}
+//		}
+//		this.brightness.propagate(concept);
+//		this.red.propagate(concept);
+//		this.green.propagate(concept);
+//		this.blue.propagate(concept);
+//		this.level.propagate(0,concept,true);
+//		if (concept == null) {
+//			List<Concept> conceptList = this.level.getCoincidenceConceptList();
+//			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
+//			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
+//				belief = new Belief(concept, new Point(this.x, this.y));
+//				this.beliefList.add(belief);
+//			}
+//		}
+//	}
 
 	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
 		logger.info("processing...");
