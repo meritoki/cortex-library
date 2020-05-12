@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model.hexagon;
+package com.meritoki.cortex.library.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,12 +12,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import com.meritoki.cortex.library.model.Coincidence;
-import com.meritoki.cortex.library.model.Concept;
-import com.meritoki.cortex.library.model.Node;
+import com.meritoki.cortex.library.model.Shape;
 
 /**
- * In a level, hexagons are always referenced by their relative coordinates, i.e. 0,0
+ * In a level, shapes are always referenced by their relative coordinates, i.e. 0,0
  * @author osvaldo.rodriguez
  *
  */
@@ -26,48 +24,48 @@ public class Level {
 	@JsonIgnore
 	private static Logger logger = LogManager.getLogger(Level.class.getName());
 	@JsonIgnore
-	public Map<String, Hexagon> hexagonMap = new HashMap<>();
+	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonIgnore
 	public Map<String, Integer> conceptCountMap = new HashMap<>();
 	
 	public Level() {
 	}
 
-	public Level(Map<String, Hexagon> hexagonMap) {
-		this.hexagonMap = hexagonMap;
+	public Level(Map<String, Shape> shapeMap) {
+		this.shapeMap = shapeMap;
 	}
 
 	@JsonIgnore
-	public void addHexagon(Hexagon hexagon) {
-		this.hexagonMap.put(hexagon.toString(), hexagon);
+	public void addShape(Shape shape) {
+		this.shapeMap.put(shape.toString(), shape);
 	}
 
 	@JsonIgnore
-	public List<Hexagon> getHexagonList() {
-		return this.getHexagonList(this.hexagonMap);
+	public List<Shape> getShapeList() {
+		return this.getShapeList(this.shapeMap);
 	}
 
 	@JsonIgnore
-	public Map<String, Hexagon> getHexagonMap() {
-		return this.hexagonMap;
+	public Map<String, Shape> getShapeMap() {
+		return this.shapeMap;
 	}
 
 	@JsonIgnore
-	public LinkedList<Hexagon> getHexagonList(Map<String, Hexagon> hexagonMap) {
-		LinkedList<Hexagon> hexagonList = new LinkedList<Hexagon>();
-		for (Map.Entry<String, Hexagon> entry : hexagonMap.entrySet()) {
-			hexagonList.add((Hexagon) entry.getValue());
+	public LinkedList<Shape> getShapeList(Map<String, Shape> shapeMap) {
+		LinkedList<Shape> shapeList = new LinkedList<Shape>();
+		for (Map.Entry<String, Shape> entry : shapeMap.entrySet()) {
+			shapeList.add((Shape) entry.getValue());
 		}
-		return hexagonList;
+		return shapeList;
 	}
 	
 	@JsonIgnore
 	public void input(int type, Concept concept) {
 //		logger.info("propagate("+type+","+concept+")");
-		Hexagon h = null;
+		Shape h = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
-		for (Map.Entry<String,Hexagon> entry : this.hexagonMap.entrySet()) {
+		for (Map.Entry<String,Shape> entry : this.shapeMap.entrySet()) {
             h = entry.getValue();
             h.coincidence = h.getCoincidence(type);
 		}
@@ -75,31 +73,32 @@ public class Level {
 	
 	@JsonIgnore
 	public void propagate(int type, Concept concept, boolean flag) {
-		Hexagon h = null;
+		logger.info("propagate("+type+", "+concept+", "+flag+")");
+		Shape s = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
-		for (Map.Entry<String,Hexagon> entry : this.hexagonMap.entrySet()) {
+		for (Map.Entry<String,Shape> entry : this.shapeMap.entrySet()) {
 			coincidence = new Coincidence();
-            h = entry.getValue();
-            nodeList = h.getChildren();
+            s = entry.getValue();
+            nodeList = s.getChildren();
             for(Node n : nodeList) {
-            	coincidence.list.addAll(n.coincidence.list);
+            	coincidence.list.addAll(((Shape)n).coincidence.list);
             }
-            h.addCoincidence(coincidence, concept,flag);
+            s.addCoincidence(coincidence, concept,flag);
 		}
 	}
 	
 	@JsonIgnore
 	public List<Concept> getCoincidenceConceptList() {
 		List<Concept> conceptList = new ArrayList<>();
-		Hexagon hexagon = null;
+		Shape shape = null;
 		List<Concept> cList = null;
 		Integer count = 0;
 		this.conceptCountMap = new HashMap<>();
-		for (Map.Entry<String,Hexagon> entry : this.hexagonMap.entrySet()) {
-			hexagon = entry.getValue();
-			if(hexagon.coincidence != null) {
-				cList = hexagon.conceptListMap.get(hexagon.coincidence.toString());
+		for (Map.Entry<String,Shape> entry : this.shapeMap.entrySet()) {
+			shape = entry.getValue();
+			if(shape.coincidence != null) {
+				cList = shape.conceptListMap.get(shape.coincidence.toString());
 			} else {
 				cList = null;
 			}
@@ -163,6 +162,6 @@ public class Level {
     }
 	
 	public String toString() {
-		return this.getHexagonList()+"";
+		return this.getShapeList()+"";
 	}
 }
