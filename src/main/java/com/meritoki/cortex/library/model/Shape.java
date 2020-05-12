@@ -67,6 +67,10 @@ public class Shape extends Node<Object> {
 	protected LinkedList<Integer> correctList = new LinkedList<>();
 	@JsonIgnore
 	public static final int LIMIT = 4096;
+	
+	public Shape() {
+		
+	}
 
 	public Shape(int sides, int rotation, int x, int y, Point center, double radius) {
 		super(x + "," + y);

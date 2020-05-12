@@ -31,17 +31,19 @@ public class Group {
 	private Network green = null;
 	private Network blue = null;
 	private Level level = new Level();
-	private Hexagon root = new Hexagon();
+	private Shape root = new Shape();
 	@JsonProperty
 	private int size = 13;
 	@JsonProperty
 	private int radius = 1;
 	@JsonProperty
+	private int dimension = 13;
+	@JsonProperty
+	private int length = 10;
+	@JsonProperty
 	private int padding = 0;
 	@JsonProperty
 	private int depth = 0;
-//	@JsonProperty
-//	private Map<String, Hexagon> hexagonMap = new HashMap<>();
 	@JsonProperty
 	private Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonIgnore
@@ -70,11 +72,11 @@ public class Group {
 			break;
 		}
 		case SQUARED: {
-			this.brightness = new Squared(Network.BRIGHTNESS, x,y,size,radius,padding);
-			this.red = new Squared(Hexagonal.RED, x,y,size,radius,padding);
-			this.green = new Squared(Hexagonal.GREEN, x,y,size,radius,padding);
-			this.blue = new Squared(Hexagonal.BLUE, x,y,size,radius,padding);
-			this.shapeMap = Squared.getShapeMap(0,new Point(this.x, this.y), size, radius, padding);
+			this.brightness = new Squared(Network.BRIGHTNESS, x,y,dimension,length,padding);
+			this.red = new Squared(Hexagonal.RED, x,y,dimension,length,padding);
+			this.green = new Squared(Hexagonal.GREEN, x,y,dimension,length,padding);
+			this.blue = new Squared(Hexagonal.BLUE, x,y,dimension,length,padding);
+			this.shapeMap = Squared.getShapeMap(0,new Point(this.x, this.y), dimension,length, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
 			this.green.setShapeMap(this.shapeMap);
@@ -158,25 +160,24 @@ public class Group {
 			break;
 		}
 		case SQUARED: {
-			int half = dimension / 2;
+			int half = dimension/2;
 			Square square = null;
-			Level level = this.getInputLevel();
-			double xLeg = (length / 2) - (padding / 2);
+			double xLeg = (length/2)-(padding/2);
 			double yLeg = xLeg;
-			double radius = Math.sqrt(Math.pow(xLeg, 2) + Math.pow(yLeg, 2));
+//			double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
 			for (int row = 0; row < dimension; row++) {
 				for (int column = 0; column < dimension; column++) {
 					int xPosition = column - half;
 					int yPosition = row - half;
-					double x = (this.x + (xPosition * length));
+//					System.out.println(xPosition+" "+yPosition);
+					double x = (this.x + (xPosition * length) );
 					double y = (this.y + (yPosition * length));
-					square = (Square) this.shapeMap.get("0:"+xPosition + "," + yPosition);
+					square = (Square)this.shapeMap.get("0:"+xPosition + "," + yPosition);
 					if (square != null) {
 						square.setCenter(new Point(x, y));
 					}
 				}
 			}
-			
 			break;
 		}
 		}
@@ -239,8 +240,8 @@ public class Group {
 	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
 		logger.info("processing...");
 		Belief belief = null;
-		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
-		for (Shape h : hexagonList) {
+		List<Shape> shapeList = Network.getShapeList(this.shapeMap);
+		for (Shape h : shapeList) {
 			if (sleep > 0) {
 				graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
 						(int) h.npoints);
