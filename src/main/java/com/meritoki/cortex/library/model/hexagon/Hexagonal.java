@@ -18,8 +18,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.meritoki.cortex.library.model.Belief;
 import com.meritoki.cortex.library.model.Concept;
+import com.meritoki.cortex.library.model.Level;
+import com.meritoki.cortex.library.model.Network;
 import com.meritoki.cortex.library.model.Node;
 import com.meritoki.cortex.library.model.Point;
+import com.meritoki.cortex.library.model.Shape;
 
 /**
  * In Network, hexagons are referenced by level and relative coordinates, i.e.
@@ -28,10 +31,10 @@ import com.meritoki.cortex.library.model.Point;
  * @author osvaldo.rodriguez
  *
  */
-public class Network {
-	
+public class Hexagonal extends Network {
+
 	public static void main(String[] args) {
-		Network n = new Network(Network.BRIGHTNESS, 0,0,13,1,0);
+		Hexagonal n = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 13, 1, 0);
 		n.load();
 //		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
 //		
@@ -43,25 +46,7 @@ public class Network {
 	}
 
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Network.class.getName());
-	public static final int BRIGHTNESS = 1;
-	public static final int RED = 2;
-	public static final int GREEN = 3;
-	public static final int BLUE = 4;
-	@JsonIgnore
-	private LinkedList<Level> levelList = new LinkedList<>();
-	@JsonIgnore
-	public int index = 0;
-	@JsonProperty
-	private Map<String, Hexagon> hexagonMap = new HashMap<>();
-	@JsonProperty
-	private int type = 0;
-	@JsonProperty
-	public String uuid = null;
-	@JsonIgnore
-	private int x = 0;
-	@JsonIgnore
-	private int y = 0;
+	private static Logger logger = LogManager.getLogger(Hexagonal.class.getName());
 	@JsonProperty
 	private int size = 13;
 	@JsonProperty
@@ -70,87 +55,52 @@ public class Network {
 	private int padding = 0;
 	@JsonProperty
 	private int depth = 0;
-	@JsonProperty
-	private List<Belief> beliefList = new ArrayList<>();
 
-	public Network() {
-		this.uuid = UUID.randomUUID().toString();
+	public Hexagonal() {
+		super(BRIGHTNESS, 0, 0);
 	}
 
-	public Network(int type, int x, int y, int size, int radius, int padding) {
-		this.uuid = UUID.randomUUID().toString();
-		this.type = type;
-		this.x = x;
-		this.y = y;
+	public Hexagonal(int size, int radius, int padding) {
+		super(BRIGHTNESS, 0, 0);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
 	}
 
-	public Network(int size, int radius, int padding) {
-		this.uuid = UUID.randomUUID().toString();
+	public Hexagonal(int type, int x, int y, int size, int radius, int padding) {
+		super(type, x, y);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
 	}
 
+	/**
+	 * Need to modify so that it only moves the input level, not all levels this
+	 * will improve the performance of the algorithm.
+	 */
 	@JsonIgnore
-	public int getIndex() {
-		return this.index;
-	}
-
-	@JsonIgnore
-	public void setOrigin(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public int getX() {
-		return this.x;
-	}
-
-	public int getY() {
-		return this.y;
-	}
-
-	@JsonIgnore
-	public List<Level> getLevelList() {
-		return this.levelList;
-	}
-
-	@JsonIgnore
-	public void addLevel(Level level) {
-		logger.info("addLevel(" + level + ")");
-		this.levelList.add(level);
-	}
-
-	@JsonIgnore
-	public Level peekLevel() {
-		Level level = this.levelList.get(this.levelList.size()-1);
-		logger.info("peekLevel() level=" + level);
-		return level;
-	}
-
-	@JsonIgnore
-	public void setConcept(Concept concept) {
-		for (Level level : this.levelList) {
-			level.propagate(0, concept, true);
+	@Override
+	public void update() {
+		double radians = Math.toRadians(30);
+		double xOff = Math.cos(radians) * (radius + padding);
+		double yOff = Math.sin(radians) * (radius + padding);
+		int half = size / 2;
+		Level level = null;
+		Hexagon hexagon = null;
+		level = this.getInputLevel();
+		for (int row = 0; row < size; row++) {
+			int cols = size - java.lang.Math.abs(row - half);
+			for (int col = 0; col < cols; col++) {
+				int xPosition = row < half ? col - row : col - half;
+				int yPosition = row - half;
+				int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
+				int y = (int) (this.y + yOff * (row - half) * 3);
+				hexagon = (Hexagon) level.shapeMap.get(xPosition + "," + yPosition);
+				if (hexagon != null) {
+					hexagon.setCenter(new Point(x, y));
+				}
+			}
 		}
-	}
-
-	@JsonIgnore
-	public void setHexagonMap(Map<String, Hexagon> hexagonMap) {
-//		this.hexagonMap = hexagonMap;
-		for (Map.Entry<String, Hexagon> entry : hexagonMap.entrySet()) {
-			String key = entry.getKey();
-			Hexagon value = entry.getValue();
-			this.hexagonMap.put(key, value);
-		}
-	}
-
-	@JsonIgnore
-	public Map<String, Hexagon> getHexagonMap() {
-		return this.hexagonMap;
 	}
 
 	/**
@@ -159,91 +109,94 @@ public class Network {
 	 * relationships, forming a tree data structure that converges on a root not
 	 */
 	@JsonIgnore
+	@Override
 	public void load() {
 		logger.info("load()");
-		logger.info("load() this.hexagonMap=" + this.hexagonMap);
+		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.size=" + this.size);
 		logger.info("load() this.radius=" + this.radius);
-		Map<String, Hexagon> hexagonMap = getHexagonMap(-1, new Point(this.x, this.y), this.size, this.radius,
+		Map<String, Shape> hexagonMap = getShapeMap(-1, new Point(this.x, this.y), this.size, this.radius,
 				this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(hexagonMap.size());
 		if (this.depth == 0) {
 			this.depth = depth;
 		}
 		Level level = new Level();
-		List<Hexagon> hexagonList = this.getHexagonList(hexagonMap);
+		List<Shape> hexagonList = this.getShapeList(hexagonMap);
 		Hexagon hexagon = null;
-		for (Hexagon n : hexagonList) {
-			hexagon = this.hexagonMap.get("0:" + n);
+		for (Shape n : hexagonList) {
+			hexagon = (Hexagon)this.shapeMap.get("0:" + n);
 			if (hexagon == null) {
 				hexagon = new Hexagon(n);
-				this.hexagonMap.put("0:" + hexagon, hexagon);
+				this.shapeMap.put("0:" + hexagon, hexagon);
 			}
 			hexagon.setData("0:" + hexagon);
 			hexagon.initCells();
-			level.addHexagon(hexagon);
+			level.addShape(hexagon);
 		}
 		this.addLevel(level);
-		LinkedList<Hexagon> hexagonStack = null;
+		LinkedList<Shape> hexagonStack = null;
 		int exponent = 0;
+		Map<String, Shape> shapeMap;
 		for (int i = 1; i < depth; i++) {
 			logger.debug("load() i=" + i);
 			logger.debug("load() exponent=" + exponent);
 			if (i % 2 == 0) {
 				exponent++;
 			}
-			hexagonMap = this.peekLevel().getHexagonMap();
+			shapeMap = this.getLastLevel().getShapeMap();
 			level = new Level();
 			hexagonList = new LinkedList<>();
 			hexagonStack = new LinkedList<>();
-			hexagonStack.push(hexagonMap.get(this.x + "," + this.y));
+			hexagonStack.push(shapeMap.get(this.x + "," + this.y));
+			Shape shape;
 			while (!hexagonStack.isEmpty()) {
-				hexagon = hexagonStack.pop();
-				LinkedList<Hexagon> list = null;
+				shape = hexagonStack.pop();
+				LinkedList<Shape> list = null;
 				if (i % 2 == 1) {
-					list = getGroupOneHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent); // get list for x, y
+					list = getGroupOneHexagonList(shapeMap, shape.getX(), shape.getY(), exponent); // get list for x, y
 				} else {
-					list = getGroupZeroHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent); // get list for x,
+					list = getGroupZeroHexagonList(shapeMap, shape.getX(), shape.getY(), exponent); // get list for x,
 					// y
 				}
-				for (Hexagon h : list) {
+				for (Shape h : list) {
 					if (!hexagonList.contains(h)) {
 						hexagonList.add(h);
 						hexagonStack.push(h);
 					}
 				}
 			}
-			for (Hexagon m : hexagonList) {
-				hexagon = this.hexagonMap.get(i + ":" + m);
-				if (hexagon == null) {
-					hexagon = new Hexagon(m);
-					this.hexagonMap.put(i + ":" + hexagon, hexagon);
+			for (Shape m : hexagonList) {
+				Hexagon h = (Hexagon)this.shapeMap.get(i + ":" + m);
+				if (h == null) {
+					h = new Hexagon(m);
+					this.shapeMap.put(i + ":" + h, h);
 				}
-				List<Hexagon> list = null;
+				List<Shape> list = null;
 				if (i % 2 == 1) {
-					list = this.getGroupZeroHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent);
+					list = this.getGroupZeroHexagonList(shapeMap, h.getX(), h.getY(), exponent);
 				} else {
-					list = this.getGroupOneHexagonList(hexagonMap, hexagon.getX(), hexagon.getY(), exponent - 1);
+					list = this.getGroupOneHexagonList(shapeMap, h.getX(), h.getY(), exponent - 1);
 				}
-				for (Hexagon n : list) {
-					hexagon.addChild(n);
+				for (Shape n : list) {
+					h.addChild(n);
 				}
-				hexagon.setData(i + ":" + hexagon);
-				level.addHexagon(hexagon);
+				h.setData(i + ":" + h);
+				level.addShape(h);
 			}
 			this.addLevel(level);
 		}
-//		if (logger.isDebugEnabled()) {
-			level = this.peekLevel();
-			Hexagon h = level.getHexagonList().get(0);
-			Node.printTree(h, " ");
-//		}
+		// if (logger.isDebugEnabled()) {
+		 level = this.getRootLevel();
+		 Shape h = level.getShapeList().get(0);
+		 Node.printTree(h, " ");
+		// }
 	}
 
 	@JsonIgnore
-	public LinkedList<Hexagon> getGroupZeroHexagonList(Map<String, Hexagon> hexagonMap, int x, int y, int exponent) {
-		LinkedList<Hexagon> hexagonList = new LinkedList<>();
-		Hexagon h = null;
+	public LinkedList<Shape> getGroupZeroHexagonList(Map<String, Shape> hexagonMap, int x, int y, int exponent) {
+		LinkedList<Shape> hexagonList = new LinkedList<>();
+		Shape h = null;
 		int multiplier = (int) Math.pow(3, exponent);
 		// (0,0)
 		h = hexagonMap.get((x) + "," + (y));
@@ -280,14 +233,14 @@ public class Network {
 		if (h != null) {
 			hexagonList.push(h);
 		}
-	
+
 		return hexagonList;
 	}
 
 	@JsonIgnore
-	public LinkedList<Hexagon> getGroupOneHexagonList(Map<String, Hexagon> hexagonMap, int x, int y, int exponent) {
-		LinkedList<Hexagon> hexagonList = new LinkedList<>();
-		Hexagon h = null;
+	public LinkedList<Shape> getGroupOneHexagonList(Map<String, Shape> hexagonMap, int x, int y, int exponent) {
+		LinkedList<Shape> hexagonList = new LinkedList<>();
+		Shape h = null;
 		int multiplier = (int) Math.pow(3, exponent);
 		// (0,0)
 		h = hexagonMap.get((x) + "," + (y));
@@ -327,197 +280,9 @@ public class Network {
 		return hexagonList;
 	}
 
-	/**
-	 * Function initializes the network of nodes, or hexagons, that converges into a
-	 * single root node.
-	 */
-
-	public void input(Concept concept) {
-		logger.info("input()");
-		Level level = this.getInputLevel();
-		List<Hexagon> hexagonList = level.getHexagonList();
-		for (Hexagon hexagon : hexagonList) {
-			hexagon.addCoincidence(hexagon.getCoincidence(this.type), concept, false);
-		}
-	}
-
-	/**
-	 * Need to modify so that it only moves the input level, not all levels this
-	 * will improve the performance of the algorithm.
-	 */
 	@JsonIgnore
-	public void update() {
-		double radians = Math.toRadians(30);
-		double xOff = Math.cos(radians) * (radius + padding);
-		double yOff = Math.sin(radians) * (radius + padding);
-		int half = size / 2;
-		Level level = null;
-		Hexagon hexagon = null;
-		level = this.getInputLevel();
-		for (int row = 0; row < size; row++) {
-			int cols = size - java.lang.Math.abs(row - half);
-			for (int col = 0; col < cols; col++) {
-				int xPosition = row < half ? col - row : col - half;
-				int yPosition = row - half;
-				int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
-				int y = (int) (this.y + yOff * (row - half) * 3);
-				hexagon = level.hexagonMap.get(xPosition + "," + yPosition);
-				if (hexagon != null) {
-					hexagon.setCenter(new Point(x, y));
-				}
-			}
-		}
-	}
-
-	public void propagate(Concept concept) {
-//		logger.info("propogate(" + concept + ")");
-		Level level = null;
-		int size = this.getLevelList().size();
-		for (int i = 0; i < size; i++) {
-			level = this.getLevelList().get(i);
-			if (i == 0) {
-				level.input(this.type, concept);
-			} else {
-				if (i == size - 1) {
-					level.propagate(0, concept, true);
-				} else {
-					level.propagate(0, concept, false);
-				}
-			}
-		}
-	}
-
-	public Level getRootLevel() {
-		int size = this.getLevelList().size();
-		Level level = (size > 0) ? this.getLevelList().get(size - 1) : null;
-		return level;
-	}
-
-	public Level getInputLevel() {
-		int size = this.getLevelList().size();
-		Level level = (size > 0) ? this.getLevelList().get(0) : null;
-		return level;
-	}
-
-//	public Concept scan(BufferedImage image, double scale, int interval, Concept concept) {
-////		logger.info("processing...");
-//		int width = image.getWidth();
-//		int height = image.getHeight();
-////		System.out.println(width+" "+height);
-//		Map<Concept,Integer> conceptMap = new HashMap<>();
-//		for(int w = 0; w< width;w+=interval) {
-//			for(int n=0;n < height;n+=interval) {
-//				this.setOrigin(w, n);
-//				this.update();
-////				System.out.println(w+" "+n);
-//				concept = this.process(image, scale, concept);
-//				Integer integer = conceptMap.get(concept);
-//				if(integer == null) {
-//					integer = 0;
-//				}
-//				conceptMap.put(concept, integer+1);
-//			}
-//		}
-//		
-//		int max = 0;
-//		for (Map.Entry<Concept, Integer> entry : conceptMap.entrySet()) {
-//		    Concept key = entry.getKey();
-//		    Integer value = entry.getValue();
-//		    if(value > max) {
-//		    	max = value;
-//		    	concept = key;
-//		    }
-//		}
-//		return concept;
-//	}
-
-	public List<Concept> process(BufferedImage image, double scale, Concept concept) {
-		Belief belief = null;
-		int size = this.getLevelList().size();
-		Level level = this.getInputLevel();
-		if (level != null && image != null) {
-			for (Hexagon h : level.getHexagonList()) {
-				h.initCells();
-				for (int i = 0; i < h.SIDES; i++) {
-					if (h.shortConeArray[i] != null && h.mediumConeArray[i] != null && h.longConeArray[i] != null
-							&& (int) h.xpoints[i] > 0 && (int) h.xpoints[i] < (image.getWidth() * scale)
-							&& (int) h.ypoints[i] > 0 && (int) h.ypoints[i] < (image.getHeight() * scale)) {
-						h.shortConeArray[i]
-								.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
-						h.mediumConeArray[i]
-								.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
-						h.longConeArray[i]
-								.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
-					} else {
-						h.shortConeArray[i].input(Color.black.getRGB());
-						h.mediumConeArray[i].input(Color.black.getRGB());
-						h.longConeArray[i].input(Color.black.getRGB());
-					}
-				}
-				h.addCoincidence(h.getCoincidence(this.type), concept, false);
-			}
-			this.propagate(concept);
-		}
-
-//		if (concept == null) {
-//			List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
-//			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
-////			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
-////				belief = new Belief(concept, new Point(this.x, this.y));
-////			}
-////			System.out.println(concept);
-//		}
-
-		return this.getRootLevel().getCoincidenceConceptList();
-	}
-
-	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
-		logger.info("processing...");
-		Belief belief = null;
-		int size = this.getLevelList().size();
-		Level level = this.getInputLevel();
-		if (level != null && image != null) {
-			for (Hexagon h : level.getHexagonList()) {
-				if (sleep > 0) {
-					graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
-							(int) h.npoints);
-				}
-				h.initCells();
-				for (int i = 0; i < h.SIDES; i++) {
-					if (h.shortConeArray[i] != null && h.mediumConeArray[i] != null && h.longConeArray[i] != null
-							&& (int) h.xpoints[i] > 0 && (int) h.xpoints[i] < (image.getWidth() * scale)
-							&& (int) h.ypoints[i] > 0 && (int) h.ypoints[i] < (image.getHeight() * scale)) {
-						h.shortConeArray[i]
-								.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
-						h.mediumConeArray[i]
-								.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
-						h.longConeArray[i]
-								.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
-					} else {
-						h.shortConeArray[i].input(Color.black.getRGB());
-						h.mediumConeArray[i].input(Color.black.getRGB());
-						h.longConeArray[i].input(Color.black.getRGB());
-					}
-				}
-				h.addCoincidence(h.getCoincidence(this.type), concept, false);
-			}
-			this.propagate(concept);
-		}
-
-	}
-
-	@JsonIgnore
-	public LinkedList<Hexagon> getHexagonList(Map<String, Hexagon> hexagonMap) {
-		LinkedList<Hexagon> hexagonList = new LinkedList<Hexagon>();
-		for (Map.Entry<String, Hexagon> entry : hexagonMap.entrySet()) {
-			hexagonList.add((Hexagon) entry.getValue());
-		}
-		return hexagonList;
-	}
-
-	@JsonIgnore
-	public static Map<String, Hexagon> getHexagonMap(int level, Point origin, int size, int radius, int padding) {
-		Map<String, Hexagon> hexagonMap = new HashMap<>();
+	public static Map<String, Shape> getShapeMap(int level, Point origin, int size, int radius, int padding) {
+		Map<String, Shape> hexagonMap = new HashMap<>();
 		double radians = Math.toRadians(30);
 		double xOff = Math.cos(radians) * (radius + padding);
 		double yOff = Math.sin(radians) * (radius + padding);
@@ -540,33 +305,7 @@ public class Network {
 		return hexagonMap;
 	}
 
-//	public static Map<String, Square> getSquareMap(int level, Point origin, int dimension, int length, int padding) {
-//		Map<String, Square> squareMap = new HashMap<>();
-//		int half = dimension/2;
-////		double radians = Math.toRadians(45);
-////		double xOff = Math.cos(radians) * (radius + padding);
-////		double yOff = Math.sin(radians) * (radius + padding);
-//		Square square = null;
-//		double xLeg = (length/2)-(padding/2);
-//		double yLeg = xLeg;
-//		double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
-//		for (int row = 0; row < dimension; row++) {
-////			int cols = dimension - java.lang.Math.abs(row - half);
-//			for (int column = 0; column < dimension; column++) {
-//				int xPosition = column - half;
-//				int yPosition = row - half;
-//				System.out.println(xPosition+" "+yPosition);
-//				double x = (origin.x + (xPosition * length) );
-//				double y = (origin.y + (yPosition * length));
-//				square = new Square(xPosition,yPosition, new Point(x,y),radius);
-//				if (level > -1)
-//					squareMap.put(level + ":" + xPosition + "," + yPosition, square);
-//				else
-//					squareMap.put(xPosition + "," + yPosition, square);
-//			}
-//		}
-//		return squareMap;
-//	}
+
 
 	@JsonIgnore
 	public int getDepth(int value) {
@@ -583,8 +322,37 @@ public class Network {
 		logger.info("getLevelCount(" + value + ") count=" + count);
 		return count;
 	}
+
+
 }
 
+//public static Map<String, Square> getSquareMap(int level, Point origin, int dimension, int length, int padding) {
+//Map<String, Square> squareMap = new HashMap<>();
+//int half = dimension/2;
+////double radians = Math.toRadians(45);
+////double xOff = Math.cos(radians) * (radius + padding);
+////double yOff = Math.sin(radians) * (radius + padding);
+//Square square = null;
+//double xLeg = (length/2)-(padding/2);
+//double yLeg = xLeg;
+//double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
+//for (int row = 0; row < dimension; row++) {
+////	int cols = dimension - java.lang.Math.abs(row - half);
+//	for (int column = 0; column < dimension; column++) {
+//		int xPosition = column - half;
+//		int yPosition = row - half;
+//		System.out.println(xPosition+" "+yPosition);
+//		double x = (origin.x + (xPosition * length) );
+//		double y = (origin.y + (yPosition * length));
+//		square = new Square(xPosition,yPosition, new Point(x,y),radius);
+//		if (level > -1)
+//			squareMap.put(level + ":" + xPosition + "," + yPosition, square);
+//		else
+//			squareMap.put(xPosition + "," + yPosition, square);
+//	}
+//}
+//return squareMap;
+//}
 //@JsonIgnore
 //public void init() {
 //	logger.info("init()");
@@ -739,4 +507,79 @@ public class Network {
 //		}
 //	}
 //	return belief;
+//}
+//public List<Concept> process(BufferedImage image, double scale, Concept concept) {
+////System.out.println("process(image,scale, "+concept+")");
+//Belief belief = null;
+//int size = this.getLevelList().size();
+//Level level = this.getInputLevel();
+//if (level != null && image != null) {
+//for (Hexagon h : level.getHexagonList()) {
+//	h.initCells();
+//	for (int i = 0; i < h.SIDES; i++) {
+//		if (h.shortConeArray[i] != null && h.mediumConeArray[i] != null && h.longConeArray[i] != null
+//				&& (int) h.xpoints[i] > 0 && (int) h.xpoints[i] < (image.getWidth() * scale)
+//				&& (int) h.ypoints[i] > 0 && (int) h.ypoints[i] < (image.getHeight() * scale)) {
+//			h.shortConeArray[i]
+//					.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+//			h.mediumConeArray[i]
+//					.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+//			h.longConeArray[i]
+//					.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+//		} else {
+//			h.shortConeArray[i].input(Color.black.getRGB());
+//			h.mediumConeArray[i].input(Color.black.getRGB());
+//			h.longConeArray[i].input(Color.black.getRGB());
+//		}
+//	}
+//	h.addCoincidence(h.getCoincidence(this.type), concept, false);
+//}
+//this.propagate(concept);
+//}
+//
+////if (concept == null) {
+////List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
+////concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
+//////if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
+//////	belief = new Belief(concept, new Point(this.x, this.y));
+//////}
+//////System.out.println(concept);
+////}
+//
+//return this.getRootLevel().getCoincidenceConceptList();
+//}
+//
+//public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
+//logger.info("processing...");
+//Belief belief = null;
+//int size = this.getLevelList().size();
+//Level level = this.getInputLevel();
+//if (level != null && image != null) {
+//for (Hexagon h : level.getHexagonList()) {
+//	if (sleep > 0) {
+//		graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
+//				(int) h.npoints);
+//	}
+//	h.initCells();
+//	for (int i = 0; i < h.SIDES; i++) {
+//		if (h.shortConeArray[i] != null && h.mediumConeArray[i] != null && h.longConeArray[i] != null
+//				&& (int) h.xpoints[i] > 0 && (int) h.xpoints[i] < (image.getWidth() * scale)
+//				&& (int) h.ypoints[i] > 0 && (int) h.ypoints[i] < (image.getHeight() * scale)) {
+//			h.shortConeArray[i]
+//					.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+//			h.mediumConeArray[i]
+//					.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+//			h.longConeArray[i]
+//					.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+//		} else {
+//			h.shortConeArray[i].input(Color.black.getRGB());
+//			h.mediumConeArray[i].input(Color.black.getRGB());
+//			h.longConeArray[i].input(Color.black.getRGB());
+//		}
+//	}
+//	h.addCoincidence(h.getCoincidence(this.type), concept, false);
+//}
+//this.propagate(concept);
+//}
+//
 //}

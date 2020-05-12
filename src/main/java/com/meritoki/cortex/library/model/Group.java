@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model.hexagon;
+package com.meritoki.cortex.library.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,13 +15,17 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.meritoki.cortex.library.model.Belief;
-import com.meritoki.cortex.library.model.Concept;
-import com.meritoki.cortex.library.model.Point;
+import com.meritoki.cortex.library.model.hexagon.Hexagon;
+import com.meritoki.cortex.library.model.hexagon.Hexagonal;
+import com.meritoki.cortex.library.model.square.Square;
+import com.meritoki.cortex.library.model.square.Squared;
 
 public class Group {
 
 	private static Logger logger = LogManager.getLogger(Group.class.getName());
+	public static final int HEXAGONAL = 1;
+	public static final int SQUARED = 2;
+	public int type = 0;
 	private Network brightness = null;
 	private Network red = null;
 	private Network green = null;
@@ -36,8 +40,10 @@ public class Group {
 	private int padding = 0;
 	@JsonProperty
 	private int depth = 0;
+//	@JsonProperty
+//	private Map<String, Hexagon> hexagonMap = new HashMap<>();
 	@JsonProperty
-	private Map<String, Hexagon> hexagonMap = new HashMap<>();
+	private Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonIgnore
 	private int x = 0;
 	@JsonIgnore
@@ -48,16 +54,34 @@ public class Group {
 	/**
 	 * Checked 202001191442 Good
 	 */
-	public Group() {
-		this.brightness = new Network(Network.BRIGHTNESS, x,y,size,radius,padding);
-		this.red = new Network(Network.RED, x,y,size,radius,padding);
-		this.green = new Network(Network.GREEN, x,y,size,radius,padding);
-		this.blue = new Network(Network.BLUE, x,y,size,radius,padding);
-		this.hexagonMap = Network.getHexagonMap(0,new Point(this.x, this.y), size, radius, padding);
-		this.brightness.setHexagonMap(this.hexagonMap);
-		this.red.setHexagonMap(this.hexagonMap);
-		this.green.setHexagonMap(this.hexagonMap);
-		this.blue.setHexagonMap(this.hexagonMap);
+	public Group(int type) {
+		this.type = type;
+		switch(this.type) {
+		case HEXAGONAL: {
+			this.brightness = new Hexagonal(Network.BRIGHTNESS, x,y,size,radius,padding);
+			this.red = new Hexagonal(Network.RED, x,y,size,radius,padding);
+			this.green = new Hexagonal(Network.GREEN, x,y,size,radius,padding);
+			this.blue = new Hexagonal(Network.BLUE, x,y,size,radius,padding);
+			this.shapeMap = Hexagonal.getShapeMap(0,new Point(this.x, this.y), size, radius, padding);
+			this.brightness.setShapeMap(this.shapeMap);
+			this.red.setShapeMap(this.shapeMap);
+			this.green.setShapeMap(this.shapeMap);
+			this.blue.setShapeMap(this.shapeMap);
+			break;
+		}
+		case SQUARED: {
+			this.brightness = new Squared(Network.BRIGHTNESS, x,y,size,radius,padding);
+			this.red = new Squared(Hexagonal.RED, x,y,size,radius,padding);
+			this.green = new Squared(Hexagonal.GREEN, x,y,size,radius,padding);
+			this.blue = new Squared(Hexagonal.BLUE, x,y,size,radius,padding);
+			this.shapeMap = Squared.getShapeMap(0,new Point(this.x, this.y), size, radius, padding);
+			this.brightness.setShapeMap(this.shapeMap);
+			this.red.setShapeMap(this.shapeMap);
+			this.green.setShapeMap(this.shapeMap);
+			this.blue.setShapeMap(this.shapeMap);
+			break;
+		}
+		}
 	}
 	
 	@JsonIgnore
@@ -97,38 +121,66 @@ public class Group {
 		this.red.load();
 		this.green.load();
 		this.blue.load();
-		Hexagon brightnessHexagon = this.brightness.getRootLevel().getHexagonList().get(0);
-		Hexagon redHexagon = this.red.getRootLevel().getHexagonList().get(0);
-		Hexagon greenHexagon = this.green.getRootLevel().getHexagonList().get(0);
-		Hexagon blueHexagon = this.blue.getRootLevel().getHexagonList().get(0);
+		Shape brightnessHexagon = this.brightness.getRootLevel().getShapeList().get(0);
+		Shape redHexagon = this.red.getRootLevel().getShapeList().get(0);
+		Shape greenHexagon = this.green.getRootLevel().getShapeList().get(0);
+		Shape blueHexagon = this.blue.getRootLevel().getShapeList().get(0);
 		this.root.addChild(brightnessHexagon);
 		this.root.addChild(redHexagon);
 		this.root.addChild(greenHexagon);
 		this.root.addChild(blueHexagon);
-		this.level.addHexagon(this.root);
+		this.level.addShape(this.root);
 	}
 	
 	@JsonIgnore
 	public void update() {
 		logger.info("update()");
-		double radians = Math.toRadians(30);
-		double xOff = Math.cos(radians) * (this.radius + this.padding);
-		double yOff = Math.sin(radians) * (this.radius + this.padding);
-		int half = this.size / 2;
-		Hexagon hexagon = null;
-		for (int row = 0; row < this.size; row++) {
-			int cols = this.size - java.lang.Math.abs(row - half);
-			for (int col = 0; col < cols; col++) {
-				int xPosition = row < half ? col - row : col - half;
-				int yPosition = row - half;
-				int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
-				int y = (int) (this.y + yOff * (row - half) * 3);
-				hexagon = this.hexagonMap.get("0:"+xPosition + "," + yPosition);
-				if (hexagon != null) {
-					hexagon.setCenter(new Point(x, y));
+		switch(this.type) {
+		case HEXAGONAL: {
+			double radians = Math.toRadians(30);
+			double xOff = Math.cos(radians) * (this.radius + this.padding);
+			double yOff = Math.sin(radians) * (this.radius + this.padding);
+			int half = this.size / 2;
+			Hexagon hexagon = null;
+			for (int row = 0; row < this.size; row++) {
+				int cols = this.size - java.lang.Math.abs(row - half);
+				for (int col = 0; col < cols; col++) {
+					int xPosition = row < half ? col - row : col - half;
+					int yPosition = row - half;
+					int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
+					int y = (int) (this.y + yOff * (row - half) * 3);
+					hexagon = (Hexagon)this.shapeMap.get("0:"+xPosition + "," + yPosition);
+					if (hexagon != null) {
+						hexagon.setCenter(new Point(x, y));
+					}
 				}
 			}
+			break;
 		}
+		case SQUARED: {
+			int half = dimension / 2;
+			Square square = null;
+			Level level = this.getInputLevel();
+			double xLeg = (length / 2) - (padding / 2);
+			double yLeg = xLeg;
+			double radius = Math.sqrt(Math.pow(xLeg, 2) + Math.pow(yLeg, 2));
+			for (int row = 0; row < dimension; row++) {
+				for (int column = 0; column < dimension; column++) {
+					int xPosition = column - half;
+					int yPosition = row - half;
+					double x = (this.x + (xPosition * length));
+					double y = (this.y + (yPosition * length));
+					square = (Square) this.shapeMap.get("0:"+xPosition + "," + yPosition);
+					if (square != null) {
+						square.setCenter(new Point(x, y));
+					}
+				}
+			}
+			
+			break;
+		}
+		}
+
 	}
 	
 	public void scan(BufferedImage image, double scale, Concept concept) {
@@ -146,9 +198,9 @@ public class Group {
 	
 	public void process(BufferedImage image, double scale, Concept concept) {
 		Belief belief = null;
-		List<Hexagon> hexagonList = this.getHexagonList(this.hexagonMap);
-		for (Hexagon h : hexagonList) {
-			for (int i = 0; i < h.SIDES; i++) {
+		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
+		for (Shape h : hexagonList) {
+			for (int i = 0; i < h.sides; i++) {
 				if (h.shortConeArray[i] != null 
 						&& h.mediumConeArray[i] != null
 						&& h.longConeArray[i] != null
@@ -187,13 +239,13 @@ public class Group {
 	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
 		logger.info("processing...");
 		Belief belief = null;
-		List<Hexagon> hexagonList = this.getHexagonList(this.hexagonMap);
-		for (Hexagon h : hexagonList) {
+		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
+		for (Shape h : hexagonList) {
 			if (sleep > 0) {
 				graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
 						(int) h.npoints);
 			}
-			for (int i = 0; i < h.SIDES; i++) {
+			for (int i = 0; i < h.sides; i++) {
 				if (h.shortConeArray[i] != null 
 						&& h.mediumConeArray[i] != null
 						&& h.longConeArray[i] != null

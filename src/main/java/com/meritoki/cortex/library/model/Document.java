@@ -1,7 +1,9 @@
-package com.meritoki.cortex.library.model.square;
+package com.meritoki.cortex.library.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.meritoki.cortex.library.model.hexagon.Hexagonal;
 
 public class Document {
 
@@ -11,8 +13,8 @@ public class Document {
 	public Group group = null;
 	
 	public Document() {
-		this.network = new Network(Network.BRIGHTNESS, 0, 0, 7, 1, 0);
-		this.group = new Group();
+		this.network = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
+		this.group = new Group(Group.HEXAGONAL);
 	}
 	
 	@JsonIgnore
