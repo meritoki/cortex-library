@@ -37,22 +37,21 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	public double[] ypoints = null;
 	@JsonProperty
-	public Coincidence coincidence = new Coincidence(6);
+	public Coincidence coincidence;
 	@JsonIgnore
-	public Coincidence brightnessCoincidence = new Coincidence(6);
-	public Coincidence redCoincidence = new Coincidence(6);
-	public Coincidence greenCoincidence = new Coincidence(6);
-	public Coincidence blueCoincidence = new Coincidence(6);
-//
-//	@JsonIgnore
-//	public List<Cell> cellList = new ArrayList<>();
+	public Coincidence brightnessCoincidence;
+	@JsonIgnore
+	public Coincidence redCoincidence;
+	@JsonIgnore
+	public Coincidence greenCoincidence;
+	@JsonIgnore
+	public Coincidence blueCoincidence;
 	@JsonIgnore
 	public Cone[] shortConeArray;
 	@JsonIgnore
 	public Cone[] mediumConeArray;
 	@JsonIgnore
 	public Cone[] longConeArray;
-
 	@JsonProperty
 	protected List<Coincidence> coincidenceList = new LinkedList<>();
 	@JsonProperty
@@ -75,6 +74,24 @@ public class Shape extends Node<Object> {
 	public Shape(int sides, int rotation, int x, int y, Point center, double radius) {
 		super(x + "," + y);
 		this.sides = sides;
+		switch(this.sides) {
+		case 4: {
+			this.coincidence = new Coincidence(9);
+			this.brightnessCoincidence = new Coincidence(9);
+			this.redCoincidence = new Coincidence(9);
+			this.greenCoincidence = new Coincidence(9);
+			this.blueCoincidence = new Coincidence(9);
+			break;
+		}
+		case 6: {
+			this.coincidence = new Coincidence(7);
+			this.brightnessCoincidence = new Coincidence(7);
+			this.redCoincidence = new Coincidence(7);
+			this.greenCoincidence = new Coincidence(7);
+			this.blueCoincidence = new Coincidence(7);
+			break;
+		}
+		}
 		this.rotation = rotation;
 		this.x = x;
 		this.y = y;
@@ -89,7 +106,6 @@ public class Shape extends Node<Object> {
 		this.longConeArray = new Cone[sides];
 		this.updatePoints();
 		this.initCells();
-
 	}
 
 	@Override
@@ -213,7 +229,6 @@ public class Shape extends Node<Object> {
 	 */
 	@JsonIgnore
 	public void addCoincidence(Coincidence coincidence, Concept concept, boolean flag) {
-//		logger.info(this.getData());
 		Coincidence c = null;
 		Integer count = 0;
 		double max = 0;

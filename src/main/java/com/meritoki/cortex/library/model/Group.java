@@ -26,9 +26,13 @@ public class Group {
 	public static final int HEXAGONAL = 1;
 	public static final int SQUARED = 2;
 	public int type = 0;
+	@JsonProperty
 	private Network brightness = null;
+	@JsonProperty
 	private Network red = null;
+	@JsonProperty
 	private Network green = null;
+	@JsonProperty
 	private Network blue = null;
 	private Level level = new Level();
 	private Shape root = new Shape();
@@ -124,14 +128,14 @@ public class Group {
 		this.red.load();
 		this.green.load();
 		this.blue.load();
-		Shape brightnessHexagon = this.brightness.getRootLevel().getShapeList().get(0);
-		Shape redHexagon = this.red.getRootLevel().getShapeList().get(0);
-		Shape greenHexagon = this.green.getRootLevel().getShapeList().get(0);
-		Shape blueHexagon = this.blue.getRootLevel().getShapeList().get(0);
-		this.root.addChild(brightnessHexagon);
-		this.root.addChild(redHexagon);
-		this.root.addChild(greenHexagon);
-		this.root.addChild(blueHexagon);
+		Shape brightnessShape = this.brightness.getRootLevel().getShapeList().get(0);
+		Shape redShape = this.red.getRootLevel().getShapeList().get(0);
+		Shape greenShape = this.green.getRootLevel().getShapeList().get(0);
+		Shape blueShape = this.blue.getRootLevel().getShapeList().get(0);
+		this.root.addChild(brightnessShape);
+		this.root.addChild(redShape);
+		this.root.addChild(greenShape);
+		this.root.addChild(blueShape);
 		this.level.addShape(this.root);
 	}
 	
