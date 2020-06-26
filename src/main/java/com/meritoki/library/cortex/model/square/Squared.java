@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model.square;
+package com.meritoki.library.cortex.model.square;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,11 +10,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.cortex.library.model.Level;
-import com.meritoki.cortex.library.model.Network;
-import com.meritoki.cortex.library.model.Node;
-import com.meritoki.cortex.library.model.Point;
-import com.meritoki.cortex.library.model.Shape;
+import com.meritoki.library.cortex.model.Level;
+import com.meritoki.library.cortex.model.Network;
+import com.meritoki.library.cortex.model.Node;
+import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.Shape;
 
 /**
  * In Network, squares are referenced by level and relative coordinates, i.e.

@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.library.cortex.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

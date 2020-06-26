@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.library.cortex.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,10 +15,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.cortex.library.model.hexagon.Hexagon;
-import com.meritoki.cortex.library.model.hexagon.Hexagonal;
-import com.meritoki.cortex.library.model.square.Square;
-import com.meritoki.cortex.library.model.square.Squared;
+import com.meritoki.library.cortex.model.hexagon.Hexagon;
+import com.meritoki.library.cortex.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.square.Square;
+import com.meritoki.library.cortex.model.square.Squared;
 
 public class Group {
 

@@ -1,6 +1,6 @@
-package com.meritoki.cortex.library;
+package com.meritoki.library.cortex;
 
-import com.meritoki.cortex.library.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 
 public class Main {
 	public static void main(String[] args) {

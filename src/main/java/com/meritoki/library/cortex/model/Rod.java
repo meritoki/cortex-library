@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.library.cortex.model;
 
 public class Rod extends Cell {
 	

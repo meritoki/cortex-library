@@ -1,4 +1,4 @@
-package com.meritoki.cortex.library.model;
+package com.meritoki.library.cortex.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.cortex.library.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 
 public class Shape extends Node<Object> {
 

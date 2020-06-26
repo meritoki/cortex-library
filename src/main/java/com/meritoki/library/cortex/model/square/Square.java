@@ -1,11 +1,11 @@
-package com.meritoki.cortex.library.model.square;
+package com.meritoki.library.cortex.model.square;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.cortex.library.model.Point;
-import com.meritoki.cortex.library.model.Shape;
+import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.Shape;
 
 public class Square extends Shape {
 	@JsonIgnore
