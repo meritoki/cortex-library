@@ -9,31 +9,32 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.meritoki.library.cortex.controller.NodeController;
+import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class HexagonGroupSaveLoadTest {
+public class HexagonNetworkSaveLoadTest {
 
 	static Document document = new Document();
 	
 	@BeforeAll
 	public static void initialize() {
-		document.group = new Group(Group.HEXAGONAL);
-		document.group.load();
+		document.network = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
+		document.network.load();
 	}
 	
 	@Test
 	@Order(1)
 	public void save() {
-		File file = new File("test/hexagon-group.json");
+		File file = new File("test/hexagon-network.json");
 		NodeController.saveJson(file, document);
 	}
 	
 	@Test
 	@Order(2)
 	public void load() {
-		File file = new File("test/hexagon-group.json");
+		File file = new File("test/hexagon-network.json");
 		document = (Document)NodeController.openJson(file, Document.class);
-		document.group.load();
+		document.network.load();
 	}
 	
 }

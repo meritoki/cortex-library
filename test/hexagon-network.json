@@ -1,0 +1,2452 @@
+{
+  "network" : {
+    "type" : 1,
+    "uuid" : "294b503b-b28c-4a20-abbd-cdabe8310454",
+    "shapeMap" : {
+      "3:0,0" : {
+        "x" : 0,
+        "y" : 0,
+        "center" : {
+          "x" : 0.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -1.0
+        }, {
+          "x" : 0.866,
+          "y" : -0.5
+        }, {
+          "x" : 0.866,
+          "y" : 0.5
+        }, {
+          "x" : 0.0,
+          "y" : 1.0
+        }, {
+          "x" : -0.866,
+          "y" : 0.5
+        }, {
+          "x" : -0.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:3,-3" : {
+        "x" : 3,
+        "y" : -3,
+        "center" : {
+          "x" : 2.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : -5.0
+        }, {
+          "x" : 2.866,
+          "y" : -4.5
+        }, {
+          "x" : 2.866,
+          "y" : -3.5
+        }, {
+          "x" : 2.0,
+          "y" : -3.0
+        }, {
+          "x" : 1.134,
+          "y" : -3.5
+        }, {
+          "x" : 1.134,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:3,0" : {
+        "x" : 3,
+        "y" : 0,
+        "center" : {
+          "x" : 5.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 5.0,
+          "y" : -1.0
+        }, {
+          "x" : 5.866,
+          "y" : -0.5
+        }, {
+          "x" : 5.866,
+          "y" : 0.5
+        }, {
+          "x" : 5.0,
+          "y" : 1.0
+        }, {
+          "x" : 4.134,
+          "y" : 0.5
+        }, {
+          "x" : 4.134,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 5.0, 5.866, 5.866, 5.0, 4.134, 4.134 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:1,2" : {
+        "x" : 1,
+        "y" : 2,
+        "center" : {
+          "x" : 3.0,
+          "y" : 2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 3.0,
+          "y" : 1.0
+        }, {
+          "x" : 3.866,
+          "y" : 1.5
+        }, {
+          "x" : 3.866,
+          "y" : 2.5
+        }, {
+          "x" : 3.0,
+          "y" : 3.0
+        }, {
+          "x" : 2.134,
+          "y" : 2.5
+        }, {
+          "x" : 2.134,
+          "y" : 1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 3.0, 3.866, 3.866, 3.0, 2.134, 2.134 ],
+        "ypoints" : [ 1.0, 1.5, 2.5, 3.0, 2.5, 1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:1,1" : {
+        "x" : 1,
+        "y" : 1,
+        "center" : {
+          "x" : 2.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : 0.0
+        }, {
+          "x" : 2.866,
+          "y" : 0.5
+        }, {
+          "x" : 2.866,
+          "y" : 1.5
+        }, {
+          "x" : 2.0,
+          "y" : 2.0
+        }, {
+          "x" : 1.134,
+          "y" : 1.5
+        }, {
+          "x" : 1.134,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:1,0" : {
+        "x" : 1,
+        "y" : 0,
+        "center" : {
+          "x" : 1.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 1.0,
+          "y" : -1.0
+        }, {
+          "x" : 1.866,
+          "y" : -0.5
+        }, {
+          "x" : 1.866,
+          "y" : 0.5
+        }, {
+          "x" : 1.0,
+          "y" : 1.0
+        }, {
+          "x" : 0.134,
+          "y" : 0.5
+        }, {
+          "x" : 0.134,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 1.0, 1.866, 1.866, 1.0, 0.134, 0.134 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-3,3" : {
+        "x" : -3,
+        "y" : 3,
+        "center" : {
+          "x" : -2.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : 3.0
+        }, {
+          "x" : -1.134,
+          "y" : 3.5
+        }, {
+          "x" : -1.134,
+          "y" : 4.5
+        }, {
+          "x" : -2.0,
+          "y" : 5.0
+        }, {
+          "x" : -2.866,
+          "y" : 4.5
+        }, {
+          "x" : -2.866,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-3,2" : {
+        "x" : -3,
+        "y" : 2,
+        "center" : {
+          "x" : -3.0,
+          "y" : 2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -3.0,
+          "y" : 1.0
+        }, {
+          "x" : -2.134,
+          "y" : 1.5
+        }, {
+          "x" : -2.134,
+          "y" : 2.5
+        }, {
+          "x" : -3.0,
+          "y" : 3.0
+        }, {
+          "x" : -3.866,
+          "y" : 2.5
+        }, {
+          "x" : -3.866,
+          "y" : 1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -3.0, -2.134, -2.134, -3.0, -3.866, -3.866 ],
+        "ypoints" : [ 1.0, 1.5, 2.5, 3.0, 2.5, 1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,-1" : {
+        "x" : 0,
+        "y" : -1,
+        "center" : {
+          "x" : 0.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -2.0
+        }, {
+          "x" : 0.866,
+          "y" : -1.5
+        }, {
+          "x" : 0.866,
+          "y" : -0.5
+        }, {
+          "x" : 0.0,
+          "y" : 0.0
+        }, {
+          "x" : -0.866,
+          "y" : -0.5
+        }, {
+          "x" : -0.866,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-3,1" : {
+        "x" : -3,
+        "y" : 1,
+        "center" : {
+          "x" : -4.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -4.0,
+          "y" : 0.0
+        }, {
+          "x" : -3.134,
+          "y" : 0.5
+        }, {
+          "x" : -3.134,
+          "y" : 1.5
+        }, {
+          "x" : -4.0,
+          "y" : 2.0
+        }, {
+          "x" : -4.866,
+          "y" : 1.5
+        }, {
+          "x" : -4.866,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -4.0, -3.134, -3.134, -4.0, -4.866, -4.866 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-1,3" : {
+        "x" : -1,
+        "y" : 3,
+        "center" : {
+          "x" : 0.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : 3.0
+        }, {
+          "x" : 0.866,
+          "y" : 3.5
+        }, {
+          "x" : 0.866,
+          "y" : 4.5
+        }, {
+          "x" : 0.0,
+          "y" : 5.0
+        }, {
+          "x" : -0.866,
+          "y" : 4.5
+        }, {
+          "x" : -0.866,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,-2" : {
+        "x" : 0,
+        "y" : -2,
+        "center" : {
+          "x" : -1.0,
+          "y" : -2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -1.0,
+          "y" : -3.0
+        }, {
+          "x" : -0.134,
+          "y" : -2.5
+        }, {
+          "x" : -0.134,
+          "y" : -1.5
+        }, {
+          "x" : -1.0,
+          "y" : -1.0
+        }, {
+          "x" : -1.866,
+          "y" : -1.5
+        }, {
+          "x" : -1.866,
+          "y" : -2.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -1.0, -0.134, -0.134, -1.0, -1.866, -1.866 ],
+        "ypoints" : [ -3.0, -2.5, -1.5, -1.0, -1.5, -2.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-3,0" : {
+        "x" : -3,
+        "y" : 0,
+        "center" : {
+          "x" : -5.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -5.0,
+          "y" : -1.0
+        }, {
+          "x" : -4.134,
+          "y" : -0.5
+        }, {
+          "x" : -4.134,
+          "y" : 0.5
+        }, {
+          "x" : -5.0,
+          "y" : 1.0
+        }, {
+          "x" : -5.866,
+          "y" : 0.5
+        }, {
+          "x" : -5.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -5.0, -4.134, -4.134, -5.0, -5.866, -5.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-1,2" : {
+        "x" : -1,
+        "y" : 2,
+        "center" : {
+          "x" : 0.0,
+          "y" : 2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : 1.0
+        }, {
+          "x" : 0.866,
+          "y" : 1.5
+        }, {
+          "x" : 0.866,
+          "y" : 2.5
+        }, {
+          "x" : 0.0,
+          "y" : 3.0
+        }, {
+          "x" : -0.866,
+          "y" : 2.5
+        }, {
+          "x" : -0.866,
+          "y" : 1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ 1.0, 1.5, 2.5, 3.0, 2.5, 1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,-3" : {
+        "x" : 0,
+        "y" : -3,
+        "center" : {
+          "x" : -2.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : -5.0
+        }, {
+          "x" : -1.134,
+          "y" : -4.5
+        }, {
+          "x" : -1.134,
+          "y" : -3.5
+        }, {
+          "x" : -2.0,
+          "y" : -3.0
+        }, {
+          "x" : -2.866,
+          "y" : -3.5
+        }, {
+          "x" : -2.866,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-1,1" : {
+        "x" : -1,
+        "y" : 1,
+        "center" : {
+          "x" : 0.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : 0.0
+        }, {
+          "x" : 0.866,
+          "y" : 0.5
+        }, {
+          "x" : 0.866,
+          "y" : 1.5
+        }, {
+          "x" : 0.0,
+          "y" : 2.0
+        }, {
+          "x" : -0.866,
+          "y" : 1.5
+        }, {
+          "x" : -0.866,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:3,-3" : {
+        "x" : 3,
+        "y" : -3,
+        "center" : {
+          "x" : 2.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : -5.0
+        }, {
+          "x" : 2.866,
+          "y" : -4.5
+        }, {
+          "x" : 2.866,
+          "y" : -3.5
+        }, {
+          "x" : 2.0,
+          "y" : -3.0
+        }, {
+          "x" : 1.134,
+          "y" : -3.5
+        }, {
+          "x" : 1.134,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-1,0" : {
+        "x" : -1,
+        "y" : 0,
+        "center" : {
+          "x" : -1.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -1.0,
+          "y" : -1.0
+        }, {
+          "x" : -0.134,
+          "y" : -0.5
+        }, {
+          "x" : -0.134,
+          "y" : 0.5
+        }, {
+          "x" : -1.0,
+          "y" : 1.0
+        }, {
+          "x" : -1.866,
+          "y" : 0.5
+        }, {
+          "x" : -1.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -1.0, -0.134, -0.134, -1.0, -1.866, -1.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:0,3" : {
+        "x" : 0,
+        "y" : 3,
+        "center" : {
+          "x" : 2.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : 3.0
+        }, {
+          "x" : 2.866,
+          "y" : 3.5
+        }, {
+          "x" : 2.866,
+          "y" : 4.5
+        }, {
+          "x" : 2.0,
+          "y" : 5.0
+        }, {
+          "x" : 1.134,
+          "y" : 4.5
+        }, {
+          "x" : 1.134,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:0,0" : {
+        "x" : 0,
+        "y" : 0,
+        "center" : {
+          "x" : 0.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -1.0
+        }, {
+          "x" : 0.866,
+          "y" : -0.5
+        }, {
+          "x" : 0.866,
+          "y" : 0.5
+        }, {
+          "x" : 0.0,
+          "y" : 1.0
+        }, {
+          "x" : -0.866,
+          "y" : 0.5
+        }, {
+          "x" : -0.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:0,-3" : {
+        "x" : 0,
+        "y" : -3,
+        "center" : {
+          "x" : -2.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : -5.0
+        }, {
+          "x" : -1.134,
+          "y" : -4.5
+        }, {
+          "x" : -1.134,
+          "y" : -3.5
+        }, {
+          "x" : -2.0,
+          "y" : -3.0
+        }, {
+          "x" : -2.866,
+          "y" : -3.5
+        }, {
+          "x" : -2.866,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:-1,2" : {
+        "x" : -1,
+        "y" : 2,
+        "center" : {
+          "x" : 0.0,
+          "y" : 2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : 1.0
+        }, {
+          "x" : 0.866,
+          "y" : 1.5
+        }, {
+          "x" : 0.866,
+          "y" : 2.5
+        }, {
+          "x" : 0.0,
+          "y" : 3.0
+        }, {
+          "x" : -0.866,
+          "y" : 2.5
+        }, {
+          "x" : -0.866,
+          "y" : 1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ 1.0, 1.5, 2.5, 3.0, 2.5, 1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:-3,3" : {
+        "x" : -3,
+        "y" : 3,
+        "center" : {
+          "x" : -2.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : 3.0
+        }, {
+          "x" : -1.134,
+          "y" : 3.5
+        }, {
+          "x" : -1.134,
+          "y" : 4.5
+        }, {
+          "x" : -2.0,
+          "y" : 5.0
+        }, {
+          "x" : -2.866,
+          "y" : 4.5
+        }, {
+          "x" : -2.866,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:0,3" : {
+        "x" : 0,
+        "y" : 3,
+        "center" : {
+          "x" : 2.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : 3.0
+        }, {
+          "x" : 2.866,
+          "y" : 3.5
+        }, {
+          "x" : 2.866,
+          "y" : 4.5
+        }, {
+          "x" : 2.0,
+          "y" : 5.0
+        }, {
+          "x" : 1.134,
+          "y" : 4.5
+        }, {
+          "x" : 1.134,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:-3,0" : {
+        "x" : -3,
+        "y" : 0,
+        "center" : {
+          "x" : -5.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -5.0,
+          "y" : -1.0
+        }, {
+          "x" : -4.134,
+          "y" : -0.5
+        }, {
+          "x" : -4.134,
+          "y" : 0.5
+        }, {
+          "x" : -5.0,
+          "y" : 1.0
+        }, {
+          "x" : -5.866,
+          "y" : 0.5
+        }, {
+          "x" : -5.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -5.0, -4.134, -4.134, -5.0, -5.866, -5.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:0,0" : {
+        "x" : 0,
+        "y" : 0,
+        "center" : {
+          "x" : 0.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -1.0
+        }, {
+          "x" : 0.866,
+          "y" : -0.5
+        }, {
+          "x" : 0.866,
+          "y" : 0.5
+        }, {
+          "x" : 0.0,
+          "y" : 1.0
+        }, {
+          "x" : -0.866,
+          "y" : 0.5
+        }, {
+          "x" : -0.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:-1,-1" : {
+        "x" : -1,
+        "y" : -1,
+        "center" : {
+          "x" : -2.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : -2.0
+        }, {
+          "x" : -1.134,
+          "y" : -1.5
+        }, {
+          "x" : -1.134,
+          "y" : -0.5
+        }, {
+          "x" : -2.0,
+          "y" : 0.0
+        }, {
+          "x" : -2.866,
+          "y" : -0.5
+        }, {
+          "x" : -2.866,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:1,-1" : {
+        "x" : 1,
+        "y" : -1,
+        "center" : {
+          "x" : 0.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -2.0
+        }, {
+          "x" : 0.866,
+          "y" : -1.5
+        }, {
+          "x" : 0.866,
+          "y" : -0.5
+        }, {
+          "x" : 0.0,
+          "y" : 0.0
+        }, {
+          "x" : -0.866,
+          "y" : -0.5
+        }, {
+          "x" : -0.866,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:1,-2" : {
+        "x" : 1,
+        "y" : -2,
+        "center" : {
+          "x" : 0.0,
+          "y" : -2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -3.0
+        }, {
+          "x" : 0.866,
+          "y" : -2.5
+        }, {
+          "x" : 0.866,
+          "y" : -1.5
+        }, {
+          "x" : 0.0,
+          "y" : -1.0
+        }, {
+          "x" : -0.866,
+          "y" : -1.5
+        }, {
+          "x" : -0.866,
+          "y" : -2.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -3.0, -2.5, -1.5, -1.0, -1.5, -2.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:1,-3" : {
+        "x" : 1,
+        "y" : -3,
+        "center" : {
+          "x" : 0.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -5.0
+        }, {
+          "x" : 0.866,
+          "y" : -4.5
+        }, {
+          "x" : 0.866,
+          "y" : -3.5
+        }, {
+          "x" : 0.0,
+          "y" : -3.0
+        }, {
+          "x" : -0.866,
+          "y" : -3.5
+        }, {
+          "x" : -0.866,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:1,-2" : {
+        "x" : 1,
+        "y" : -2,
+        "center" : {
+          "x" : 0.0,
+          "y" : -2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -3.0
+        }, {
+          "x" : 0.866,
+          "y" : -2.5
+        }, {
+          "x" : 0.866,
+          "y" : -1.5
+        }, {
+          "x" : 0.0,
+          "y" : -1.0
+        }, {
+          "x" : -0.866,
+          "y" : -1.5
+        }, {
+          "x" : -0.866,
+          "y" : -2.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -3.0, -2.5, -1.5, -1.0, -1.5, -2.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:2,1" : {
+        "x" : 2,
+        "y" : 1,
+        "center" : {
+          "x" : 4.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 4.0,
+          "y" : 0.0
+        }, {
+          "x" : 4.866,
+          "y" : 0.5
+        }, {
+          "x" : 4.866,
+          "y" : 1.5
+        }, {
+          "x" : 4.0,
+          "y" : 2.0
+        }, {
+          "x" : 3.134,
+          "y" : 1.5
+        }, {
+          "x" : 3.134,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 4.0, 4.866, 4.866, 4.0, 3.134, 3.134 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,3" : {
+        "x" : 0,
+        "y" : 3,
+        "center" : {
+          "x" : 2.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : 3.0
+        }, {
+          "x" : 2.866,
+          "y" : 3.5
+        }, {
+          "x" : 2.866,
+          "y" : 4.5
+        }, {
+          "x" : 2.0,
+          "y" : 5.0
+        }, {
+          "x" : 1.134,
+          "y" : 4.5
+        }, {
+          "x" : 1.134,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:2,0" : {
+        "x" : 2,
+        "y" : 0,
+        "center" : {
+          "x" : 3.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 3.0,
+          "y" : -1.0
+        }, {
+          "x" : 3.866,
+          "y" : -0.5
+        }, {
+          "x" : 3.866,
+          "y" : 0.5
+        }, {
+          "x" : 3.0,
+          "y" : 1.0
+        }, {
+          "x" : 2.134,
+          "y" : 0.5
+        }, {
+          "x" : 2.134,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 3.0, 3.866, 3.866, 3.0, 2.134, 2.134 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,2" : {
+        "x" : 0,
+        "y" : 2,
+        "center" : {
+          "x" : 1.0,
+          "y" : 2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 1.0,
+          "y" : 1.0
+        }, {
+          "x" : 1.866,
+          "y" : 1.5
+        }, {
+          "x" : 1.866,
+          "y" : 2.5
+        }, {
+          "x" : 1.0,
+          "y" : 3.0
+        }, {
+          "x" : 0.134,
+          "y" : 2.5
+        }, {
+          "x" : 0.134,
+          "y" : 1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 1.0, 1.866, 1.866, 1.0, 0.134, 0.134 ],
+        "ypoints" : [ 1.0, 1.5, 2.5, 3.0, 2.5, 1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,1" : {
+        "x" : 0,
+        "y" : 1,
+        "center" : {
+          "x" : 0.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : 0.0
+        }, {
+          "x" : 0.866,
+          "y" : 0.5
+        }, {
+          "x" : 0.866,
+          "y" : 1.5
+        }, {
+          "x" : 0.0,
+          "y" : 2.0
+        }, {
+          "x" : -0.866,
+          "y" : 1.5
+        }, {
+          "x" : -0.866,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:0,0" : {
+        "x" : 0,
+        "y" : 0,
+        "center" : {
+          "x" : 0.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -1.0
+        }, {
+          "x" : 0.866,
+          "y" : -0.5
+        }, {
+          "x" : 0.866,
+          "y" : 0.5
+        }, {
+          "x" : 0.0,
+          "y" : 1.0
+        }, {
+          "x" : -0.866,
+          "y" : 0.5
+        }, {
+          "x" : -0.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-1,-2" : {
+        "x" : -1,
+        "y" : -2,
+        "center" : {
+          "x" : -3.0,
+          "y" : -2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -3.0,
+          "y" : -3.0
+        }, {
+          "x" : -2.134,
+          "y" : -2.5
+        }, {
+          "x" : -2.134,
+          "y" : -1.5
+        }, {
+          "x" : -3.0,
+          "y" : -1.0
+        }, {
+          "x" : -3.866,
+          "y" : -1.5
+        }, {
+          "x" : -3.866,
+          "y" : -2.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -3.0, -2.134, -2.134, -3.0, -3.866, -3.866 ],
+        "ypoints" : [ -3.0, -2.5, -1.5, -1.0, -1.5, -2.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-1,-1" : {
+        "x" : -1,
+        "y" : -1,
+        "center" : {
+          "x" : -2.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : -2.0
+        }, {
+          "x" : -1.134,
+          "y" : -1.5
+        }, {
+          "x" : -1.134,
+          "y" : -0.5
+        }, {
+          "x" : -2.0,
+          "y" : 0.0
+        }, {
+          "x" : -2.866,
+          "y" : -0.5
+        }, {
+          "x" : -2.866,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:2,-2" : {
+        "x" : 2,
+        "y" : -2,
+        "center" : {
+          "x" : 1.0,
+          "y" : -2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 1.0,
+          "y" : -3.0
+        }, {
+          "x" : 1.866,
+          "y" : -2.5
+        }, {
+          "x" : 1.866,
+          "y" : -1.5
+        }, {
+          "x" : 1.0,
+          "y" : -1.0
+        }, {
+          "x" : 0.134,
+          "y" : -1.5
+        }, {
+          "x" : 0.134,
+          "y" : -2.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 1.0, 1.866, 1.866, 1.0, 0.134, 0.134 ],
+        "ypoints" : [ -3.0, -2.5, -1.5, -1.0, -1.5, -2.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:2,-1" : {
+        "x" : 2,
+        "y" : -1,
+        "center" : {
+          "x" : 2.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : -2.0
+        }, {
+          "x" : 2.866,
+          "y" : -1.5
+        }, {
+          "x" : 2.866,
+          "y" : -0.5
+        }, {
+          "x" : 2.0,
+          "y" : 0.0
+        }, {
+          "x" : 1.134,
+          "y" : -0.5
+        }, {
+          "x" : 1.134,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-2,3" : {
+        "x" : -2,
+        "y" : 3,
+        "center" : {
+          "x" : 0.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : 3.0
+        }, {
+          "x" : 0.866,
+          "y" : 3.5
+        }, {
+          "x" : 0.866,
+          "y" : 4.5
+        }, {
+          "x" : 0.0,
+          "y" : 5.0
+        }, {
+          "x" : -0.866,
+          "y" : 4.5
+        }, {
+          "x" : -0.866,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-2,2" : {
+        "x" : -2,
+        "y" : 2,
+        "center" : {
+          "x" : -1.0,
+          "y" : 2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -1.0,
+          "y" : 1.0
+        }, {
+          "x" : -0.134,
+          "y" : 1.5
+        }, {
+          "x" : -0.134,
+          "y" : 2.5
+        }, {
+          "x" : -1.0,
+          "y" : 3.0
+        }, {
+          "x" : -1.866,
+          "y" : 2.5
+        }, {
+          "x" : -1.866,
+          "y" : 1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -1.0, -0.134, -0.134, -1.0, -1.866, -1.866 ],
+        "ypoints" : [ 1.0, 1.5, 2.5, 3.0, 2.5, 1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:2,-3" : {
+        "x" : 2,
+        "y" : -3,
+        "center" : {
+          "x" : 0.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 0.0,
+          "y" : -5.0
+        }, {
+          "x" : 0.866,
+          "y" : -4.5
+        }, {
+          "x" : 0.866,
+          "y" : -3.5
+        }, {
+          "x" : 0.0,
+          "y" : -3.0
+        }, {
+          "x" : -0.866,
+          "y" : -3.5
+        }, {
+          "x" : -0.866,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 0.0, 0.866, 0.866, 0.0, -0.866, -0.866 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-2,1" : {
+        "x" : -2,
+        "y" : 1,
+        "center" : {
+          "x" : -2.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : 0.0
+        }, {
+          "x" : -1.134,
+          "y" : 0.5
+        }, {
+          "x" : -1.134,
+          "y" : 1.5
+        }, {
+          "x" : -2.0,
+          "y" : 2.0
+        }, {
+          "x" : -2.866,
+          "y" : 1.5
+        }, {
+          "x" : -2.866,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-2,0" : {
+        "x" : -2,
+        "y" : 0,
+        "center" : {
+          "x" : -3.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -3.0,
+          "y" : -1.0
+        }, {
+          "x" : -2.134,
+          "y" : -0.5
+        }, {
+          "x" : -2.134,
+          "y" : 0.5
+        }, {
+          "x" : -3.0,
+          "y" : 1.0
+        }, {
+          "x" : -3.866,
+          "y" : 0.5
+        }, {
+          "x" : -3.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -3.0, -2.134, -2.134, -3.0, -3.866, -3.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:1,1" : {
+        "x" : 1,
+        "y" : 1,
+        "center" : {
+          "x" : 2.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : 0.0
+        }, {
+          "x" : 2.866,
+          "y" : 0.5
+        }, {
+          "x" : 2.866,
+          "y" : 1.5
+        }, {
+          "x" : 2.0,
+          "y" : 2.0
+        }, {
+          "x" : 1.134,
+          "y" : 1.5
+        }, {
+          "x" : 1.134,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:2,-1" : {
+        "x" : 2,
+        "y" : -1,
+        "center" : {
+          "x" : 2.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : -2.0
+        }, {
+          "x" : 2.866,
+          "y" : -1.5
+        }, {
+          "x" : 2.866,
+          "y" : -0.5
+        }, {
+          "x" : 2.0,
+          "y" : 0.0
+        }, {
+          "x" : 1.134,
+          "y" : -0.5
+        }, {
+          "x" : 1.134,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:3,0" : {
+        "x" : 3,
+        "y" : 0,
+        "center" : {
+          "x" : 5.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 5.0,
+          "y" : -1.0
+        }, {
+          "x" : 5.866,
+          "y" : -0.5
+        }, {
+          "x" : 5.866,
+          "y" : 0.5
+        }, {
+          "x" : 5.0,
+          "y" : 1.0
+        }, {
+          "x" : 4.134,
+          "y" : 0.5
+        }, {
+          "x" : 4.134,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 5.0, 5.866, 5.866, 5.0, 4.134, 4.134 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:-3,0" : {
+        "x" : -3,
+        "y" : 0,
+        "center" : {
+          "x" : -5.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -5.0,
+          "y" : -1.0
+        }, {
+          "x" : -4.134,
+          "y" : -0.5
+        }, {
+          "x" : -4.134,
+          "y" : 0.5
+        }, {
+          "x" : -5.0,
+          "y" : 1.0
+        }, {
+          "x" : -5.866,
+          "y" : 0.5
+        }, {
+          "x" : -5.866,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -5.0, -4.134, -4.134, -5.0, -5.866, -5.866 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:-3,3" : {
+        "x" : -3,
+        "y" : 3,
+        "center" : {
+          "x" : -2.0,
+          "y" : 4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : 3.0
+        }, {
+          "x" : -1.134,
+          "y" : 3.5
+        }, {
+          "x" : -1.134,
+          "y" : 4.5
+        }, {
+          "x" : -2.0,
+          "y" : 5.0
+        }, {
+          "x" : -2.866,
+          "y" : 4.5
+        }, {
+          "x" : -2.866,
+          "y" : 3.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ 3.0, 3.5, 4.5, 5.0, 4.5, 3.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "1:-2,1" : {
+        "x" : -2,
+        "y" : 1,
+        "center" : {
+          "x" : -2.0,
+          "y" : 1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : 0.0
+        }, {
+          "x" : -1.134,
+          "y" : 0.5
+        }, {
+          "x" : -1.134,
+          "y" : 1.5
+        }, {
+          "x" : -2.0,
+          "y" : 2.0
+        }, {
+          "x" : -2.866,
+          "y" : 1.5
+        }, {
+          "x" : -2.866,
+          "y" : 0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ 0.0, 0.5, 1.5, 2.0, 1.5, 0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:0,-3" : {
+        "x" : 0,
+        "y" : -3,
+        "center" : {
+          "x" : -2.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -2.0,
+          "y" : -5.0
+        }, {
+          "x" : -1.134,
+          "y" : -4.5
+        }, {
+          "x" : -1.134,
+          "y" : -3.5
+        }, {
+          "x" : -2.0,
+          "y" : -3.0
+        }, {
+          "x" : -2.866,
+          "y" : -3.5
+        }, {
+          "x" : -2.866,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -2.0, -1.134, -1.134, -2.0, -2.866, -2.866 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:-2,-1" : {
+        "x" : -2,
+        "y" : -1,
+        "center" : {
+          "x" : -4.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : -4.0,
+          "y" : -2.0
+        }, {
+          "x" : -3.134,
+          "y" : -1.5
+        }, {
+          "x" : -3.134,
+          "y" : -0.5
+        }, {
+          "x" : -4.0,
+          "y" : 0.0
+        }, {
+          "x" : -4.866,
+          "y" : -0.5
+        }, {
+          "x" : -4.866,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ -4.0, -3.134, -3.134, -4.0, -4.866, -4.866 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "2:3,0" : {
+        "x" : 3,
+        "y" : 0,
+        "center" : {
+          "x" : 5.0,
+          "y" : 0.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 5.0,
+          "y" : -1.0
+        }, {
+          "x" : 5.866,
+          "y" : -0.5
+        }, {
+          "x" : 5.866,
+          "y" : 0.5
+        }, {
+          "x" : 5.0,
+          "y" : 1.0
+        }, {
+          "x" : 4.134,
+          "y" : 0.5
+        }, {
+          "x" : 4.134,
+          "y" : -0.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 5.0, 5.866, 5.866, 5.0, 4.134, 4.134 ],
+        "ypoints" : [ -1.0, -0.5, 0.5, 1.0, 0.5, -0.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:3,-1" : {
+        "x" : 3,
+        "y" : -1,
+        "center" : {
+          "x" : 4.0,
+          "y" : -1.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 4.0,
+          "y" : -2.0
+        }, {
+          "x" : 4.866,
+          "y" : -1.5
+        }, {
+          "x" : 4.866,
+          "y" : -0.5
+        }, {
+          "x" : 4.0,
+          "y" : 0.0
+        }, {
+          "x" : 3.134,
+          "y" : -0.5
+        }, {
+          "x" : 3.134,
+          "y" : -1.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 4.0, 4.866, 4.866, 4.0, 3.134, 3.134 ],
+        "ypoints" : [ -2.0, -1.5, -0.5, 0.0, -0.5, -1.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:3,-3" : {
+        "x" : 3,
+        "y" : -3,
+        "center" : {
+          "x" : 2.0,
+          "y" : -4.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 2.0,
+          "y" : -5.0
+        }, {
+          "x" : 2.866,
+          "y" : -4.5
+        }, {
+          "x" : 2.866,
+          "y" : -3.5
+        }, {
+          "x" : 2.0,
+          "y" : -3.0
+        }, {
+          "x" : 1.134,
+          "y" : -3.5
+        }, {
+          "x" : 1.134,
+          "y" : -4.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 2.0, 2.866, 2.866, 2.0, 1.134, 1.134 ],
+        "ypoints" : [ -5.0, -4.5, -3.5, -3.0, -3.5, -4.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      },
+      "0:3,-2" : {
+        "x" : 3,
+        "y" : -2,
+        "center" : {
+          "x" : 3.0,
+          "y" : -2.0
+        },
+        "radius" : 1.0,
+        "points" : [ {
+          "x" : 3.0,
+          "y" : -3.0
+        }, {
+          "x" : 3.866,
+          "y" : -2.5
+        }, {
+          "x" : 3.866,
+          "y" : -1.5
+        }, {
+          "x" : 3.0,
+          "y" : -1.0
+        }, {
+          "x" : 2.134,
+          "y" : -1.5
+        }, {
+          "x" : 2.134,
+          "y" : -2.5
+        } ],
+        "npoints" : 6.0,
+        "xpoints" : [ 3.0, 3.866, 3.866, 3.0, 2.134, 2.134 ],
+        "ypoints" : [ -3.0, -2.5, -1.5, -1.0, -1.5, -2.5 ],
+        "coincidence" : {
+          "list" : [ 0, 0, 0, 0, 0, 0, 0 ],
+          "threshold" : 0.95,
+          "quotient" : 0.0
+        },
+        "coincidenceList" : [ ],
+        "coincidenceCountMap" : { },
+        "coincidenceUnionCountMap" : { },
+        "coincidenceConditionalMap" : { },
+        "conceptListMap" : { },
+        "correctList" : [ ]
+      }
+    },
+    "beliefList" : [ ],
+    "size" : 7,
+    "radius" : 1,
+    "padding" : 0,
+    "depth" : 4,
+    "rootLevel" : { },
+    "inputLevel" : { }
+  },
+  "group" : null
+}
