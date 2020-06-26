@@ -57,6 +57,10 @@ public class Group {
 	@JsonProperty
 	private List<Belief> beliefList = new ArrayList<>();
 	
+	public Group() {
+		
+	}
+	
 	/**
 	 * Checked 202001191442 Good
 	 */

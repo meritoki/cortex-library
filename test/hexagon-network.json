@@ -1,7 +1,8 @@
 {
   "network" : {
+    "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
     "type" : 1,
-    "uuid" : "294b503b-b28c-4a20-abbd-cdabe8310454",
+    "uuid" : "27a0d7cb-40a1-461e-9d16-625afb5f7dfc",
     "shapeMap" : {
       "3:0,0" : {
         "x" : 0,
@@ -2443,10 +2444,10 @@
     "beliefList" : [ ],
     "size" : 7,
     "radius" : 1,
+    "dimension" : 13,
+    "length" : 1,
     "padding" : 0,
-    "depth" : 4,
-    "rootLevel" : { },
-    "inputLevel" : { }
+    "depth" : 4
   },
   "group" : null
 }

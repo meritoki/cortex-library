@@ -14,7 +14,20 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.meritoki.library.cortex.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.square.Squared;
+@JsonTypeInfo(use = Id.CLASS,
+include = JsonTypeInfo.As.PROPERTY,
+property = "type")
+@JsonSubTypes({
+@Type(value = Hexagonal.class),
+@Type(value = Squared.class),
 
+})
 public class Network {
 	
 	private static Logger logger = LogManager.getLogger(Network.class.getName());
@@ -41,6 +54,19 @@ public class Network {
 	@JsonProperty
 	private List<Belief> beliefList = new ArrayList<>();
 	
+	@JsonProperty
+	public int size = 13;
+	@JsonProperty
+	public int radius = 1;
+	@JsonProperty
+	public int dimension = 13;
+	@JsonProperty
+	public int length = 1;
+	@JsonProperty
+	public int padding = 0;
+	@JsonProperty
+	public int depth = 0;
+	
 	public Network() {
 		this.type = BRIGHTNESS;
 		this.uuid = UUID.randomUUID().toString();
@@ -59,10 +85,12 @@ public class Network {
 		this.y = y;
 	}
 
+	@JsonIgnore
 	public int getX() {
 		return this.x;
 	}
 
+	@JsonIgnore
 	public int getY() {
 		return this.y;
 	}
@@ -117,22 +145,26 @@ public class Network {
 		return shapeList;
 	}
 	
+	@JsonIgnore
 	public Level getRootLevel() {
 		int size = this.getLevelList().size();
 		Level level = (size > 0) ? this.getLevelList().get(size - 1) : null;
 		return level;
 	}
 
+	@JsonIgnore
 	public Level getInputLevel() {
 		int size = this.getLevelList().size();
 		Level level = (size > 0) ? this.getLevelList().get(0) : null;
 		return level;
 	}
 	
+	@JsonIgnore
 	public void load() {
-		
+		logger.info("load()");
 	}
 	
+	@JsonIgnore
 	public void update() {
 		
 	}
@@ -141,6 +173,7 @@ public class Network {
 	 * Function initializes the network of nodes, or squares, that converges into a
 	 * single root node.
 	 */
+	@JsonIgnore
 	public void input(Concept concept) {
 		logger.info("input()");
 		Level level = this.getInputLevel();
@@ -150,6 +183,7 @@ public class Network {
 		}
 	}
 	
+	@JsonIgnore
 	public void propagate(Concept concept) {
 		logger.info("propogate(" + concept + ")");
 		Level level = null;
@@ -168,6 +202,7 @@ public class Network {
 		}
 	}
 	
+	@JsonIgnore
 	public List<Concept> process(BufferedImage image, double scale, Concept concept) {
 		Level level = this.getInputLevel();
 		if (level != null && image != null) {

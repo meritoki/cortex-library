@@ -31,14 +31,14 @@ public class Squared extends Network {
 	}
 	@JsonIgnore
 	private static Logger logger = LogManager.getLogger(Squared.class.getName());
-	@JsonProperty
-	private int dimension = 13;
-	@JsonProperty
-	private int length = 1;
-	@JsonProperty
-	private int padding = 0;
-	@JsonProperty
-	private int depth = 0;
+//	@JsonProperty
+//	private int dimension = 13;
+//	@JsonProperty
+//	private int length = 1;
+//	@JsonProperty
+//	private int padding = 0;
+//	@JsonProperty
+//	private int depth = 0;
 
 	public Squared() {
 		super(BRIGHTNESS, 0, 0);

@@ -35,7 +35,7 @@ public class SquareNetworkSaveLoadTest {
 	public void load() {
 		File file = new File("test/square-network.json");
 		document = (Document)NodeController.openJson(file, Document.class);
-		document.group.load();
+		document.network.load();
 	}
 	
 }

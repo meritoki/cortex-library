@@ -39,14 +39,7 @@ public class Hexagonal extends Network {
 
 	@JsonIgnore
 	private static Logger logger = LogManager.getLogger(Hexagonal.class.getName());
-	@JsonProperty
-	private int size = 13;
-	@JsonProperty
-	private int radius = 1;
-	@JsonProperty
-	private int padding = 0;
-	@JsonProperty
-	private int depth = 0;
+
 
 	public Hexagonal() {
 		super(BRIGHTNESS, 0, 0);
@@ -181,7 +174,7 @@ public class Hexagonal extends Network {
 		// if (logger.isDebugEnabled()) {
 		 level = this.getRootLevel();
 		 Shape h = level.getShapeList().get(0);
-		 Node.printTree(h, " ");
+//		 Node.printTree(h, " ");
 		// }
 	}
 

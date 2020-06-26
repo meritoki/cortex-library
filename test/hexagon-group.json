@@ -3,8 +3,9 @@
   "group" : {
     "type" : 1,
     "brightness" : {
+      "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 1,
-      "uuid" : "6f2832b4-6c09-4e64-871b-ea00c966eb2f",
+      "uuid" : "b97fbe7a-1253-403c-b3ae-8be46a6c0d43",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -8284,14 +8285,15 @@
       "beliefList" : [ ],
       "size" : 13,
       "radius" : 1,
+      "dimension" : 13,
+      "length" : 1,
       "padding" : 0,
-      "depth" : 5,
-      "inputLevel" : { },
-      "rootLevel" : { }
+      "depth" : 5
     },
     "red" : {
+      "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 2,
-      "uuid" : "ad57ad5e-9930-4707-be9e-76d7ebeee108",
+      "uuid" : "167ec1e3-6f63-4fea-b5aa-fb2515919d95",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -16571,14 +16573,15 @@
       "beliefList" : [ ],
       "size" : 13,
       "radius" : 1,
+      "dimension" : 13,
+      "length" : 1,
       "padding" : 0,
-      "depth" : 5,
-      "inputLevel" : { },
-      "rootLevel" : { }
+      "depth" : 5
     },
     "green" : {
+      "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 3,
-      "uuid" : "5eb21ee8-4dc1-42c7-bd1f-b0c0b3909ac0",
+      "uuid" : "ecbedf48-b3c2-449f-81e0-99d8d3029ea3",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -24858,14 +24861,15 @@
       "beliefList" : [ ],
       "size" : 13,
       "radius" : 1,
+      "dimension" : 13,
+      "length" : 1,
       "padding" : 0,
-      "depth" : 5,
-      "inputLevel" : { },
-      "rootLevel" : { }
+      "depth" : 5
     },
     "blue" : {
+      "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 4,
-      "uuid" : "48a86d95-2ecc-44e5-ab38-7d3a76b4cf41",
+      "uuid" : "6efcc0d8-ebc5-470f-a45e-077dc6e5fb39",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -33145,10 +33149,10 @@
       "beliefList" : [ ],
       "size" : 13,
       "radius" : 1,
+      "dimension" : 13,
+      "length" : 1,
       "padding" : 0,
-      "depth" : 5,
-      "inputLevel" : { },
-      "rootLevel" : { }
+      "depth" : 5
     },
     "level" : { },
     "size" : 13,
