@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.meritoki.cortex.library.model.hexagon.Hexagonal;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Node<T> {
 

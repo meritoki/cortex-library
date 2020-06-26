@@ -1,23 +1,15 @@
 package com.meritoki.cortex.library.model.hexagon;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.meritoki.cortex.library.model.Belief;
-import com.meritoki.cortex.library.model.Concept;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.cortex.library.model.Level;
 import com.meritoki.cortex.library.model.Network;
 import com.meritoki.cortex.library.model.Node;

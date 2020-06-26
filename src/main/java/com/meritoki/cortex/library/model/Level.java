@@ -10,9 +10,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
-import com.meritoki.cortex.library.model.Shape;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * In a level, shapes are always referenced by their relative coordinates, i.e. 0,0

@@ -1,8 +1,7 @@
 package com.meritoki.cortex.library.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.cortex.library.model.hexagon.Hexagonal;
 
 public class Document {
