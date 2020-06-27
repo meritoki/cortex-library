@@ -2,7 +2,7 @@
   "network" : {
     "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
     "type" : 1,
-    "uuid" : "27a0d7cb-40a1-461e-9d16-625afb5f7dfc",
+    "uuid" : "3e031a79-3011-42b0-a284-1ec1408707ad",
     "shapeMap" : {
       "3:0,0" : {
         "x" : 0,

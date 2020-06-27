@@ -5,7 +5,7 @@
     "brightness" : {
       "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 1,
-      "uuid" : "b97fbe7a-1253-403c-b3ae-8be46a6c0d43",
+      "uuid" : "fcbe1244-e7a5-40d2-bcf0-3918611c4fc9",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -8293,7 +8293,7 @@
     "red" : {
       "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 2,
-      "uuid" : "167ec1e3-6f63-4fea-b5aa-fb2515919d95",
+      "uuid" : "240766d7-6477-49f8-9780-b878fe3a5e67",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -16581,7 +16581,7 @@
     "green" : {
       "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 3,
-      "uuid" : "ecbedf48-b3c2-449f-81e0-99d8d3029ea3",
+      "uuid" : "dc0b3d09-2831-4545-9a12-08ce5b5c47d5",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,
@@ -24869,7 +24869,7 @@
     "blue" : {
       "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
       "type" : 4,
-      "uuid" : "6efcc0d8-ebc5-470f-a45e-077dc6e5fb39",
+      "uuid" : "f0d95b11-7a0b-404c-acd2-c265d5674c3a",
       "shapeMap" : {
         "3:-3,-3" : {
           "x" : -3,

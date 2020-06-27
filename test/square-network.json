@@ -2,7 +2,7 @@
   "network" : {
     "type" : "com.meritoki.library.cortex.model.square.Squared",
     "type" : 1,
-    "uuid" : "e2ffdcf6-0ca0-4319-8d11-c693f16e4ea6",
+    "uuid" : "5dc03385-665d-4da7-9d21-4efc1a88755c",
     "shapeMap" : {
       "3:0,0" : {
         "x" : 0,

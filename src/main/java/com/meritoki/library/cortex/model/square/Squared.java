@@ -105,9 +105,9 @@ public class Squared extends Network {
 		}
 		Level level = new Level();
 		List<Shape> squareList = this.getShapeList(squareMap);
-		Square square = null;
+		Shape square = null;
 		for (Shape n : squareList) {
-			square = (Square)this.shapeMap.get("0:" + n);
+			square = this.shapeMap.get("0:" + n);
 			if (square == null) {
 				square = new Square(n);
 				this.shapeMap.put("0:" + square, square);
@@ -140,7 +140,7 @@ public class Squared extends Network {
 				}
 			}
 			for (Shape m : squareList) {
-				Square s = (Square)this.shapeMap.get(i + ":" + m);
+				Shape s = this.shapeMap.get(i + ":" + m);
 				if (s == null) {
 					s = new Square(m);
 					this.shapeMap.put(i + ":" + s, s);

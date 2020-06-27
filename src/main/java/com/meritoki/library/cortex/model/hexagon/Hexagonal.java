@@ -100,19 +100,21 @@ public class Hexagonal extends Network {
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.size=" + this.size);
 		logger.info("load() this.radius=" + this.radius);
-		Map<String, Shape> hexagonMap = getShapeMap(-1, new Point(this.x, this.y), this.size, this.radius,
+		logger.info("load() this.depth=" + this.depth);
+		Map<String, Shape> shapeMap = getShapeMap(-1, new Point(this.x, this.y), this.size, this.radius,
 				this.padding);
-		int depth = (this.depth > 0) ? this.depth : this.getDepth(hexagonMap.size());
+		int depth = (this.depth > 0) ? this.depth : this.getDepth(shapeMap.size());
 		if (this.depth == 0) {
 			this.depth = depth;
 		}
 		Level level = new Level();
-		List<Shape> hexagonList = this.getShapeList(hexagonMap);
-		Hexagon hexagon = null;
-		for (Shape n : hexagonList) {
-			hexagon = (Hexagon)this.shapeMap.get("0:" + n);
+		List<Shape> shapeList = this.getShapeList(shapeMap);
+		Shape hexagon = null;
+		logger.info("load() shapeList.size()="+shapeList.size());
+		for (Shape s : shapeList) {
+			hexagon = this.shapeMap.get("0:" + s);
 			if (hexagon == null) {
-				hexagon = new Hexagon(n);
+				hexagon = new Hexagon(s);
 				this.shapeMap.put("0:" + hexagon, hexagon);
 			}
 			hexagon.setData("0:" + hexagon);
@@ -122,7 +124,7 @@ public class Hexagonal extends Network {
 		this.addLevel(level);
 		LinkedList<Shape> hexagonStack = null;
 		int exponent = 0;
-		Map<String, Shape> shapeMap;
+//		Map<String, Shape> shapeMap;
 		for (int i = 1; i < depth; i++) {
 			logger.debug("load() i=" + i);
 			logger.debug("load() exponent=" + exponent);
@@ -131,7 +133,7 @@ public class Hexagonal extends Network {
 			}
 			shapeMap = this.getLastLevel().getShapeMap();
 			level = new Level();
-			hexagonList = new LinkedList<>();
+			shapeList = new LinkedList<>();
 			hexagonStack = new LinkedList<>();
 			hexagonStack.push(shapeMap.get(this.x + "," + this.y));
 			Shape shape;
@@ -145,14 +147,14 @@ public class Hexagonal extends Network {
 					// y
 				}
 				for (Shape h : list) {
-					if (!hexagonList.contains(h)) {
-						hexagonList.add(h);
+					if (!shapeList.contains(h)) {
+						shapeList.add(h);
 						hexagonStack.push(h);
 					}
 				}
 			}
-			for (Shape m : hexagonList) {
-				Hexagon h = (Hexagon)this.shapeMap.get(i + ":" + m);
+			for (Shape m : shapeList) {
+				Shape h = this.shapeMap.get(i + ":" + m);
 				if (h == null) {
 					h = new Hexagon(m);
 					this.shapeMap.put(i + ":" + h, h);
