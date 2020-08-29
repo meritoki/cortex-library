@@ -4,11 +4,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,12 +19,9 @@ import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 import com.meritoki.library.cortex.model.square.Square;
 import com.meritoki.library.cortex.model.square.Squared;
 
-public class Group {
+public class Group extends Cortex {
 
 	private static Logger logger = LogManager.getLogger(Group.class.getName());
-	public static final int HEXAGONAL = 1;
-	public static final int SQUARED = 2;
-	public int type = 0;
 	@JsonProperty
 	private Network brightness = null;
 	@JsonProperty
@@ -34,46 +30,28 @@ public class Group {
 	private Network green = null;
 	@JsonProperty
 	private Network blue = null;
+	@JsonProperty
 	private Level level = new Level();
+	@JsonProperty
 	private Shape root = new Shape();
-	@JsonProperty
-	private int size = 13;
-	@JsonProperty
-	private int radius = 1;
-	@JsonProperty
-	private int dimension = 13;
-	@JsonProperty
-	private int length = 2;
-	@JsonProperty
-	private int padding = 0;
-	@JsonProperty
-	private int depth = 0;
-	@JsonProperty
-	private Map<String, Shape> shapeMap = new HashMap<>();
-	@JsonIgnore
-	private int x = 0;
-	@JsonIgnore
-	private int y = 0;
-	@JsonProperty
-	private List<Belief> beliefList = new ArrayList<>();
-	
+
 	public Group() {
-		
+		this.uuid = UUID.randomUUID().toString();
 	}
-	
+
 	/**
 	 * Checked 202001191442 Good
 	 */
 	public Group(int type) {
 		this.type = type;
-		switch(this.type) {
+		switch (this.type) {
 		case HEXAGONAL: {
 			logger.info("HEXAGONAL");
-			this.brightness = new Hexagonal(Network.BRIGHTNESS, x,y,size,radius,padding);
-			this.red = new Hexagonal(Network.RED, x,y,size,radius,padding);
-			this.green = new Hexagonal(Network.GREEN, x,y,size,radius,padding);
-			this.blue = new Hexagonal(Network.BLUE, x,y,size,radius,padding);
-			this.shapeMap = Hexagonal.getShapeMap(0,new Point(this.x, this.y), size, radius, padding);
+			this.brightness = new Hexagonal(Network.BRIGHTNESS, x, y, size, radius, padding);
+			this.red = new Hexagonal(Network.RED, x, y, size, radius, padding);
+			this.green = new Hexagonal(Network.GREEN, x, y, size, radius, padding);
+			this.blue = new Hexagonal(Network.BLUE, x, y, size, radius, padding);
+			this.shapeMap = Hexagonal.getShapeMap(0, new Point(this.x, this.y), size, radius, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
 			this.green.setShapeMap(this.shapeMap);
@@ -82,11 +60,11 @@ public class Group {
 		}
 		case SQUARED: {
 			logger.info("SQUARED");
-			this.brightness = new Squared(Network.BRIGHTNESS, x,y,dimension,length,padding);
-			this.red = new Squared(Hexagonal.RED, x,y,dimension,length,padding);
-			this.green = new Squared(Hexagonal.GREEN, x,y,dimension,length,padding);
-			this.blue = new Squared(Hexagonal.BLUE, x,y,dimension,length,padding);
-			this.shapeMap = Squared.getShapeMap(0,new Point(this.x, this.y), dimension,length, padding);
+			this.brightness = new Squared(Network.BRIGHTNESS, x, y, dimension, length, padding);
+			this.red = new Squared(Hexagonal.RED, x, y, dimension, length, padding);
+			this.green = new Squared(Hexagonal.GREEN, x, y, dimension, length, padding);
+			this.blue = new Squared(Hexagonal.BLUE, x, y, dimension, length, padding);
+			this.shapeMap = Squared.getShapeMap(0, new Point(this.x, this.y), dimension, length, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
 			this.green.setShapeMap(this.shapeMap);
@@ -95,25 +73,25 @@ public class Group {
 		}
 		}
 	}
-	
+
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
 		this.x = x;
 		this.y = y;
-	}	
-	
+	}
+
 	public int getX() {
 		return this.x;
 	}
-	
+
 	public int getY() {
 		return this.y;
 	}
-	
+
 	public Level getLevel() {
 		return this.level;
 	}
-	
+
 	@JsonIgnore
 	public LinkedList<Hexagon> getHexagonList(Map<String, Hexagon> hexagonMap) {
 		LinkedList<Hexagon> hexagonList = new LinkedList<Hexagon>();
@@ -126,7 +104,8 @@ public class Group {
 	public void setLevel(Level level) {
 		this.level = level;
 	}
-	
+
+	@Override
 	public void load() {
 		this.brightness.load();
 		this.red.load();
@@ -142,17 +121,17 @@ public class Group {
 		this.root.addChild(blueShape);
 		this.level.addShape(this.root);
 	}
-	
+
 	@JsonIgnore
 	public void update() {
-		logger.info("update()");
-		switch(this.type) {
+//		logger.info("update()");
+		switch (this.type) {
 		case HEXAGONAL: {
 			double radians = Math.toRadians(30);
 			double xOff = Math.cos(radians) * (this.radius + this.padding);
 			double yOff = Math.sin(radians) * (this.radius + this.padding);
 			int half = this.size / 2;
-			Hexagon hexagon = null;
+			Shape hexagon = null;
 			for (int row = 0; row < this.size; row++) {
 				int cols = this.size - java.lang.Math.abs(row - half);
 				for (int col = 0; col < cols; col++) {
@@ -160,7 +139,7 @@ public class Group {
 					int yPosition = row - half;
 					int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
 					int y = (int) (this.y + yOff * (row - half) * 3);
-					hexagon = (Hexagon)this.shapeMap.get("0:"+xPosition + "," + yPosition);
+					hexagon = this.shapeMap.get("0:" + xPosition + "," + yPosition);
 					if (hexagon != null) {
 						hexagon.setCenter(new Point(x, y));
 					}
@@ -169,9 +148,9 @@ public class Group {
 			break;
 		}
 		case SQUARED: {
-			int half = dimension/2;
+			int half = dimension / 2;
 			Square square = null;
-			double xLeg = (length/2)-(padding/2);
+			double xLeg = (length / 2) - (padding / 2);
 			double yLeg = xLeg;
 //			double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
 			for (int row = 0; row < dimension; row++) {
@@ -179,9 +158,9 @@ public class Group {
 					int xPosition = column - half;
 					int yPosition = row - half;
 //					System.out.println(xPosition+" "+yPosition);
-					double x = (this.x + (xPosition * length) );
+					double x = (this.x + (xPosition * length));
 					double y = (this.y + (yPosition * length));
-					square = (Square)this.shapeMap.get("0:"+xPosition + "," + yPosition);
+					square = (Square) this.shapeMap.get("0:" + xPosition + "," + yPosition);
 					if (square != null) {
 						square.setCenter(new Point(x, y));
 					}
@@ -192,83 +171,19 @@ public class Group {
 		}
 
 	}
-	
-//	public void scan(BufferedImage image, double scale, Concept concept) {
-//		logger.info("processing...");
-//		int width = image.getWidth();
-//		int height = image.getHeight();
-//		for(int w = 0; w< width;w++) {
-//			for(int n=0;n < height;n++) {
-//				this.setOrigin(w, n);
-//				this.update();
-//				this.process(image, scale, concept);
-//			}
-//		}
-//	}
-	
-//	public void process(BufferedImage image, double scale, Concept concept) {
-//		Belief belief = null;
-//		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
-//		for (Shape h : hexagonList) {
-//			for (int i = 0; i < h.sides; i++) {
-//				if (h.shortConeArray[i] != null 
-//						&& h.mediumConeArray[i] != null
-//						&& h.longConeArray[i] != null
-//						&& (int) h.xpoints[i] > 0
-//						&& (int) h.xpoints[i] < (image.getWidth() * scale)
-//						&& (int) h.ypoints[i] > 0
-//						&& (int) h.ypoints[i] < (image.getHeight() * scale)) {
-//					h.shortConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-//							(int) (h.ypoints[i] * scale)));
-//					h.mediumConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-//							(int) (h.ypoints[i] * scale)));
-//					h.longConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-//							(int) (h.ypoints[i] * scale)));
-//				} else {
-//					h.shortConeArray[i].input(Color.black.getRGB());
-//					h.mediumConeArray[i].input(Color.black.getRGB());
-//					h.longConeArray[i].input(Color.black.getRGB());
-//				}
-//			}
-//		}
-//		this.brightness.propagate(concept);
-//		this.red.propagate(concept);
-//		this.green.propagate(concept);
-//		this.blue.propagate(concept);
-//		this.level.propagate(0,concept,true);
-//		if (concept == null) {
-//			List<Concept> conceptList = this.level.getCoincidenceConceptList();
-//			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
-//			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
-//				belief = new Belief(concept, new Point(this.x, this.y));
-//				this.beliefList.add(belief);
-//			}
-//		}
-//	}
 
-	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
-		logger.info("processing...");
+	@Override
+	public List<Concept> process(BufferedImage image, Concept concept) {
 		Belief belief = null;
-		List<Shape> shapeList = Network.getShapeList(this.shapeMap);
-		for (Shape h : shapeList) {
-			if (sleep > 0) {
-				graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints),
-						(int) h.npoints);
-			}
+		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
+		for (Shape h : hexagonList) {
 			for (int i = 0; i < h.sides; i++) {
-				if (h.shortConeArray[i] != null 
-						&& h.mediumConeArray[i] != null
-						&& h.longConeArray[i] != null
-						&& (int) h.xpoints[i] > 0
-						&& (int) h.xpoints[i] < (image.getWidth() * scale)
-						&& (int) h.ypoints[i] > 0
-						&& (int) h.ypoints[i] < (image.getHeight() * scale)) {
-					h.shortConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-							(int) (h.ypoints[i] * scale)));
-					h.mediumConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-							(int) (h.ypoints[i] * scale)));
-					h.longConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale),
-							(int) (h.ypoints[i] * scale)));
+				if (h.shortConeArray[i] != null && h.mediumConeArray[i] != null && h.longConeArray[i] != null
+						&& (int) h.xpoints[i] > 0 && (int) h.xpoints[i] < (image.getWidth()) && (int) h.ypoints[i] > 0
+						&& (int) h.ypoints[i] < (image.getHeight())) {
+					h.shortConeArray[i].input(image.getRGB((int) (h.xpoints[i]), (int) (h.ypoints[i])));
+					h.mediumConeArray[i].input(image.getRGB((int) (h.xpoints[i]), (int) (h.ypoints[i])));
+					h.longConeArray[i].input(image.getRGB((int) (h.xpoints[i]), (int) (h.ypoints[i])));
 				} else {
 					h.shortConeArray[i].input(Color.black.getRGB());
 					h.mediumConeArray[i].input(Color.black.getRGB());
@@ -280,7 +195,48 @@ public class Group {
 		this.red.propagate(concept);
 		this.green.propagate(concept);
 		this.blue.propagate(concept);
-		this.level.propagate(0,concept, true);
+		this.level.propagate(0, concept, true);
+		if (concept == null) {
+			List<Concept> conceptList = this.level.getCoincidenceConceptList();
+			return conceptList;
+//			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
+//			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
+//				belief = new Belief(concept, new Point(this.x, this.y));
+//				this.beliefList.add(belief);
+//			}
+//			return concept;
+		}
+		return null;
+	}
+
+	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
+		logger.info("processing...");
+		Belief belief = null;
+		List<Shape> shapeList = Network.getShapeList(this.shapeMap);
+		for (Shape h : shapeList) {
+			if (sleep > 0) {
+				graphics2D.drawPolygon(h.doubleToIntArray(h.xpoints), h.doubleToIntArray(h.ypoints), (int) h.npoints);
+			}
+			for (int i = 0; i < h.sides; i++) {
+				if (h.shortConeArray[i] != null && h.mediumConeArray[i] != null && h.longConeArray[i] != null
+						&& (int) h.xpoints[i] > 0 && (int) h.xpoints[i] < (image.getWidth() * scale)
+						&& (int) h.ypoints[i] > 0 && (int) h.ypoints[i] < (image.getHeight() * scale)) {
+					h.shortConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+					h.mediumConeArray[i]
+							.input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+					h.longConeArray[i].input(image.getRGB((int) (h.xpoints[i] * scale), (int) (h.ypoints[i] * scale)));
+				} else {
+					h.shortConeArray[i].input(Color.black.getRGB());
+					h.mediumConeArray[i].input(Color.black.getRGB());
+					h.longConeArray[i].input(Color.black.getRGB());
+				}
+			}
+		}
+		this.brightness.propagate(concept);
+		this.red.propagate(concept);
+		this.green.propagate(concept);
+		this.blue.propagate(concept);
+		this.level.propagate(0, concept, true);
 		if (concept == null) {
 			List<Concept> conceptList = this.level.getCoincidenceConceptList();
 			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
@@ -302,3 +258,16 @@ public class Group {
 		}
 	}
 }
+
+//public void scan(BufferedImage image, double scale, Concept concept) {
+//	logger.info("processing...");
+//	int width = image.getWidth();
+//	int height = image.getHeight();
+//	for(int w = 0; w< width;w++) {
+//		for(int n=0;n < height;n++) {
+//			this.setOrigin(w, n);
+//			this.update();
+//			this.process(image, scale, concept);
+//		}
+//	}
+//}

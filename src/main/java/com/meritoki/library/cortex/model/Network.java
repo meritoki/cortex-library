@@ -26,49 +26,14 @@ property = "type")
 @JsonSubTypes({
 @Type(value = Hexagonal.class),
 @Type(value = Squared.class),
-
 })
-public class Network {
+public class Network extends Cortex {
 	
 	private static Logger logger = LogManager.getLogger(Network.class.getName());
 	@JsonIgnore
-	public static final int BRIGHTNESS = 1;
-	@JsonIgnore
-	public static final int RED = 2;
-	@JsonIgnore
-	public static final int GREEN = 3;
-	@JsonIgnore
-	public static final int BLUE = 4;
-	@JsonProperty
-	private int type = 0;
-	@JsonIgnore
-	protected int x = 0;
-	@JsonIgnore
-	protected int y = 0;
-	@JsonProperty
-	public String uuid = null;
-	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
-	@JsonProperty
-	protected Map<String, Shape> shapeMap = new HashMap<>();
-	@JsonProperty
-	private List<Belief> beliefList = new ArrayList<>();
-	
-	@JsonProperty
-	public int size = 13;
-	@JsonProperty
-	public int radius = 1;
-	@JsonProperty
-	public int dimension = 13;
-	@JsonProperty
-	public int length = 1;
-	@JsonProperty
-	public int padding = 0;
-	@JsonProperty
-	public int depth = 0;
 	
 	public Network() {
-		this.type = BRIGHTNESS;
 		this.uuid = UUID.randomUUID().toString();
 	}
 	
@@ -77,12 +42,6 @@ public class Network {
 		this.x = x;
 		this.y = y;
 		this.uuid = UUID.randomUUID().toString();
-	}
-	
-	@JsonIgnore
-	public void setOrigin(int x, int y) {
-		this.x = x;
-		this.y = y;
 	}
 
 	@JsonIgnore
@@ -185,7 +144,7 @@ public class Network {
 	
 	@JsonIgnore
 	public void propagate(Concept concept) {
-		logger.info("propogate(" + concept + ")");
+//		logger.info("propogate(" + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {
@@ -202,22 +161,23 @@ public class Network {
 		}
 	}
 	
+	@Override
 	@JsonIgnore
-	public List<Concept> process(BufferedImage image, double scale, Concept concept) {
+	public List<Concept> process(BufferedImage image, Concept concept) {
 		Level level = this.getInputLevel();
 		if (level != null && image != null) {
 			for (Shape s : level.getShapeList()) {
 				s.initCells();
 				for (int i = 0; i < s.sides; i++) {
 					if (s.shortConeArray[i] != null && s.mediumConeArray[i] != null && s.longConeArray[i] != null
-							&& (int) s.xpoints[i] > 0 && (int) s.xpoints[i] < (image.getWidth() * scale)
-							&& (int) s.ypoints[i] > 0 && (int) s.ypoints[i] < (image.getHeight() * scale)) {
+							&& (int) s.xpoints[i] > 0 && (int) s.xpoints[i] < (image.getWidth())
+							&& (int) s.ypoints[i] > 0 && (int) s.ypoints[i] < (image.getHeight())) {
 						s.shortConeArray[i]
-								.input(image.getRGB((int) (s.xpoints[i] * scale), (int) (s.ypoints[i] * scale)));
+								.input(image.getRGB((int) (s.xpoints[i]), (int) (s.ypoints[i])));
 						s.mediumConeArray[i]
-								.input(image.getRGB((int) (s.xpoints[i] * scale), (int) (s.ypoints[i] * scale)));
+								.input(image.getRGB((int) (s.xpoints[i]), (int) (s.ypoints[i])));
 						s.longConeArray[i]
-								.input(image.getRGB((int) (s.xpoints[i] * scale), (int) (s.ypoints[i] * scale)));
+								.input(image.getRGB((int) (s.xpoints[i]), (int) (s.ypoints[i])));
 					} else {
 						s.shortConeArray[i].input(Color.black.getRGB());
 						s.mediumConeArray[i].input(Color.black.getRGB());

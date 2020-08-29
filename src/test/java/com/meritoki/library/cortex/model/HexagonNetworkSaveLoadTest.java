@@ -18,8 +18,8 @@ public class HexagonNetworkSaveLoadTest {
 	
 	@BeforeAll
 	public static void initialize() {
-		document.network = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
-		document.network.load();
+		document.cortex = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
+		document.cortex.load();
 	}
 	
 	@Test
@@ -34,7 +34,7 @@ public class HexagonNetworkSaveLoadTest {
 	public void load() {
 		File file = new File("test/hexagon-network.json");
 		document = (Document)NodeController.openJson(file, Document.class);
-		document.network.load();
+		document.cortex.load();
 	}
 	
 }

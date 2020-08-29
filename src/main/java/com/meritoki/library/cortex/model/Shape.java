@@ -65,7 +65,7 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	protected LinkedList<Integer> correctList = new LinkedList<>();
 	@JsonIgnore
-	public static final int LIMIT = 4096;
+	public static final int LIMIT = 1028;
 	
 	public Shape() {
 		

@@ -1,8 +1,14 @@
 {
-  "network" : {
+  "cortex" : {
     "type" : "com.meritoki.library.cortex.model.hexagon.Hexagonal",
+    "uuid" : "f2cea0b8-70ff-458f-a4df-d779e7898780",
     "type" : 1,
-    "uuid" : "3e031a79-3011-42b0-a284-1ec1408707ad",
+    "size" : 7,
+    "radius" : 1,
+    "dimension" : 13,
+    "length" : 2,
+    "padding" : 0,
+    "depth" : 4,
     "shapeMap" : {
       "3:0,0" : {
         "x" : 0,
@@ -2441,13 +2447,6 @@
         "correctList" : [ ]
       }
     },
-    "beliefList" : [ ],
-    "size" : 7,
-    "radius" : 1,
-    "dimension" : 13,
-    "length" : 1,
-    "padding" : 0,
-    "depth" : 4
-  },
-  "group" : null
+    "beliefList" : [ ]
+  }
 }

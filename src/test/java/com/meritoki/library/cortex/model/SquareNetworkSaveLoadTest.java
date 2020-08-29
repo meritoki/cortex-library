@@ -19,8 +19,8 @@ public class SquareNetworkSaveLoadTest {
 	
 	@BeforeAll
 	public static void initialize() {
-		document.network = new Squared(Squared.BRIGHTNESS, 0, 0, 7, 1, 0);
-		document.network.load();
+		document.cortex = new Squared(Squared.BRIGHTNESS, 0, 0, 7, 1, 0);
+		document.cortex.load();
 	}
 	
 	@Test
@@ -35,7 +35,7 @@ public class SquareNetworkSaveLoadTest {
 	public void load() {
 		File file = new File("test/square-network.json");
 		document = (Document)NodeController.openJson(file, Document.class);
-		document.network.load();
+		document.cortex.load();
 	}
 	
 }

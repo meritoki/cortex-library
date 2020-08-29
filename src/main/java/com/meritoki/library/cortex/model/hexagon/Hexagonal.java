@@ -71,7 +71,7 @@ public class Hexagonal extends Network {
 		double yOff = Math.sin(radians) * (radius + padding);
 		int half = size / 2;
 		Level level = null;
-		Hexagon hexagon = null;
+		Shape hexagon = null;
 		level = this.getInputLevel();
 		for (int row = 0; row < size; row++) {
 			int cols = size - java.lang.Math.abs(row - half);
@@ -80,7 +80,7 @@ public class Hexagonal extends Network {
 				int yPosition = row - half;
 				int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
 				int y = (int) (this.y + yOff * (row - half) * 3);
-				hexagon = (Hexagon) level.shapeMap.get(xPosition + "," + yPosition);
+				hexagon = level.shapeMap.get(xPosition + "," + yPosition);
 				if (hexagon != null) {
 					hexagon.setCenter(new Point(x, y));
 				}

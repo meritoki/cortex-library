@@ -17,8 +17,8 @@ public class HexagonGroupSaveLoadTest {
 	
 	@BeforeAll
 	public static void initialize() {
-		document.group = new Group(Group.HEXAGONAL);
-		document.group.load();
+		document.cortex = new Group(Group.HEXAGONAL);
+		document.cortex.load();
 	}
 	
 	@Test
@@ -33,7 +33,7 @@ public class HexagonGroupSaveLoadTest {
 	public void load() {
 		File file = new File("test/hexagon-group.json");
 		document = (Document)NodeController.openJson(file, Document.class);
-		document.group.load();
+		document.cortex.load();
 	}
 	
 }

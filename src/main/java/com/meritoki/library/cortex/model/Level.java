@@ -72,7 +72,7 @@ public class Level {
 	
 	@JsonIgnore
 	public void propagate(int type, Concept concept, boolean flag) {
-		logger.info("propagate("+type+", "+concept+", "+flag+")");
+//		logger.info("propagate("+type+", "+concept+", "+flag+")");
 		Shape s = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
