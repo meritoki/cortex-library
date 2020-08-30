@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 
-public class Document {
-
-	@JsonProperty
-	public Cortex cortex;
-	
-	public Document() {
-//		this.cortex = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
-//		this.cortex = new Group(Group.SQUARED);
+public class Library {
+	public static void main(String[] args) {
+		Hexagonal network = new Hexagonal();
+		network.load();
 	}
 }
