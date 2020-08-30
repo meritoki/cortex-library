@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.meritoki.library.cortex.controller.NodeController;
+import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

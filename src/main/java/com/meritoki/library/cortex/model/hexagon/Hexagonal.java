@@ -19,9 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Level;
@@ -51,7 +49,7 @@ public class Hexagonal extends Network {
 	}
 
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Hexagonal.class.getName());
+	protected Logger logger = Logger.getLogger(Hexagonal.class.getName());
 
 
 	public Hexagonal() {
@@ -139,8 +137,8 @@ public class Hexagonal extends Network {
 		int exponent = 0;
 //		Map<String, Shape> shapeMap;
 		for (int i = 1; i < depth; i++) {
-			logger.debug("load() i=" + i);
-			logger.debug("load() exponent=" + exponent);
+			logger.fine("load() i=" + i);
+			logger.fine("load() exponent=" + exponent);
 			if (i % 2 == 0) {
 				exponent++;
 			}

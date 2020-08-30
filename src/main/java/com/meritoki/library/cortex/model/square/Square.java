@@ -15,8 +15,7 @@
  */
 package com.meritoki.library.cortex.model.square;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Point;
@@ -24,7 +23,7 @@ import com.meritoki.library.cortex.model.Shape;
 
 public class Square extends Shape {
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Square.class.getName());
+	protected Logger logger = Logger.getLogger(Square.class.getName());
 
 	public Square() {
 		super(4,45,0,0,new Point(0,0),1);

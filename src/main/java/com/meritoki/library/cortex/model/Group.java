@@ -23,9 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,7 +34,7 @@ import com.meritoki.library.cortex.model.square.Squared;
 
 public class Group extends Cortex {
 
-	private static Logger logger = LogManager.getLogger(Group.class.getName());
+	protected Logger logger = Logger.getLogger(Group.class.getName());
 	@JsonProperty
 	private Network brightness = null;
 	@JsonProperty

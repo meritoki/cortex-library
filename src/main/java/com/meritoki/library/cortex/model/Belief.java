@@ -15,8 +15,7 @@
  */
 package com.meritoki.library.cortex.model;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Belief {
 	
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Belief.class.getName());
+	protected Logger logger = Logger.getLogger(Belief.class.getName());
 	@JsonProperty
 	public Point point;
 	@JsonProperty

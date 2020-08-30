@@ -19,9 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Level;
@@ -44,7 +42,7 @@ public class Squared extends Network {
 		n.load();
 	}
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Squared.class.getName());
+	protected Logger logger = Logger.getLogger(Squared.class.getName());
 //	@JsonProperty
 //	private int dimension = 13;
 //	@JsonProperty
@@ -134,9 +132,9 @@ public class Squared extends Network {
 		LinkedList<Shape> squareStack = null;
 		int exponent = 0;
 		for (int i = 1; i < depth; i++) {
-			logger.debug("load() i=" + i);
+			logger.fine("load() i=" + i);
 			exponent = i;
-			logger.debug("load() exponent=" + exponent);
+			logger.fine("load() exponent=" + exponent);
 			squareMap = this.getLastLevel().getShapeMap();
 			level = new Level();
 			squareList = new LinkedList<>();

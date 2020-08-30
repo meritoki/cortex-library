@@ -15,8 +15,7 @@
  */
 package com.meritoki.library.cortex.model.hexagon;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Point;
@@ -25,7 +24,7 @@ import com.meritoki.library.cortex.model.Shape;
 public class Hexagon extends Shape {
 
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Hexagon.class.getName());
+	protected Logger logger = Logger.getLogger(Hexagon.class.getName());
 	
 	public Hexagon() {
 		super(6,90,0,0,new Point(0,0),1);

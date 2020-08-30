@@ -17,9 +17,7 @@ package com.meritoki.library.cortex.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Coincidence {
 
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Coincidence.class.getName());
+	protected Logger logger = Logger.getLogger(Coincidence.class.getName());
 	@JsonProperty
 	public List<Integer> list = new ArrayList<>();
 	@JsonProperty

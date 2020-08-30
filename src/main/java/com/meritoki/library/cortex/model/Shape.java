@@ -20,9 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,7 +28,7 @@ import com.meritoki.library.cortex.model.hexagon.Hexagonal;
 
 public class Shape extends Node<Object> {
 
-	private static Logger logger = LogManager.getLogger(Shape.class.getName());
+	protected Logger logger = Logger.getLogger(Shape.class.getName());
 	@JsonProperty
 	private int x = 0;
 	@JsonProperty

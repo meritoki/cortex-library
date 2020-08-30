@@ -21,9 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -41,7 +39,7 @@ property = "type")
 })
 public class Network extends Cortex {
 	
-	private static Logger logger = LogManager.getLogger(Network.class.getName());
+	protected Logger logger = Logger.getLogger(Network.class.getName());
 	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
 	

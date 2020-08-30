@@ -15,11 +15,8 @@
  */
 package com.meritoki.library.cortex.model;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class Cone extends Cell {
-	private static Logger logger = LogManager.getLogger(Cone.class.getName());
+	
 	public Wavelength wavelength = Wavelength.SHORT;
 	
 	public Cone(Wavelength wavelength) {

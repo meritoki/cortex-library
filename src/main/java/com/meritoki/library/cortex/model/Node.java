@@ -17,16 +17,14 @@ package com.meritoki.library.cortex.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Node<T> {
 
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Node.class.getName());
+	protected Logger logger = Logger.getLogger(Node.class.getName());
 	@JsonIgnore
 	private T data = null;
 	@JsonIgnore

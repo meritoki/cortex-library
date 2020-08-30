@@ -22,9 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -36,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Level {
 	
 	@JsonIgnore
-	private static Logger logger = LogManager.getLogger(Level.class.getName());
+	protected Logger logger = Logger.getLogger(Level.class.getName());
 	@JsonIgnore
 	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonIgnore
