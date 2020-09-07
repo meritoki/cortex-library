@@ -78,7 +78,7 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	protected LinkedList<Integer> correctList = new LinkedList<>();
 	@JsonIgnore
-	public static final int LIMIT = 1028;
+	public static final int MEMORY = 4096;
 	
 	public Shape() {
 		
@@ -272,10 +272,11 @@ public class Shape extends Node<Object> {
 				this.coincidenceList.add(coincidence);
 			} else {
 				this.coincidence = coincidence;
-				this.coincidenceList.add(this.coincidence);
+				if(concept != null)
+					this.coincidenceList.add(this.coincidence);
 			}
 		}
-		if (this.coincidenceList.size() > LIMIT) {// this.getFrequencyMax() + this.buffer) {
+		if (this.coincidenceList.size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
 			this.purgeCoincidenceList();
 		}
 	}

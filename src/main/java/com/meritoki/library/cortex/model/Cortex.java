@@ -15,6 +15,7 @@
  */
 package com.meritoki.library.cortex.model;
 
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -88,9 +89,15 @@ public class Cortex {
 		this.y = y;
 	}
 	
-	public List<Concept> process(BufferedImage image, Concept concept) {
-		return null;
+	public int getX() {
+		return this.x;
 	}
+
+	public int getY() {
+		return this.y;
+	}
+	
+	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {}
 	
 	public BufferedImage scaleBufferedImage(BufferedImage bufferedImage, double scale) {
 		BufferedImage before = bufferedImage;

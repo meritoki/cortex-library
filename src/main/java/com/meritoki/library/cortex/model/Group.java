@@ -93,13 +93,7 @@ public class Group extends Cortex {
 		this.y = y;
 	}
 
-	public int getX() {
-		return this.x;
-	}
 
-	public int getY() {
-		return this.y;
-	}
 
 	public Level getLevel() {
 		return this.level;
@@ -186,7 +180,7 @@ public class Group extends Cortex {
 	}
 
 	@Override
-	public List<Concept> process(BufferedImage image, Concept concept) {
+	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {
 		Belief belief = null;
 		List<Shape> hexagonList = Network.getShapeList(this.shapeMap);
 		for (Shape h : hexagonList) {
@@ -211,7 +205,6 @@ public class Group extends Cortex {
 		this.level.propagate(0, concept, true);
 		if (concept == null) {
 			List<Concept> conceptList = this.level.getCoincidenceConceptList();
-			return conceptList;
 //			concept = (conceptList.size() > 0) ? conceptList.get(0) : null;
 //			if (concept != null) {// bConcept != null && aConcept.equals(bConcept)
 //				belief = new Belief(concept, new Point(this.x, this.y));
@@ -219,7 +212,6 @@ public class Group extends Cortex {
 //			}
 //			return concept;
 		}
-		return null;
 	}
 
 	public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {

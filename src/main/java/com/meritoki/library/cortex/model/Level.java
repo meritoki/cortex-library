@@ -135,8 +135,7 @@ public class Level {
 			concept.rank = quotient;
 			conceptList.add(concept);
 		}
-		this.sortDescendingList(conceptList);
-//		logger.debug("getConceptList() conceptList="+conceptList);
+		logger.info("getConceptList() conceptList="+conceptList);
 		return conceptList;
 	}
 	
