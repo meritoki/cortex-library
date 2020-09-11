@@ -17,6 +17,7 @@ package com.meritoki.library.cortex.model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +30,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.library.cortex.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.retina.Retina;
 import com.meritoki.library.cortex.model.square.Square;
 import com.meritoki.library.cortex.model.square.Squared;
 @JsonTypeInfo(use = Id.CLASS,
@@ -50,6 +53,7 @@ public class Network extends Cortex {
 	}
 	
 	public Network(int type, int x, int y) {
+		logger.info("Network("+type+", "+x+", "+y+")");
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -93,13 +97,12 @@ public class Network extends Cortex {
 	@JsonIgnore
 	public void setConcept(Concept concept) {
 		for (Level level : this.levelList) {
-			level.propagate(0, concept, true);
+			level.propagate(concept, true, false);
 		}
 	}
 	
 	@JsonIgnore
 	public void setShapeMap(Map<String, Shape> shapeMap) {
-		// this.hexagonMap = hexagonMap;
 		for (Map.Entry<String, Shape> entry : shapeMap.entrySet()) {
 			String key = entry.getKey();
 			Shape value = entry.getValue();
@@ -137,51 +140,7 @@ public class Network extends Cortex {
 	
 	@JsonIgnore
 	public void update() {
-//		switch (this.type) {
-//		case HEXAGONAL: {
-//			double radians = Math.toRadians(30);
-//			double xOff = Math.cos(radians) * (this.radius + this.padding);
-//			double yOff = Math.sin(radians) * (this.radius + this.padding);
-//			int half = this.size / 2;
-//			Shape hexagon = null;
-//			for (int row = 0; row < this.size; row++) {
-//				int cols = this.size - java.lang.Math.abs(row - half);
-//				for (int col = 0; col < cols; col++) {
-//					int xPosition = row < half ? col - row : col - half;
-//					int yPosition = row - half;
-//					int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
-//					int y = (int) (this.y + yOff * (row - half) * 3);
-//					hexagon = this.shapeMap.get("0:" + xPosition + "," + yPosition);
-//					if (hexagon != null) {
-//						hexagon.setCenter(new Point(x, y));
-//					}
-//				}
-//			}
-//			break;
-//		}
-//		case SQUARED: {
-//			int half = dimension / 2;
-//			Square square = null;
-//			double xLeg = (length / 2) - (padding / 2);
-//			double yLeg = xLeg;
-////			double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
-//			for (int row = 0; row < dimension; row++) {
-//				for (int column = 0; column < dimension; column++) {
-//					int xPosition = column - half;
-//					int yPosition = row - half;
-////					System.out.println(xPosition+" "+yPosition);
-//					double x = (this.x + (xPosition * length));
-//					double y = (this.y + (yPosition * length));
-//					square = (Square) this.shapeMap.get("0:" + xPosition + "," + yPosition);
-//					if (square != null) {
-//						square.setCenter(new Point(x, y));
-//					}
-//				}
-//			}
-//			break;
-//		}
-//		}
-
+		logger.info("update()");
 	}
 	
 	/**
@@ -194,51 +153,59 @@ public class Network extends Cortex {
 		Level level = this.getInputLevel();
 		List<Shape> shapeList = level.getShapeList();
 		for (Shape shape : shapeList) {
-			shape.addCoincidence(shape.getCoincidence(this.type), concept, false);
+			shape.addCoincidence(shape.getCoincidence(this.type), concept, true);
 		}
 	}
 	
 	@JsonIgnore
-	public void propagate(Concept concept) {
+	public void propagate(Concept concept, boolean flag) {
 //		logger.info("propogate(" + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {
 			level = this.getLevelList().get(i);
-			if (i == 0) {
+			if (flag && i == 0) {
 				level.input(this.type, concept);
 			} else {
+//				if(i == 0) {
+//					level.propagate(concept, true, true);
+//				} else 
 				if (i == size - 1) {
-					level.propagate(0, concept, true);
+					level.propagate(concept, true, true);
 				} else {
-					level.propagate(0, concept, false);
+					level.propagate(concept, true, false);
 				}
 			}
 		}
 	}
 	
+	@JsonIgnore
+	public void feedback(Concept concept) {
+		Level level = null;
+		int size = this.getLevelList().size();
+		for (int i = size-1; 0 < i; i--) {
+			level = this.getLevelList().get(i);
+			level.feedback(concept, false);
+		}
+	}
+	
 	@Override
 	@JsonIgnore
-	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {
-		System.out.println("process("+image+", "+concept+")");
+	public void process(Graphics2D graphics2D, BufferedImage bufferedImage, Concept concept) {
 		Level level = this.getInputLevel();
 		if (level != null) {
 			for (Shape shape : level.getShapeList()) {
-				if(graphics2D != null) {
-					graphics2D.setColor(Color.YELLOW);
-					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),(int) shape.npoints);
-				}
 				shape.initCells();
-				for (int i = 0; i < shape.sides; i++) {
-					if (image != null && shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null && shape.longConeArray[i] != null
-							&& (int) shape.xpoints[i] > 0 && (int) shape.xpoints[i] < (image.getWidth())
-							&& (int) shape.ypoints[i] > 0 && (int) shape.ypoints[i] < (image.getHeight())) {
+				for (int i = 0; i < shape.sides+1; i++) {
+					if (bufferedImage != null && shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null && shape.longConeArray[i] != null
+							&& (int) shape.xpoints[i] > 0 && (int) shape.xpoints[i] < (bufferedImage.getWidth())
+							&& (int) shape.ypoints[i] > 0 && (int) shape.ypoints[i] < (bufferedImage.getHeight())) {
 						shape.shortConeArray[i]
-								.input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
 						shape.mediumConeArray[i]
-								.input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
 						shape.longConeArray[i]
-								.input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
 					} else {
 						shape.shortConeArray[i].input(Color.black.getRGB());
 						shape.mediumConeArray[i].input(Color.black.getRGB());
@@ -247,7 +214,17 @@ public class Network extends Cortex {
 				}
 				shape.addCoincidence(shape.getCoincidence(this.type), concept, false);
 			}
-			this.propagate(concept);
+			this.propagate(concept,true);
+			this.feedback(concept);
+			for (Shape shape : level.getShapeList()) {
+				shape.initCells();
+				for (int i = 1; i < shape.sides+1; i++) {
+					int brightness = shape.coincidence.list.get(0);
+					Color color = new Color(brightness, brightness, brightness);
+					graphics2D.setColor(color);
+					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),(int) shape.npoints);
+				}
+			}
 		}
 	}
 }

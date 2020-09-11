@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -49,15 +50,15 @@ public class Cortex {
 	@JsonIgnore
 	public static final int BLUE = 4;
 	@JsonIgnore
-	public static final int HEXAGONAL = 1;
+	public static final int HEXAGONAL = 11;
 	@JsonIgnore
-	public static final int SQUARED = 2;
+	public static final int SQUARED = 22;
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
 	public int type = 0;
 	@JsonProperty
-	public int size = 13;
+	public int size = 27;
 	@JsonProperty
 	public int radius = 1;
 	@JsonProperty
@@ -98,6 +99,37 @@ public class Cortex {
 	}
 	
 	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {}
+	
+	public double getSensorRadius() {
+		double max = 0;
+		for(Entry<String, Shape> e: this.shapeMap.entrySet()) {
+//			double x = e.getValue().getX();
+//			double y = e.getValue().getY();
+//			double r = Math.sqrt(Math.pow(x,2)+Math.pow(y, 2));
+//			if(r > max) {
+//				max = r;
+//			}
+			String key = e.getKey();
+			if(key.startsWith("0:")) {
+//				System.out.println("getSensorRedius() key="+key);
+				Shape shape = e.getValue();
+				double[] xPoints = shape.xpoints;
+				double[] yPoints = shape.ypoints;
+				double nPoints = shape.npoints;
+				for(int i=0;i<nPoints; i++) {
+					double x = xPoints[i]-this.x;//e.getValue().getX();
+					double y = yPoints[i]-this.y;//e.getValue().getY();
+					double r = Math.sqrt(Math.pow(x,2)+Math.pow(y, 2));
+					if(r > max) {
+						max = r;
+					}	
+				}
+			}
+		}
+		
+//		System.out.println("getSensorRedius() max="+max);
+		return max;
+	}
 	
 	public BufferedImage scaleBufferedImage(BufferedImage bufferedImage, double scale) {
 		BufferedImage before = bufferedImage;

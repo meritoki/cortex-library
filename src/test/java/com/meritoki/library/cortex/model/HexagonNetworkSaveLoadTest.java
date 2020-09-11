@@ -20,6 +20,7 @@ public class HexagonNetworkSaveLoadTest {
 	public static void initialize() {
 		document.cortex = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
 		document.cortex.load();
+		
 	}
 	
 	@Test

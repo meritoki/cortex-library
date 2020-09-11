@@ -43,17 +43,10 @@ public class Squared extends Network {
 	}
 	@JsonIgnore
 	protected Logger logger = Logger.getLogger(Squared.class.getName());
-//	@JsonProperty
-//	private int dimension = 13;
-//	@JsonProperty
-//	private int length = 1;
-//	@JsonProperty
-//	private int padding = 0;
-//	@JsonProperty
-//	private int depth = 0;
 
 	public Squared() {
 		super(BRIGHTNESS, 0, 0);
+		this.length = 9;
 	}
 
 	public Squared(int dimension, int length, int padding) {
@@ -61,6 +54,7 @@ public class Squared extends Network {
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
+//		this.length = 9;//
 	}
 
 	public Squared(int type, int x, int y, int dimension, int length, int padding) {
@@ -68,6 +62,7 @@ public class Squared extends Network {
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
+//		this.length = 9;
 	}
 
 	/**
@@ -126,7 +121,7 @@ public class Squared extends Network {
 			}
 			square.setData("0:" + square);
 			square.initCells();
-			level.addShape(square);
+			level.addShape(null,square);
 		}
 		this.addLevel(level);
 		LinkedList<Shape> squareStack = null;
@@ -155,6 +150,7 @@ public class Squared extends Network {
 				Shape s = this.shapeMap.get(i + ":" + m);
 				if (s == null) {
 					s = new Square(m);
+					s.length = 9;
 					this.shapeMap.put(i + ":" + s, s);
 				}
 				List<Shape> list = this.getGroupZeroSquareList(squareMap, s.getX(), s.getY(), exponent - 1);
@@ -162,13 +158,13 @@ public class Squared extends Network {
 					s.addChild(n);
 				}
 				s.setData(i + ":" + s);
-				level.addShape(s);
+				level.addShape(null,s);
 			}
 			this.addLevel(level);
 		}
 		 level = this.getRootLevel();
 		 Shape h = level.getShapeList().get(0);
-		 Node.printTree(h, " ");
+//		 Node.printTree(h, " ");
 	}
 
 	@JsonIgnore
@@ -244,6 +240,7 @@ public class Squared extends Network {
 				double x = (origin.x + (xPosition * length));
 				double y = (origin.y + (yPosition * length));
 				square = new Square(xPosition, yPosition, new Point(x, y), radius);
+				square.length = 9;
 				if (level > -1)
 					shapeMap.put(level + ":" + xPosition + "," + yPosition, square);
 				else

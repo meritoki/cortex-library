@@ -24,22 +24,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.meritoki.library.cortex.model.Concept;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * In a level, shapes are always referenced by their relative coordinates, i.e. 0,0
+ * In a level, shapes are always referenced by their relative coordinates, i.e.
+ * 0,0
+ * 
  * @author osvaldo.rodriguez
  *
  */
 public class Level {
-	
+
 	@JsonIgnore
 	protected Logger logger = Logger.getLogger(Level.class.getName());
 	@JsonIgnore
 	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonIgnore
 	public Map<String, Integer> conceptCountMap = new HashMap<>();
-	
+
 	public Level() {
 	}
 
@@ -48,8 +52,12 @@ public class Level {
 	}
 
 	@JsonIgnore
-	public void addShape(Shape shape) {
-		this.shapeMap.put(shape.toString(), shape);
+	public void addShape(String key, Shape shape) {
+//		logger.info("addShape(shape) shape.toString()="+shape.toString());
+		if(key == null)
+			this.shapeMap.put(shape.toString(), shape);
+		else 
+			this.shapeMap.put(key, shape);
 	}
 
 	@JsonIgnore
@@ -70,36 +78,84 @@ public class Level {
 		}
 		return shapeList;
 	}
-	
+
 	@JsonIgnore
 	public void input(int type, Concept concept) {
 //		logger.info("propagate("+type+","+concept+")");
-		Shape h = null;
+		Shape shape = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
-		for (Map.Entry<String,Shape> entry : this.shapeMap.entrySet()) {
-            h = entry.getValue();
-            h.coincidence = h.getCoincidence(type);
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			shape = entry.getValue();
+			shape.coincidence = shape.getCoincidence(type);
 		}
 	}
-	
+
 	@JsonIgnore
-	public void propagate(int type, Concept concept, boolean flag) {
+	public void propagate(Concept concept, boolean flag, boolean nodeFlag) {
 //		logger.info("propagate("+type+", "+concept+", "+flag+")");
 		Shape s = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
-		for (Map.Entry<String,Shape> entry : this.shapeMap.entrySet()) {
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
 			coincidence = new Coincidence();
-            s = entry.getValue();
-            nodeList = s.getChildren();
-            for(Node n : nodeList) {
-            	coincidence.list.addAll(((Shape)n).coincidence.list);
-            }
-            s.addCoincidence(coincidence, concept,flag);
+			s = entry.getValue();
+			nodeList = s.getChildren();
+			if (nodeFlag) {
+//				System.out.println("propogate(...) nodeList.size()=" + nodeList.size());
+				for (int i = 0; i < nodeList.size(); i++) {
+					Node n = nodeList.get(i);
+					Shape shape = (Shape) n;
+					coincidence.list.addAll(shape.coincidence.list);
+				}
+				s.addCoincidence(coincidence, concept, flag);
+			} else {
+				int size = s.length;
+				if (size > 0) {
+//					System.out.println("propogate(...) size=" + size);
+					for (int i = 0; i < s.length; i++) {
+						if (i < nodeList.size()) {
+							Node n = nodeList.get(i);
+							Shape shape = (Shape) n;
+							size = shape.coincidence.list.size();
+							coincidence.list.addAll(shape.coincidence.list);
+						} else {
+							coincidence.list.addAll(new Coincidence(size).list);
+						}
+					}
+					s.addCoincidence(coincidence, concept, flag);
+				}
+			}
 		}
 	}
-	
+
+	@JsonIgnore
+	public void feedback(Concept concept, boolean nodeFlag) {
+		Shape s = null;
+		Coincidence coincidence = null;
+		List<Node<Object>> nodeList = null;
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			s = entry.getValue();
+			nodeList = s.getChildren();
+			int length = 0;
+			for (int i = 0; i < nodeList.size(); i++) {
+				Node<?> n = nodeList.get(i);
+				if (n instanceof Shape) {
+					Shape shape = (Shape) n;
+					length = (nodeFlag) ? nodeList.size() : shape.length;
+					if (length > 0) {
+//						System.out.println("feedback(...) length=" + length);
+						List<Integer> list = s.coincidence.getSublist(length, i);
+						if (list != null) {
+							shape.addCoincidence(new Coincidence(list), concept, false);
+
+						}
+					}
+				}
+			}
+		}
+	}
+
 	@JsonIgnore
 	public List<Concept> getCoincidenceConceptList() {
 		List<Concept> conceptList = new ArrayList<>();
@@ -107,18 +163,18 @@ public class Level {
 		List<Concept> cList = null;
 		Integer count = 0;
 		this.conceptCountMap = new HashMap<>();
-		for (Map.Entry<String,Shape> entry : this.shapeMap.entrySet()) {
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
 			shape = entry.getValue();
-			if(shape.coincidence != null) {
+			if (shape.coincidence != null) {
 				cList = shape.conceptListMap.get(shape.coincidence.toString());
 			} else {
 				cList = null;
 			}
-			if(cList != null) {
-				for(Concept c: cList) {
+			if (cList != null) {
+				for (Concept c : cList) {
 					count = this.conceptCountMap.get(c.toString());
-					count = (count != null)?count:0;
-					this.conceptCountMap.put(c.toString(), count+1);
+					count = (count != null) ? count : 0;
+					this.conceptCountMap.put(c.toString(), count + 1);
 				}
 			}
 		}
@@ -127,18 +183,57 @@ public class Level {
 		Integer dividend;
 		Double quotient;
 		Concept concept = null;
-		for (Map.Entry<String,Integer> entry : this.conceptCountMap.entrySet()) {
+		for (Map.Entry<String, Integer> entry : this.conceptCountMap.entrySet()) {
 			value = entry.getKey();
 			dividend = entry.getValue();
-			quotient = (total>0)?(double)dividend/(double)total:0;
+			quotient = (total > 0) ? (double) dividend / (double) total : 0;
 			concept = new Concept(value);
 			concept.rank = quotient;
 			conceptList.add(concept);
 		}
-		logger.info("getConceptList() conceptList="+conceptList);
+//		logger.info("getCoincidenceConceptList() conceptList="+conceptList);
 		return conceptList;
 	}
-	
+
+	@JsonIgnore
+	public List<Concept> getPredictionConceptList() {
+		List<Concept> conceptList = new ArrayList<>();
+		Shape shape = null;
+		List<Concept> cList = null;
+		Integer count = 0;
+		this.conceptCountMap = new HashMap<>();
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			shape = entry.getValue();
+			if (shape.prediction != null) {
+				cList = shape.conceptListMap.get(shape.prediction.toString());
+			} else {
+				cList = null;
+			}
+			if (cList != null) {
+				for (Concept c : cList) {
+					count = this.conceptCountMap.get(c.toString());
+					count = (count != null) ? count : 0;
+					this.conceptCountMap.put(c.toString(), count + 1);
+				}
+			}
+		}
+		Integer total = this.getTotal(this.conceptCountMap);
+		String value;
+		Integer dividend;
+		Double quotient;
+		Concept concept = null;
+		for (Map.Entry<String, Integer> entry : this.conceptCountMap.entrySet()) {
+			value = entry.getKey();
+			dividend = entry.getValue();
+			quotient = (total > 0) ? (double) dividend / (double) total : 0;
+			concept = new Concept(value);
+			concept.rank = quotient;
+			conceptList.add(concept);
+		}
+		logger.info("getPredictionConceptList() conceptList=" + conceptList);
+		return conceptList;
+	}
+
 	@JsonIgnore
 	public int getTotal(Map<String, Integer> map) {
 		int sum = 0;
@@ -149,30 +244,37 @@ public class Level {
 		}
 		return sum;
 	}
-	
-	@JsonIgnore
-    private void sortAscendingList(List<Concept> list) {
-        Collections.sort(list, new Comparator<Concept>() {
-            public int compare(Concept ideaVal1, Concept ideaVal2) {
-            	Double idea1 = ideaVal1.rank;
-            	Double idea2 = ideaVal2.rank;
-                return idea1.compareTo(idea2);
-            }
-        });
-    }
 
 	@JsonIgnore
-    private void sortDescendingList(List<Concept> list) {
-        Collections.sort(list, new Comparator<Concept>() {
-            public int compare(Concept ideaVal1, Concept ideaVal2) {
-            	Double idea1 = ideaVal1.rank;
-            	Double idea2 = ideaVal2.rank;
-                return idea2.compareTo(idea1);
-            }
-        });
-    }
-	
+	private void sortAscendingList(List<Concept> list) {
+		Collections.sort(list, new Comparator<Concept>() {
+			public int compare(Concept ideaVal1, Concept ideaVal2) {
+				Double idea1 = ideaVal1.rank;
+				Double idea2 = ideaVal2.rank;
+				return idea1.compareTo(idea2);
+			}
+		});
+	}
+
+	@JsonIgnore
+	private void sortDescendingList(List<Concept> list) {
+		Collections.sort(list, new Comparator<Concept>() {
+			public int compare(Concept ideaVal1, Concept ideaVal2) {
+				Double idea1 = ideaVal1.rank;
+				Double idea2 = ideaVal2.rank;
+				return idea2.compareTo(idea1);
+			}
+		});
+	}
+
 	public String toString() {
-		return this.getShapeList()+"";
+		return this.getShapeList() + "";
 	}
 }
+
+//List<Concept> conceptList = shape.conceptListMap.get(new Coincidence(list).toString());
+//if(conceptList != null) {
+//	shape.addCoincidence(coincidence, conceptList.get(c), true);
+//} else {
+//	shape.setCoincidence(new Coincidence(list));
+//}
