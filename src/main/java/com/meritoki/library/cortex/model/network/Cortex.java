@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.network;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +27,13 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.group.Group;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 
 @JsonTypeInfo(use = Id.CLASS,
 include = JsonTypeInfo.As.PROPERTY,
@@ -40,23 +43,12 @@ property = "type")
 @Type(value = Group.class),
 })
 public class Cortex {
-	
-	@JsonIgnore
-	public static final int BRIGHTNESS = 1;
-	@JsonIgnore
-	public static final int RED = 2;
-	@JsonIgnore
-	public static final int GREEN = 3;
-	@JsonIgnore
-	public static final int BLUE = 4;
-	@JsonIgnore
-	public static final int HEXAGONAL = 11;
-	@JsonIgnore
-	public static final int SQUARED = 22;
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
-	public int type = 0;
+	public Color type = Color.BRIGHTNESS ;//int type;//com.meritoki.library.cortex.model.Type type = com.meritoki.library.cortex.model.Type.HEXAGONAL;
+	@JsonProperty
+	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
 	public int size = 27;
 	@JsonProperty
@@ -75,8 +67,8 @@ public class Cortex {
 	public int x = 0;
 	@JsonIgnore
 	public int y = 0;
-	@JsonProperty
-	public List<Belief> beliefList = new ArrayList<>();
+	@JsonIgnore
+	public List<Point> pointList;
 	
 	@JsonIgnore
 	public void load() {}
@@ -86,6 +78,7 @@ public class Cortex {
 	
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
+		System.out.println("setOrigin("+x+", "+y+")");
 		this.x = x;
 		this.y = y;
 	}
@@ -141,5 +134,9 @@ public class Cortex {
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		after = scaleOp.filter(before, after);
 		return after;
+	}
+	
+	public List<Point> getPointList() {
+		return null;
 	}
 }

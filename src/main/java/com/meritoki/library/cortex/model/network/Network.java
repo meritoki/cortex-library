@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.network;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,29 +32,28 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.controller.node.NodeController;
-import com.meritoki.library.cortex.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.network.shape.Shape;
+import com.meritoki.library.cortex.model.network.square.Square;
+import com.meritoki.library.cortex.model.network.square.Squared;
 import com.meritoki.library.cortex.model.retina.Retina;
-import com.meritoki.library.cortex.model.square.Square;
-import com.meritoki.library.cortex.model.square.Squared;
-@JsonTypeInfo(use = Id.CLASS,
-include = JsonTypeInfo.As.PROPERTY,
-property = "type")
-@JsonSubTypes({
-@Type(value = Hexagonal.class),
-@Type(value = Squared.class),
-})
+
+@JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = Hexagonal.class), @Type(value = Squared.class), })
 public class Network extends Cortex {
-	
+
 	protected Logger logger = Logger.getLogger(Network.class.getName());
 	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
-	
+
 	public Network() {
 		this.uuid = UUID.randomUUID().toString();
 	}
-	
-	public Network(int type, int x, int y) {
-		logger.info("Network("+type+", "+x+", "+y+")");
+
+	public Network(com.meritoki.library.cortex.model.network.Color type, int x, int y) {
+		logger.info("Network(" + type + ", " + x + ", " + y + ")");
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -69,7 +69,6 @@ public class Network extends Cortex {
 	public int getY() {
 		return this.y;
 	}
-	
 
 	@JsonIgnore
 	public Map<String, Shape> getShapeMap() {
@@ -89,7 +88,7 @@ public class Network extends Cortex {
 
 	@JsonIgnore
 	public Level getLastLevel() {
-		Level level = this.levelList.get(this.levelList.size()-1);
+		Level level = this.levelList.get(this.levelList.size() - 1);
 		logger.info("getLastLevel() level=" + level);
 		return level;
 	}
@@ -100,7 +99,7 @@ public class Network extends Cortex {
 			level.propagate(concept, true, false);
 		}
 	}
-	
+
 	@JsonIgnore
 	public void setShapeMap(Map<String, Shape> shapeMap) {
 		for (Map.Entry<String, Shape> entry : shapeMap.entrySet()) {
@@ -109,7 +108,7 @@ public class Network extends Cortex {
 			this.shapeMap.put(key, value);
 		}
 	}
-	
+
 	@JsonIgnore
 	public static LinkedList<Shape> getShapeList(Map<String, Shape> shapeMap) {
 		LinkedList<Shape> shapeList = new LinkedList<>();
@@ -118,7 +117,7 @@ public class Network extends Cortex {
 		}
 		return shapeList;
 	}
-	
+
 	@JsonIgnore
 	public Level getRootLevel() {
 		int size = this.getLevelList().size();
@@ -132,17 +131,17 @@ public class Network extends Cortex {
 		Level level = (size > 0) ? this.getLevelList().get(0) : null;
 		return level;
 	}
-	
+
 	@JsonIgnore
 	public void load() {
 		logger.info("load()");
 	}
-	
+
 	@JsonIgnore
 	public void update() {
 		logger.info("update()");
 	}
-	
+
 	/**
 	 * Function initializes the network of nodes, or squares, that converges into a
 	 * single root node.
@@ -156,7 +155,7 @@ public class Network extends Cortex {
 			shape.addCoincidence(shape.getCoincidence(this.type), concept, true);
 		}
 	}
-	
+
 	@JsonIgnore
 	public void propagate(Concept concept, boolean flag) {
 //		logger.info("propogate(" + concept + ")");
@@ -178,28 +177,30 @@ public class Network extends Cortex {
 			}
 		}
 	}
-	
+
 	@JsonIgnore
 	public void feedback(Concept concept) {
 		Level level = null;
 		int size = this.getLevelList().size();
-		for (int i = size-1; 0 < i; i--) {
+		for (int i = size - 1; 0 < i; i--) {
 			level = this.getLevelList().get(i);
 			level.feedback(concept, false);
 		}
 	}
-	
+
 	@Override
 	@JsonIgnore
 	public void process(Graphics2D graphics2D, BufferedImage bufferedImage, Concept concept) {
+		logger.info("process(" + String.valueOf(graphics2D!=null) + ", "+String.valueOf(bufferedImage != null)+", <" + concept + ")");
 		Level level = this.getInputLevel();
 		if (level != null) {
 			for (Shape shape : level.getShapeList()) {
 				shape.initCells();
-				for (int i = 0; i < shape.sides+1; i++) {
-					if (bufferedImage != null && shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null && shape.longConeArray[i] != null
-							&& (int) shape.xpoints[i] > 0 && (int) shape.xpoints[i] < (bufferedImage.getWidth())
-							&& (int) shape.ypoints[i] > 0 && (int) shape.ypoints[i] < (bufferedImage.getHeight())) {
+				for (int i = 0; i < shape.sides + 1; i++) {
+					if (bufferedImage != null && shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null
+							&& shape.longConeArray[i] != null && (int) shape.xpoints[i] > 0
+							&& (int) shape.xpoints[i] < (bufferedImage.getWidth()) && (int) shape.ypoints[i] > 0
+							&& (int) shape.ypoints[i] < (bufferedImage.getHeight())) {
 						shape.shortConeArray[i]
 								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
 						shape.mediumConeArray[i]
@@ -214,17 +215,38 @@ public class Network extends Cortex {
 				}
 				shape.addCoincidence(shape.getCoincidence(this.type), concept, false);
 			}
-			this.propagate(concept,true);
-			this.feedback(concept);
-			for (Shape shape : level.getShapeList()) {
-				shape.initCells();
-				for (int i = 1; i < shape.sides+1; i++) {
+			this.propagate(concept, true);
+//			this.feedback(concept);
+			if (graphics2D != null) {
+				for (Shape shape : level.getShapeList()) {
+					shape.initCells();
+
 					int brightness = shape.coincidence.list.get(0);
 					Color color = new Color(brightness, brightness, brightness);
 					graphics2D.setColor(color);
-					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),(int) shape.npoints);
+					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
+							(int) shape.npoints);
+
 				}
 			}
 		}
+	}
+
+	@Override
+	public List<Point> getPointList() {
+		List<Point> pointList = null;
+		Level level = this.getInputLevel();
+		if (level != null) {
+			pointList = new ArrayList<>();
+			for (Shape shape : level.getShapeList()) {
+				shape.initCells();
+				Point point = new Point();
+				point.x = shape.xpoints[0];
+				point.y = shape.ypoints[0];
+				point.conceptList = shape.getConceptList(shape.coincidence);
+				pointList.add(point);
+			}
+		}
+		return pointList;
 	}
 }

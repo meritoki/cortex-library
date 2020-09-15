@@ -15,8 +15,6 @@
  */
 package com.meritoki.library.cortex.model.cell;
 
-import com.meritoki.library.cortex.model.Wavelength;
-
 public class Cone extends Cell {
 	
 	public Wavelength wavelength = Wavelength.SHORT;

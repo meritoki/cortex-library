@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.network.shape;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +24,14 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meritoki.library.cortex.model.Coincidence;
+import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Node;
+import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cell.Cone;
-import com.meritoki.library.cortex.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.cell.Wavelength;
+import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 
 public class Shape extends Node<Object> {
 
@@ -54,14 +60,14 @@ public class Shape extends Node<Object> {
 	public double[] ypoints = null;
 	@JsonProperty
 	public Coincidence coincidence;
-	@JsonIgnore
-	public Coincidence brightnessCoincidence;
-	@JsonIgnore
-	public Coincidence redCoincidence;
-	@JsonIgnore
-	public Coincidence greenCoincidence;
-	@JsonIgnore
-	public Coincidence blueCoincidence;
+//	@JsonIgnore
+//	public Coincidence brightnessCoincidence;
+//	@JsonIgnore
+//	public Coincidence redCoincidence;
+//	@JsonIgnore
+//	public Coincidence greenCoincidence;
+//	@JsonIgnore
+//	public Coincidence blueCoincidence;
 	@JsonProperty
 	public Coincidence previousPrediction = null;
 	@JsonProperty
@@ -85,7 +91,7 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	public Map<String, Map<String, Double>> coincidenceConditionalMap = new HashMap<>();
 	@JsonProperty
-	protected Map<String, List<Concept>> conceptListMap = new HashMap<>();
+	public Map<String, List<Concept>> conceptListMap = new HashMap<>();
 	@JsonProperty
 	protected LinkedList<Integer> correctList = new LinkedList<>();
 	@JsonIgnore
@@ -107,18 +113,18 @@ public class Shape extends Node<Object> {
 		switch (this.sides) {
 		case 4: {
 			this.coincidence = new Coincidence(9);
-			this.brightnessCoincidence = new Coincidence(9);
-			this.redCoincidence = new Coincidence(9);
-			this.greenCoincidence = new Coincidence(9);
-			this.blueCoincidence = new Coincidence(9);
+//			this.brightnessCoincidence = new Coincidence(9);
+//			this.redCoincidence = new Coincidence(9);
+//			this.greenCoincidence = new Coincidence(9);
+//			this.blueCoincidence = new Coincidence(9);
 			break;
 		}
 		case 6: {
 			this.coincidence = new Coincidence(7);
-			this.brightnessCoincidence = new Coincidence(7);
-			this.redCoincidence = new Coincidence(7);
-			this.greenCoincidence = new Coincidence(7);
-			this.blueCoincidence = new Coincidence(7);
+//			this.brightnessCoincidence = new Coincidence(7);
+//			this.redCoincidence = new Coincidence(7);
+//			this.greenCoincidence = new Coincidence(7);
+//			this.blueCoincidence = new Coincidence(7);
 			break;
 		}
 		}
@@ -195,6 +201,10 @@ public class Shape extends Node<Object> {
 	@JsonIgnore
 	public void setCenter(int x, int y) {
 		setCenter(new Point(x, y));
+	}
+	
+	public List<Concept> getConceptList(Coincidence c) {
+		return this.conceptListMap.get(c.toString());
 	}
 
 	public Coincidence getCoincidence() {
@@ -442,25 +452,25 @@ public class Shape extends Node<Object> {
 	}
 
 	@JsonIgnore
-	public Coincidence getCoincidence(int type) {
+	public Coincidence getCoincidence(Color type) {
 //		logger.info("getCoincidence("+type+")");
 		Coincidence coincidence = new Coincidence();
 		int value = 0;
 		for (int i = 0; i < this.sides + 1; i++) {
 			switch (type) {
-			case Hexagonal.BRIGHTNESS: {
+			case BRIGHTNESS: {
 				value = (shortConeArray[i].red + mediumConeArray[i].green + longConeArray[i].blue) / 3;
 				break;
 			}
-			case Hexagonal.RED: {
+			case RED: {
 				value = shortConeArray[i].red;
 				break;
 			}
-			case Hexagonal.GREEN: {
+			case GREEN: {
 				value = mediumConeArray[i].green;
 				break;
 			}
-			case Hexagonal.BLUE: {
+			case BLUE: {
 				value = longConeArray[i].blue;
 				break;
 			}
@@ -508,6 +518,6 @@ public class Shape extends Node<Object> {
 
 	@JsonIgnore
 	public String toString() {
-		return (String)this.getData();//this.getX() + "," + this.getY();// 
+		return this.getX() + "," + this.getY();// (String)this.getData();//
 	}
 }

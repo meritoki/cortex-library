@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.square;
+package com.meritoki.library.cortex.model.network.square;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,11 +22,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Level;
-import com.meritoki.library.cortex.model.Network;
 import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.Shape;
+import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.Level;
+import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 
 /**
  * In Network, squares are referenced by level and relative coordinates, i.e.
@@ -38,26 +39,26 @@ import com.meritoki.library.cortex.model.Shape;
 public class Squared extends Network {
 
 	public static void main(String[] args) {
-		Squared n = new Squared(Squared.BRIGHTNESS, 0, 0, 5, 1, 0);
+		Squared n = new Squared(Color.BRIGHTNESS, 0, 0, 5, 1, 0);
 		n.load();
 	}
 	@JsonIgnore
 	protected Logger logger = Logger.getLogger(Squared.class.getName());
 
 	public Squared() {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
 		this.length = 9;
 	}
 
 	public Squared(int dimension, int length, int padding) {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
 //		this.length = 9;//
 	}
 
-	public Squared(int type, int x, int y, int dimension, int length, int padding) {
+	public Squared(Color type, int x, int y, int dimension, int length, int padding) {
 		super(type, x, y);
 		this.dimension = dimension;
 		this.length = length;

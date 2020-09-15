@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.network;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.meritoki.library.cortex.model.Coincidence;
 import com.meritoki.library.cortex.model.Concept;
-
+import com.meritoki.library.cortex.model.Node;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -80,7 +82,7 @@ public class Level {
 	}
 
 	@JsonIgnore
-	public void input(int type, Concept concept) {
+	public void input(Color type, Concept concept) {
 //		logger.info("propagate("+type+","+concept+")");
 		Shape shape = null;
 		Coincidence coincidence = null;

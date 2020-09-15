@@ -1,4 +1,4 @@
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.network;
 
 public enum Color {
 	BRIGHTNESS,

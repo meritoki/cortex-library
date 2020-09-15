@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.hexagon;
+package com.meritoki.library.cortex.model.network.hexagon;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,10 +22,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Level;
-import com.meritoki.library.cortex.model.Network;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.Shape;
+import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.Level;
+import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 
 /**
  * In Network, hexagons are referenced by level and relative coordinates, i.e.
@@ -37,7 +38,7 @@ import com.meritoki.library.cortex.model.Shape;
 public class Hexagonal extends Network {
 
 	public static void main(String[] args) {
-		Hexagonal n = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 13, 1, 0);
+		Hexagonal n = new Hexagonal(Color.BRIGHTNESS, 0, 0, 13, 1, 0);
 		n.load();
 //		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
 //		
@@ -53,19 +54,19 @@ public class Hexagonal extends Network {
 
 
 	public Hexagonal() {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
 		this.length = 7;
 	}
 
 	public Hexagonal(int size, int radius, int padding) {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
 		this.length = 7;
 	}
 
-	public Hexagonal(int type, int x, int y, int size, int radius, int padding) {
+	public Hexagonal(Color type, int x, int y, int size, int radius, int padding) {
 		super(type, x, y);
 		this.size = size;
 		this.radius = radius;

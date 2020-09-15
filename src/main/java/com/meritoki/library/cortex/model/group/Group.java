@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.group;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -27,10 +27,17 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.library.cortex.model.hexagon.Hexagon;
-import com.meritoki.library.cortex.model.hexagon.Hexagonal;
-import com.meritoki.library.cortex.model.square.Square;
-import com.meritoki.library.cortex.model.square.Squared;
+import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.network.Configuration;
+import com.meritoki.library.cortex.model.network.Cortex;
+import com.meritoki.library.cortex.model.network.Level;
+import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagon;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.network.shape.Shape;
+import com.meritoki.library.cortex.model.network.square.Square;
+import com.meritoki.library.cortex.model.network.square.Squared;
 
 public class Group extends Cortex {
 
@@ -57,15 +64,15 @@ public class Group extends Cortex {
 	/**
 	 * Checked 202001191442 Good
 	 */
-	public Group(int type) {
-		this.type = type;
-		switch (this.type) {
+	public Group(Configuration configuration) {
+		this.configuration = configuration;
+		switch (this.configuration) {
 		case HEXAGONAL: {
 			logger.info("HEXAGONAL");
-			this.brightness = new Hexagonal(Network.BRIGHTNESS, x, y, size, radius, padding);
-			this.red = new Hexagonal(Network.RED, x, y, size, radius, padding);
-			this.green = new Hexagonal(Network.GREEN, x, y, size, radius, padding);
-			this.blue = new Hexagonal(Network.BLUE, x, y, size, radius, padding);
+			this.brightness = new Hexagonal(com.meritoki.library.cortex.model.network.Color.BRIGHTNESS, x, y, size, radius, padding);
+			this.red = new Hexagonal(com.meritoki.library.cortex.model.network.Color.RED, x, y, size, radius, padding);
+			this.green = new Hexagonal(com.meritoki.library.cortex.model.network.Color.GREEN, x, y, size, radius, padding);
+			this.blue = new Hexagonal(com.meritoki.library.cortex.model.network.Color.BLUE, x, y, size, radius, padding);
 			this.shapeMap = Hexagonal.getShapeMap(0, new Point(this.x, this.y), size, radius, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
@@ -75,10 +82,10 @@ public class Group extends Cortex {
 		}
 		case SQUARED: {
 			logger.info("SQUARED");
-			this.brightness = new Squared(Network.BRIGHTNESS, x, y, dimension, length, padding);
-			this.red = new Squared(Hexagonal.RED, x, y, dimension, length, padding);
-			this.green = new Squared(Hexagonal.GREEN, x, y, dimension, length, padding);
-			this.blue = new Squared(Hexagonal.BLUE, x, y, dimension, length, padding);
+			this.brightness = new Squared(com.meritoki.library.cortex.model.network.Color.BRIGHTNESS, x, y, dimension, length, padding);
+			this.red = new Squared(com.meritoki.library.cortex.model.network.Color.RED, x, y, dimension, length, padding);
+			this.green = new Squared(com.meritoki.library.cortex.model.network.Color.GREEN, x, y, dimension, length, padding);
+			this.blue = new Squared(com.meritoki.library.cortex.model.network.Color.BLUE, x, y, dimension, length, padding);
 			this.shapeMap = Squared.getShapeMap(0, new Point(this.x, this.y), dimension, length, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
@@ -122,24 +129,6 @@ public class Group extends Cortex {
 		Shape redShape = this.red.getRootLevel().getShapeList().get(0);
 		Shape greenShape = this.green.getRootLevel().getShapeList().get(0);
 		Shape blueShape = this.blue.getRootLevel().getShapeList().get(0);
-		switch(this.type) {
-		case HEXAGONAL: {
-			brightnessShape.length = 7;
-			redShape.length = 7;
-			greenShape.length = 7;
-			blueShape.length = 7;
-			break;
-		}
-		case SQUARED: {
-			brightnessShape.length = 4;
-			redShape.length = 4;
-			greenShape.length = 4;
-			blueShape.length = 4;
-			break;
-		}
-		}
-
-//		this.root.length = 4;
 		brightnessShape.setData("brightness");
 		redShape.setData("red");
 		greenShape.setData("green");
@@ -163,15 +152,12 @@ public class Group extends Cortex {
 				System.out.println(shape+" "+shape.length);
 			}
 		}
-		
-		System.out.println(this.root+" "+this.root.length);
-		System.out.println(brightnessShape+" "+brightnessShape.length);
 	}
 
 	@JsonIgnore
 	public void update() {
 //		logger.info("update()");
-		switch (this.type) {
+		switch (this.configuration) {
 		case HEXAGONAL: {
 			double radians = Math.toRadians(30);
 			double xOff = Math.cos(radians) * (this.radius + this.padding);

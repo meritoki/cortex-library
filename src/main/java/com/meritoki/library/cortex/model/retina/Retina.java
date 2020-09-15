@@ -1,82 +1,167 @@
 package com.meritoki.library.cortex.model.retina;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Cortex;
-import com.meritoki.library.cortex.model.Dimension;
+import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.network.Cortex;
 
+
+/**
+ * Retina is a class that combines all the functions to perform a scan of an image for the purpose of training and inference
+ * Retina uses a 4 dimensional space to represent information in points.
+ * Each point contains a concept
+ * @author jorodriguez
+ *
+ */
 public class Retina {
+
+	//I want bufferedimage to appear in "center" of screen;
+	//has width and height, which can be used to obtain top right and left and bottom right and left corners.
+	//center can also be calculated.
+	//by subtracting center from points, can get a new origin.
+	//Can find the longest radius, sqrt(x^2 + y^2) 
+	//Longest radius is half of width and height that represents square containing image.
+	//Draw bufferedImage image with dimension from calculation
+	//Draw object in bufferedImage in position centered.
+
+	//I want points to relate to the "center",
+	//the center can be set to any value and all points will be relative to it.
+	//Distance is calculated between points.
 	
+	//For a given distance, which translates to a new scale, a point is modified
+	//The modification includes three transformations.
+	//1. Sensor Point -> the points are pixel based and mapped to global position on image @ a given scale.
+	//This transformation converts the Point to be relative to the Object center.
+	//2. 
 	
-	//Process the output of the cortexMap into input for the shapeMap
-	//Has some configuration involved.
+	//When a new point is added it connect itself to the closet point.
+	//This done through a network instead of a list to decrease runtime.
+	//The root node is queried, then its children
+	//Eventually a child will win that has or does not have children, but cannot decrease the minDistance.
+	//This is where we connect the point and add it to the list.
 	
-	//Must determine how to process default size of cortex into size of the larger cortex. 
-	
-	//default one cortex per shape, then two, three.
 	
 	public BufferedImage bufferedImage;
 	public BufferedImage scaledBufferedImage;
 	public double maxDistance;
 	public double minDistance = 16;
-	public double distance = 8;
+	public double distance = 16;
 	public Cortex cortex;
 	public double focalLength = 8;
 	public final double  MILLIMETER = 0.2645833333;
-	public double scale = 0;
+	public double scale = 1;
 	public double sensorRadius;
 	public int defaultDimension = 100;
+	public double x = 0;
+	public double y = 0;
+	public double objectRadius;
+	public List<Point> pointList = new ArrayList<>();
+	public Point root = null;
+	public Observation observation;
 	
-	public Retina(BufferedImage bufferedImage, Cortex cortex) {
-		this.bufferedImage = bufferedImage;
-		if(this.bufferedImage == null) {
-			this.bufferedImage = new BufferedImage(defaultDimension, defaultDimension, BufferedImage.TYPE_INT_RGB);
+	
+	public void scan(Graphics graphics) {
+		Graphics2D graphics2D = (Graphics2D) graphics.create();
+		if (this.distance == 0) {
+			this.distance = this.getMaxDistance();
+			this.setDistance(this.distance);
+		} else { 
+			this.setDistance(this.distance);
 		}
+		System.out.println("angle="+this.getAngle());
+		System.out.println("lensEquivalence="+this.lensEquivalence());
+		System.out.println("objectEquivalence="+this.objectEquivalence());
+		System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
+		graphics2D.drawImage(this.scaledBufferedImage, null, null);
+		Concept concept = new Concept(UUID.randomUUID().toString());
+		
+		if(this.root == null) {
+			x = this.getCenterX();
+			y = this.getCenterY();
+			this.root = new Point(x/this.scale,y/this.scale);//Save root 
+			this.pointList.add(this.root);
+			this.cortex.setOrigin((int)(x), (int)(y));
+			this.cortex.process(graphics2D, scaledBufferedImage, concept);
+			List<Point> pointList = this.cortex.getPointList();
+			for(Point p: pointList) {
+				p.x /= this.scale;
+				p.y /= this.scale;
+				p.x -= x;
+				p.y -= y;
+				Point point = new Point(p.x,p.y);
+				root.addChild(point);
+			}
+		}
+		graphics2D.setColor(Color.BLUE);
+		double r = this.getSensorRadius();
+		double x = this.cortex.getX();
+		double y = this.cortex.getY();
+		double newX = x - r;
+		double newY = y - r;
+		System.out.println("r="+r+" x="+x+" y="+y);
+		Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
+		graphics2D.draw(ellipse);
+	}
+	
+	
+	
+	public void setCortex(Cortex cortex) {
 		this.cortex = cortex;
 		this.sensorRadius = this.cortex.getSensorRadius();
-//		this.maxDistance = (int)this.getMaxDistance();
-		this.setDistance(this.getMaxDistance());
-//		this.setDistance(16);
-//		System.out.println("scale="+scale);
-//		System.out.println(this.getObjectHeightMM());
-//		System.out.println(this.getObjectWidthMM());
-//		System.out.println(this.getObjectHeight());
-//		System.out.println(this.getObjectWidth());
-//		this.dimension  = new Dimension(this.getObjectWidth(),this.getObjectHeight());
-//		this.scale = (this.getObjectHeight()<this.bufferedImage.getHeight())?this.getObjectHeight()/this.bufferedImage.getHeight():this.bufferedImage.getHeight()/this.getObjectHeight();
-//		this.scale = (this.getObjectHeight()/this.bufferedImage.getHeight());
-//		System.out.println("this.scale="+this.scale);
-		
-//		this.cortex.setOrigin(this.scaledBufferedImage.getWidth()/2, this.scaledBufferedImage.getHeight()/2);
-//		this.cortex.update();
 	}
 	
 	public void setBufferedImage(BufferedImage bufferedImage) {
 		this.bufferedImage = bufferedImage;
+		this.observation = new Observation(this.bufferedImage);
 	}
 	
 	public void setDistance(double distance) {
 		this.distance = distance;
-		double scale = (this.getObjectHeight()/this.bufferedImage.getHeight());
-		if(scale != this.scale) {
-			this.scale = scale;
-			this.scaledBufferedImage = this.getScaledBufferedImage();
-		}
+		this.scale = (this.getObjectHeight()/this.observation.getObject().getHeight());
+		this.scaledBufferedImage = this.getScaledBufferedImage();
 	}
 	
+	//When distance is maxDistance, angle is formed with the point that is left, right, top, bottom corners from center of object;
+	//Field dimension is 
+	public double getAngle() {
+		return 2 * Math.atan((this.getSensorWidthMM())/(2*this.focalLength));
+	}
 	
+	public double getCenterX() {
+		return this.getObjectWidth()/2;
+	}
+	
+	public double getCenterY() {
+		return this.getObjectHeight()/2;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public double getMaxDistance() {
-		return (this.bufferedImage.getHeight() * this.focalLength)/this.getSensorWidthMM();
+		return (this.observation.getObject().getHeight() * this.focalLength)/this.getSensorWidthMM();
 	}
 	
-	public double fieldWidth() {
+	public double getFieldWidth() {
 		return (this.getSensorWidth()*distance)/focalLength;
 	}
 	
-	public double fieldHeight() {
+	public double getFieldHeight() {
 		return (this.getSensorHeight()*distance)/focalLength;
 	}
 	
@@ -102,11 +187,11 @@ public class Retina {
 	}
 	
 	public double getObjectHeightMM() {
-		return (this.focalLength*this.bufferedImage.getHeight())/this.distance;
+		return (this.focalLength*this.observation.getObject().getHeight())/this.distance;
 	}
 	
 	public double getObjectWidthMM() {
-		return (this.focalLength*this.bufferedImage.getWidth())/this.distance;
+		return (this.focalLength*this.observation.getObject().getWidth())/this.distance;
 	}
 	
 	public double getObjectHeight() {
@@ -117,21 +202,48 @@ public class Retina {
 		return this.getObjectWidthMM()/MILLIMETER;
 	}
 	
-	public boolean equivalence() {
-		return this.getObjectHeightMM()/this.focalLength == (this.bufferedImage.getHeight())/this.distance;
+	public boolean lensEquivalence() {
+		double a = (this.getSensorWidth())/this.focalLength;
+		double b = this.getFieldHeight()/this.distance;
+		System.out.println("lenEquivalence() a="+a+" b="+b);
+		return a == b;
 	}
 	
+	public boolean objectEquivalence() {
+		return this.getObjectHeightMM()/this.focalLength == (this.observation.getObject().getHeight())/this.distance;
+	}
+	
+	public boolean magnificationEquivalence() {
+		NumberFormat formatter = new DecimalFormat("#0.00");  
+		double a = this.getMagnification();
+		double b = this.getObjectHeightMM()/this.getSensorObjectHeightMM();
+//		System.out.println("magnificationEquivalence() a="+a+" b="+b);
+		return formatter.format(a).equals(formatter.format(b));
+	}
+
 	public double getMagnification() {
 		return this.distance/this.focalLength;
 	}
 	
-	public boolean magnificationEquivalence() {
-		return this.getMagnification() == this.getObjectHeightMM();
+	public double getSensorObjectWidthMM() {
+		return this.getObjectWidthMM()/this.getMagnification();
+	}
+	
+	public double getSensorObjectHeightMM() {
+		return this.getObjectHeightMM()/this.getMagnification();
+	}
+	
+	public double getSensorObjectWidth() {
+		return getSensorObjectWidthMM()/MILLIMETER;
+	}
+	
+	public double getSensorObjectHeight() {
+		return getSensorObjectHeightMM()/MILLIMETER;
 	}
 	
 	@JsonIgnore
 	public BufferedImage getScaledBufferedImage() {
-		BufferedImage before = this.bufferedImage;
+		BufferedImage before = this.observation.getObject();//this.bufferedImage;
 		BufferedImage after = new BufferedImage((int)(before.getWidth()*this.scale), (int)(before.getHeight()*this.scale), BufferedImage.TYPE_INT_RGB);//new BufferedImage(before.getWidth(), before.getHeight(), BufferedImage.TYPE_INT_RGB);
 		AffineTransform affineTransform = new AffineTransform();
 		affineTransform.scale(this.scale, this.scale);// this handles scaling the bufferedImage
@@ -140,3 +252,17 @@ public class Retina {
 		return after;
 	}
 }
+
+//this.setDistance(16);
+//System.out.println("scale="+scale);
+//System.out.println(this.getObjectHeightMM());
+//System.out.println(this.getObjectWidthMM());
+//System.out.println(this.getObjectHeight());
+//System.out.println(this.getObjectWidth());
+//this.dimension  = new Dimension(this.getObjectWidth(),this.getObjectHeight());
+//this.scale = (this.getObjectHeight()<this.bufferedImage.getHeight())?this.getObjectHeight()/this.bufferedImage.getHeight():this.bufferedImage.getHeight()/this.getObjectHeight();
+//this.scale = (this.getObjectHeight()/this.bufferedImage.getHeight());
+//System.out.println("this.scale="+this.scale);
+
+//this.cortex.setOrigin(this.scaledBufferedImage.getWidth()/2, this.scaledBufferedImage.getHeight()/2);
+//this.cortex.update();

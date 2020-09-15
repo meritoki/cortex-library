@@ -15,28 +15,46 @@
  */
 package com.meritoki.library.cortex.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Point {
+public class Point extends Node {
 
 	@JsonProperty
 	public double x = 0;
 	@JsonProperty
 	public double y = 0;
+	@JsonProperty
+	public Map<String,Object> attributeMap = new HashMap<>();
+	@JsonProperty
+	public List<Concept> conceptList;
+	@JsonProperty
+	public double scale;
+	@JsonProperty
+	public double addScale;
 
 	public Point() {
 	}
 
 	public Point(Point p) {
+		super(p.x+","+p.y);
 		this.x = p.x;
 		this.y = p.y;
 	}
 
 	public Point(double x, double y) {
+		super(x+","+y);
 		this.x = x;
 		this.y = y;
 	}
+	
+//	public double getX() {
+//		return s
+//	}
 
 	@JsonIgnore
 	public boolean equals(Point point) {
