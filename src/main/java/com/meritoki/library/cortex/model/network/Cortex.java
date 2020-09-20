@@ -19,6 +19,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.group.Group;
@@ -68,7 +70,54 @@ public class Cortex {
 	@JsonIgnore
 	public int y = 0;
 	@JsonIgnore
-	public List<Point> pointList;
+	public int index = 0;
+	@JsonProperty
+	public List<Belief> beliefList = new ArrayList<>();
+	//Using the belief List construct a domain where belief is 
+	public List<Point> pointList = new ArrayList<>();
+	public Belief[][] beliefMatrix;
+	public List<Belief[][]> beliefMatrixList;
+	public Map<List<Concept>,Concept> conceptMap = new HashMap<>();
+	
+	
+	@JsonIgnore
+	public boolean setIndex(String uuid) {
+		boolean flag = false;
+		for(int i=0;i<this.beliefList.size();i++) {
+			Belief input = this.beliefList.get(i);
+			if(input.uuid.equals(uuid)) {
+				this.index = i;
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	}
+	
+	@JsonIgnore
+	public boolean setIndex(int index) {
+		boolean flag = false;
+		if (index >= 0 && index < this.beliefList.size()) {
+			this.index = index;
+			flag = true;
+		}
+		return flag;
+	}
+	
+	@JsonIgnore
+	public Belief getBelief() {
+		int size = this.beliefList.size();
+		Belief page = (this.index < size && size > 0) ? this.beliefList.get(this.index) : null;
+		return page;
+	}
+
+	@JsonIgnore
+	public Belief getBelief(int index) {
+		int size = this.beliefList.size();
+		Belief page = (index < size && size > 0) ? this.beliefList.get(index) : null;
+		return page;
+	}
+	
 	
 	@JsonIgnore
 	public void load() {}
@@ -78,7 +127,7 @@ public class Cortex {
 	
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
-		System.out.println("setOrigin("+x+", "+y+")");
+//		System.out.println("setOrigin("+x+", "+y+")");
 		this.x = x;
 		this.y = y;
 	}
@@ -93,19 +142,35 @@ public class Cortex {
 	
 	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {}
 	
+	public int setPointMap(List<Point> pointList) {
+//		System.out.println("setPointMap(" + pointList.size() + ")");
+		int max = 0;
+		for (Point p : pointList) {
+			Belief belief = this.beliefMatrix[(int) p.x][(int) p.y];
+			if (belief == null) {
+				belief = new Belief();
+			}
+			if(p.belief != null) {
+				int size = p.belief.conceptList.size();
+				if(size > max) {
+					max = size;
+				}
+				belief.conceptList.addAll(p.belief.conceptList);
+			}
+//			System.out.println("setPointMap("+pointList.size()+") count="+count);
+			this.beliefMatrix[(int) p.x][(int) p.y] = belief;
+		}
+		return max;
+	}
+	
 	public double getSensorRadius() {
 		double max = 0;
 		for(Entry<String, Shape> e: this.shapeMap.entrySet()) {
-//			double x = e.getValue().getX();
-//			double y = e.getValue().getY();
-//			double r = Math.sqrt(Math.pow(x,2)+Math.pow(y, 2));
-//			if(r > max) {
-//				max = r;
-//			}
 			String key = e.getKey();
 			if(key.startsWith("0:")) {
 //				System.out.println("getSensorRedius() key="+key);
 				Shape shape = e.getValue();
+				shape.initCells();
 				double[] xPoints = shape.xpoints;
 				double[] yPoints = shape.ypoints;
 				double nPoints = shape.npoints;
@@ -134,9 +199,5 @@ public class Cortex {
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		after = scaleOp.filter(before, after);
 		return after;
-	}
-	
-	public List<Point> getPointList() {
-		return null;
 	}
 }

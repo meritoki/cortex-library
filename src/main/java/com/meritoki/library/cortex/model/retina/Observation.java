@@ -11,10 +11,12 @@ public class Observation {
 
 	public BufferedImage bufferedImage;
 	public double radius = 0;
+	public BufferedImage object;
 
 	public Observation(BufferedImage bufferedImage) {
 		this.bufferedImage = bufferedImage;
 		this.radius = this.getMaxRadius();
+		this.object = this.getDefaultObject();
 	}
 	
 	public List<Point> getCornerList() {
@@ -32,7 +34,7 @@ public class Observation {
 	
 	public List<Point> getCenteredCornerList() {
 		List<Point> cornerList = this.getCornerList();
-		Point center = this.getCenter();
+		Point center = this.getCenter(this.bufferedImage);
 		for(Point corner:cornerList) {
 			corner.x -= center.x;
 			corner.y -= center.y;
@@ -61,20 +63,35 @@ public class Observation {
 	}
 	
 	public Point getCenter() {
-		Point center = new Point(this.bufferedImage.getWidth()/2,this.bufferedImage.getHeight()/2);
-		System.out.println("getCenter() center="+center);
+		Point center = new Point(this.getWidth()/2,this.getHeight()/2);
+		return center;
+	}
+	
+	public Point getCenter(BufferedImage bufferedImage) {
+		Point center = new Point(bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
+//		System.out.println("getCenter() center="+center);
 		return center;
 	}
 	
 	public BufferedImage getObject() {
+		return this.object;
+	}
+	
+	public BufferedImage getDefaultObject() {
 		int width = (int)this.getWidth();
 		int height = (int)this.getHeight();
-		BufferedImage b = new BufferedImage(width, height,BufferedImage.TYPE_INT_RGB);
+		Point center = this.getCenter();
+		BufferedImage b = new BufferedImage((int)(width), (int)(height),BufferedImage.TYPE_INT_RGB);
 		Graphics g = b.createGraphics();
-		int x = (width/2)-(int)this.getCenter().x;
-		int y = (height/2)-(int)this.getCenter().y;
-		System.out.println("x="+x+" y="+y);
-		g.drawImage(this.bufferedImage,x,y,this.bufferedImage.getWidth(),this.bufferedImage.getHeight(),null);	
+		Point bufferedImageCenter = this.getCenter(this.bufferedImage);
+//		System.out.println("bufferedImageCenter="+bufferedImageCenter);
+		int x = (int)(center.x-bufferedImageCenter.x);//(int)((width/2)-(center.x-bufferedImageCenter.x));
+		int y = (int)(center.y-bufferedImageCenter.y);// ;//(int)((height/2)-
+//		System.out.println("difference x="+x+" y="+y);
+//		System.out.println("this.bufferedImage.getWidth()="+this.bufferedImage.getWidth()+" this.bufferedImage.getHeight()="+this.bufferedImage.getHeight());
+		g.drawImage(this.bufferedImage,x,y,this.bufferedImage.getWidth(),this.bufferedImage.getHeight(),null);
+//		g.drawRect(x, y, this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+//		System.out.println("getObject() b.getWidth()="+b.getWidth()+" b.getHeight()="+b.getHeight());
 		return b;
 	}
 }

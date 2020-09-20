@@ -29,13 +29,7 @@ public class Point extends Node {
 	@JsonProperty
 	public double y = 0;
 	@JsonProperty
-	public Map<String,Object> attributeMap = new HashMap<>();
-	@JsonProperty
-	public List<Concept> conceptList;
-	@JsonProperty
-	public double scale;
-	@JsonProperty
-	public double addScale;
+	public Belief belief;
 
 	public Point() {
 	}
@@ -51,10 +45,6 @@ public class Point extends Node {
 		this.x = x;
 		this.y = y;
 	}
-	
-//	public double getX() {
-//		return s
-//	}
 
 	@JsonIgnore
 	public boolean equals(Point point) {

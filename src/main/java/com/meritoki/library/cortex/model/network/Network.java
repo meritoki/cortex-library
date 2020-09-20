@@ -17,7 +17,6 @@ package com.meritoki.library.cortex.model.network;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -31,14 +30,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.meritoki.library.controller.node.NodeController;
+import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 import com.meritoki.library.cortex.model.network.shape.Shape;
-import com.meritoki.library.cortex.model.network.square.Square;
 import com.meritoki.library.cortex.model.network.square.Squared;
-import com.meritoki.library.cortex.model.retina.Retina;
 
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Hexagonal.class), @Type(value = Squared.class), })
@@ -47,6 +44,7 @@ public class Network extends Cortex {
 	protected Logger logger = Logger.getLogger(Network.class.getName());
 	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
+
 
 	public Network() {
 		this.uuid = UUID.randomUUID().toString();
@@ -191,7 +189,7 @@ public class Network extends Cortex {
 	@Override
 	@JsonIgnore
 	public void process(Graphics2D graphics2D, BufferedImage bufferedImage, Concept concept) {
-		logger.info("process(" + String.valueOf(graphics2D!=null) + ", "+String.valueOf(bufferedImage != null)+", <" + concept + ")");
+		logger.info("process(" + String.valueOf(graphics2D!=null) + ", "+String.valueOf(bufferedImage != null)+", " + concept + ")");
 		Level level = this.getInputLevel();
 		if (level != null) {
 			for (Shape shape : level.getShapeList()) {
@@ -217,36 +215,67 @@ public class Network extends Cortex {
 			}
 			this.propagate(concept, true);
 //			this.feedback(concept);
+			
+			//Here we make a coincidence
+			//Can draw on image
 			if (graphics2D != null) {
+//				System.out.println("graphics2D != null");
+				int dimension = (int)(this.getSensorRadius()*2);
+				BufferedImage beliefBufferedImage = new BufferedImage(dimension, dimension, BufferedImage.TYPE_INT_RGB);
+				List<Point> pointList = new ArrayList<>();
+				List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
+				Belief belief = new Belief();
 				for (Shape shape : level.getShapeList()) {
 					shape.initCells();
-
+					Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
 					int brightness = shape.coincidence.list.get(0);
+					if(255 > brightness && brightness > 0 ) {
+						point.belief = belief;
+						pointList.add(point);
+					}
 					Color color = new Color(brightness, brightness, brightness);
 					graphics2D.setColor(color);
 					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
 							(int) shape.npoints);
-
+					
+					for (int i = 0; i < shape.sides+1; i++) {
+						color = new Color(brightness, brightness, brightness);
+						double x = (shape.xpoints[i]-this.getX());
+						double y = (shape.ypoints[i]-this.getY());
+						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
+					}
 				}
+				
+				belief.map = this.conceptMap;
+				belief.conceptList = conceptList;
+				belief.pointList = pointList;
+				belief.bufferedImage = beliefBufferedImage;
+				belief.x = this.getX();
+				belief.y = this.getY();
+//				System.out.println(belief);
+				this.beliefList.add(belief);
+				this.setIndex(belief.uuid);
 			}
 		}
 	}
 
-	@Override
-	public List<Point> getPointList() {
-		List<Point> pointList = null;
-		Level level = this.getInputLevel();
-		if (level != null) {
-			pointList = new ArrayList<>();
-			for (Shape shape : level.getShapeList()) {
-				shape.initCells();
-				Point point = new Point();
-				point.x = shape.xpoints[0];
-				point.y = shape.ypoints[0];
-				point.conceptList = shape.getConceptList(shape.coincidence);
-				pointList.add(point);
-			}
-		}
-		return pointList;
-	}
+//	//Same as loop above
+//	@Override
+//	public List<Point> getPointList() {
+//		List<Point> pointList = null;
+//		Level level = this.getInputLevel();
+//		if (level != null) {
+//			pointList = new ArrayList<>();
+//			for (Shape shape : level.getShapeList()) {
+//				shape.initCells();
+//				Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
+//				int brightness = shape.coincidence.list.get(0);
+//				if(255 > brightness && brightness > 0 ) {
+//					point.conceptList = shape.getConceptList(shape.coincidence);
+//					pointList.add(point);
+//				}
+//			}
+//		}
+//		return pointList;
+//	}
 }

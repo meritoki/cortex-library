@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import com.meritoki.library.cortex.model.Coincidence;
 import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.ConceptComparator;
 import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -193,6 +194,7 @@ public class Level {
 			concept.rank = quotient;
 			conceptList.add(concept);
 		}
+		Collections.sort(conceptList, new ConceptComparator());
 //		logger.info("getCoincidenceConceptList() conceptList="+conceptList);
 		return conceptList;
 	}

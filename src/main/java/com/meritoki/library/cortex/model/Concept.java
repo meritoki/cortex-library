@@ -15,17 +15,25 @@
  */
 package com.meritoki.library.cortex.model;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Concept {
-
+	
 	@JsonProperty
 	public String value = null;
 	@JsonProperty
 	public double rank = 0;
 	
 	public Concept() {
+		this.value = UUID.randomUUID().toString();
+	}
+	
+	public Concept(Concept concept) {
+		this.value = concept.value;
+		this.rank = concept.rank;
 	}
 	
 	public Concept(String value) {
