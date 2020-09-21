@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.network;
+package com.meritoki.library.cortex.model.cortex;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -35,6 +35,9 @@ import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.group.Group;
+import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.Configuration;
+import com.meritoki.library.cortex.model.network.Network;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 
 @JsonTypeInfo(use = Id.CLASS,
@@ -74,9 +77,13 @@ public class Cortex {
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
 	//Using the belief List construct a domain where belief is 
+	@JsonIgnore
 	public List<Point> pointList = new ArrayList<>();
+	@JsonIgnore
 	public Belief[][] beliefMatrix;
+	@JsonIgnore
 	public List<Belief[][]> beliefMatrixList;
+	@JsonIgnore
 	public Map<List<Concept>,Concept> conceptMap = new HashMap<>();
 	
 	
@@ -139,30 +146,30 @@ public class Cortex {
 	public int getY() {
 		return this.y;
 	}
-	
+	@JsonIgnore
 	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {}
-	
-	public int setPointMap(List<Point> pointList) {
-//		System.out.println("setPointMap(" + pointList.size() + ")");
-		int max = 0;
-		for (Point p : pointList) {
-			Belief belief = this.beliefMatrix[(int) p.x][(int) p.y];
-			if (belief == null) {
-				belief = new Belief();
-			}
-			if(p.belief != null) {
-				int size = p.belief.conceptList.size();
-				if(size > max) {
-					max = size;
-				}
-				belief.conceptList.addAll(p.belief.conceptList);
-			}
-//			System.out.println("setPointMap("+pointList.size()+") count="+count);
-			this.beliefMatrix[(int) p.x][(int) p.y] = belief;
-		}
-		return max;
-	}
-	
+//	@JsonIgnore
+//	public int setPointMap(List<Point> pointList) {
+////		System.out.println("setPointMap(" + pointList.size() + ")");
+//		int max = 0;
+//		for (Point p : pointList) {
+//			Belief belief = this.beliefMatrix[(int) p.x][(int) p.y];
+//			if (belief == null) {
+//				belief = new Belief();
+//			}
+//			if(p.belief != null) {
+//				int size = p.belief.conceptList.size();
+//				if(size > max) {
+//					max = size;
+//				}
+//				belief.conceptList.addAll(p.belief.conceptList);
+//			}
+////			System.out.println("setPointMap("+pointList.size()+") count="+count);
+//			this.beliefMatrix[(int) p.x][(int) p.y] = belief;
+//		}
+//		return max;
+//	}
+	@JsonIgnore
 	public double getSensorRadius() {
 		double max = 0;
 		for(Entry<String, Shape> e: this.shapeMap.entrySet()) {
@@ -188,7 +195,7 @@ public class Cortex {
 //		System.out.println("getSensorRedius() max="+max);
 		return max;
 	}
-	
+	@JsonIgnore
 	public BufferedImage scaleBufferedImage(BufferedImage bufferedImage, double scale) {
 		BufferedImage before = bufferedImage;
 		int w = before.getWidth();

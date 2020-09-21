@@ -104,11 +104,12 @@ public class Shape extends Node<Object> {
 	public int blue;
 
 	public Shape() {
-
+//		logger.info("Shape()");
 	}
 
 	public Shape(int sides, int rotation, int x, int y, Point center, double radius) {
 		super(x + "," + y);
+//		logger.info("Shape("+sides+", "+rotation+", "+x+", "+y+", "+center+", "+radius+")");
 		this.sides = sides;
 		switch (this.sides) {
 		case 4: {
@@ -137,9 +138,7 @@ public class Shape extends Node<Object> {
 		this.npoints = sides;
 		this.xpoints = new double[sides + 1];
 		this.ypoints = new double[sides + 1];
-		this.shortConeArray = new Cone[sides + 1];
-		this.mediumConeArray = new Cone[sides + 1];
-		this.longConeArray = new Cone[sides + 1];
+
 		this.updatePoints();
 		this.initCells();
 	}
@@ -232,6 +231,9 @@ public class Shape extends Node<Object> {
 
 	@JsonIgnore
 	public void initCells() {
+		this.shortConeArray = new Cone[sides + 1];
+		this.mediumConeArray = new Cone[sides + 1];
+		this.longConeArray = new Cone[sides + 1];
 		for (int i = 0; i < this.sides + 1; i++) {
 			shortConeArray[i] = new Cone(Wavelength.SHORT);
 			mediumConeArray[i] = new Cone(Wavelength.MEDIUM);

@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Concept {
 	
 	@JsonProperty
-	public String value = null;
+	public String value;
 	@JsonProperty
-	public double rank = 0;
+	public double rank;
 	
 	public Concept() {
 		this.value = UUID.randomUUID().toString();

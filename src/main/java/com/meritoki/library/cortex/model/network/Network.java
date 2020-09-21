@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.cortex.Cortex;
 import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 import com.meritoki.library.cortex.model.network.square.Squared;
@@ -50,9 +51,9 @@ public class Network extends Cortex {
 		this.uuid = UUID.randomUUID().toString();
 	}
 
-	public Network(com.meritoki.library.cortex.model.network.Color type, int x, int y) {
-		logger.info("Network(" + type + ", " + x + ", " + y + ")");
-		this.type = type;
+	public Network(com.meritoki.library.cortex.model.network.Color color, int x, int y) {
+		logger.info("Network(" + color + ", " + x + ", " + y + ")");
+		this.type = color;
 		this.x = x;
 		this.y = y;
 		this.uuid = UUID.randomUUID().toString();
@@ -230,7 +231,7 @@ public class Network extends Cortex {
 					Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
 					int brightness = shape.coincidence.list.get(0);
 					if(255 > brightness && brightness > 0 ) {
-						point.belief = belief;
+//						point.belief = belief;
 						pointList.add(point);
 					}
 					Color color = new Color(brightness, brightness, brightness);
@@ -248,8 +249,8 @@ public class Network extends Cortex {
 				
 				belief.map = this.conceptMap;
 				belief.conceptList = conceptList;
-				belief.pointList = pointList;
-				belief.bufferedImage = beliefBufferedImage;
+				belief.pointList = new ArrayList<>(pointList);
+				belief.bufferedImage = (beliefBufferedImage);
 				belief.x = this.getX();
 				belief.y = this.getY();
 //				System.out.println(belief);

@@ -28,16 +28,17 @@ public class Point extends Node {
 	public double x = 0;
 	@JsonProperty
 	public double y = 0;
-	@JsonProperty
-	public Belief belief;
+//	@JsonProperty
+//	public Belief belief;
 
 	public Point() {
 	}
 
 	public Point(Point p) {
-		super(p.x+","+p.y);
+//		super(p.x+","+p.y);
 		this.x = p.x;
 		this.y = p.y;
+//		this.belief = p.belief;
 	}
 
 	public Point(double x, double y) {

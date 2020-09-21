@@ -21,8 +21,8 @@ import com.meritoki.library.controller.time.TimeController;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.cortex.Cortex;
 import com.meritoki.library.cortex.model.Node;
-import com.meritoki.library.cortex.model.network.Cortex;
 
 /**
  * Retina is a class that combines all the functions to perform a scan of an
@@ -176,12 +176,12 @@ public class Retina {
 			}
 			if (this.manual) {
 				this.input(graphics2D, concept);
-//				this.drawPointList(graphics2D);
-				this.drawPointMatrix(graphics2D);
+				this.drawPointList(graphics2D);
+//				this.drawPointMatrix(graphics2D);
 			} else {
 				this.drawScaledBufferedImage(graphics2D);
-//				this.drawPointList(graphics2D);
-				this.drawPointMatrix(graphics2D);
+				this.drawPointList(graphics2D);
+//				this.drawPointMatrix(graphics2D);
 			}
 		}
 	}
@@ -275,21 +275,21 @@ public class Retina {
 
 	public void drawPointMatrix(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-			int max = this.cortex.setPointMap(this.cortex.pointList);
-//			if ((this.getMagnification() <= 1)) {
-			for (int i = 0; i < this.cortex.beliefMatrix.length; i++) {
-				for (int j = 0; j < this.cortex.beliefMatrix[i].length; j++) {
-					Belief belief = this.cortex.beliefMatrix[i][j];
-					if(belief != null) {
-						int count = belief.conceptList.size();
-						if (count > 0) {
-							graphics2D.setColor(this.getColor(0.8, count, max));
-							graphics2D.drawOval((int) (i * this.scale), (int) (j * this.scale), 2, 2);
-						}
-					}
-				}
-			}
+//			int max = this.cortex.setPointMap(this.cortex.pointList);
+////			if ((this.getMagnification() <= 1)) {
+//			for (int i = 0; i < this.cortex.beliefMatrix.length; i++) {
+//				for (int j = 0; j < this.cortex.beliefMatrix[i].length; j++) {
+//					Belief belief = this.cortex.beliefMatrix[i][j];
+//					if(belief != null) {
+//						int count = belief.conceptList.size();
+//						if (count > 0) {
+//							graphics2D.setColor(this.getColor(0.8, count, max));
+//							graphics2D.drawOval((int) (i * this.scale), (int) (j * this.scale), 2, 2);
+//						}
+//					}
+//				}
 //			}
+////			}
 		}
 	}
 

@@ -126,21 +126,27 @@ public class Hexagonal extends Network {
 		}
 		Level level = new Level();
 		List<Shape> shapeList = this.getShapeList(shapeMap);
-		Shape hexagon = null;
+		Shape shape = null;
 		logger.info("load() shapeList.size()="+shapeList.size());
 		for (Shape s : shapeList) {
-			hexagon = this.shapeMap.get("0:" + s);
-			if (hexagon == null) {
-				hexagon = new Hexagon(s);
-				this.shapeMap.put("0:" + hexagon, hexagon);
-			}
+			shape = this.shapeMap.get("0:" + s);
+			if (shape == null) {
+				shape = new Hexagon(s);
+				this.shapeMap.put("0:" + shape, shape);
+			} 
+//			else {
+//				shape = new Hexagon(shape);
+//			}
 //			hexagon.setData("0:" + hexagon);
-			hexagon.initCells();
+//			System.out.println(shape);
+//			System.out.println(shape.shortConeArray);
+//			
+			shape.initCells();
 //			level.shapeMap.put("0:" + hexagon, hexagon);
-			level.addShape(null,hexagon);
+			level.addShape(null,shape);
 		}
 		this.addLevel(level);
-		LinkedList<Shape> hexagonStack = null;
+		LinkedList<Shape> shapeStack = null;
 		int exponent = 0;
 //		Map<String, Shape> shapeMap;
 		for (int i = 1; i < depth; i++) {
@@ -152,22 +158,22 @@ public class Hexagonal extends Network {
 			shapeMap = this.getLastLevel().getShapeMap();
 			level = new Level();
 			shapeList = new LinkedList<>();
-			hexagonStack = new LinkedList<>();
-			hexagonStack.push(shapeMap.get(this.x + "," + this.y));
-			Shape shape;
-			while (!hexagonStack.isEmpty()) {
-				shape = hexagonStack.pop();
+			shapeStack = new LinkedList<>();
+			shapeStack.push(shapeMap.get(this.x + "," + this.y));
+			Shape s;
+			while (!shapeStack.isEmpty()) {
+				s = shapeStack.pop();
 				LinkedList<Shape> list = null;
 				if (i % 2 == 1) {
-					list = getGroupOneHexagonList(shapeMap, shape.getX(), shape.getY(), exponent); // get list for x, y
+					list = getGroupOneHexagonList(shapeMap, s.getX(), s.getY(), exponent); // get list for x, y
 				} else {
-					list = getGroupZeroHexagonList(shapeMap, shape.getX(), shape.getY(), exponent); // get list for x,
+					list = getGroupZeroHexagonList(shapeMap, s.getX(), s.getY(), exponent); // get list for x,
 					// y
 				}
 				for (Shape h : list) {
 					if (!shapeList.contains(h)) {
 						shapeList.add(h);
-						hexagonStack.push(h);
+						shapeStack.push(h);
 					}
 				}
 			}
@@ -177,7 +183,10 @@ public class Hexagonal extends Network {
 					h = new Hexagon(m);
 					h.length = 7;
 					this.shapeMap.put(i + ":" + h, h);
-				}
+				} 
+//				else {
+//					h = new Hexagon(h);
+//				}
 				List<Shape> list = null;
 				if (i % 2 == 1) {
 					list = this.getGroupZeroHexagonList(shapeMap, h.getX(), h.getY(), exponent);
@@ -186,6 +195,7 @@ public class Hexagonal extends Network {
 				}
 //				logger.info("load() list.size()="+list.size());
 				for (Shape n : list) {
+//					n = new Hexagon(n);
 					h.addChild(n);
 				}
 //				h.setData(i + ":" + h);

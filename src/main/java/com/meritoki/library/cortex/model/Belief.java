@@ -1,6 +1,7 @@
 package com.meritoki.library.cortex.model;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +11,12 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 
 public class Belief {
 
+	@JsonProperty
 	public String uuid;
 	@JsonProperty
 	public Coincidence coincidence;
@@ -27,7 +30,13 @@ public class Belief {
 	public double y;
 	@JsonIgnore
 	public BufferedImage bufferedImage;
+	@JsonIgnore
+	public File file;
 	@JsonProperty
+	public String filePath;
+	@JsonProperty
+	public String fileName;
+	@JsonIgnore
 	public Map<List<Concept>, Concept> map = new HashMap<>();
 	@JsonIgnore
 	public Map<String, Integer> conceptCountMap = new HashMap<>();
@@ -36,8 +45,22 @@ public class Belief {
 		this.uuid = UUID.randomUUID().toString();
 	}
 
+	public BufferedImage getBufferedImage() {
+//		BufferedImage bufferedImage = null;
+		System.out.println("getBufferedImage()");
+		if (this.bufferedImage == null) {
+			System.out.println("getBufferedImage() filePath="+filePath+" fileName="+fileName);
+			this.file = new File(filePath + NodeController.getSeperator() + fileName);
+			if (this.file.exists()) {
+				this.bufferedImage = NodeController.openBufferedImage(this.file);
+			}
+		}
+		return this.bufferedImage;
+	}
+
+	@JsonIgnore
 	public List<Concept> getConceptList() {
-		System.out.println("getConceptList() this.conceptList="+this.conceptList);
+		System.out.println("getConceptList() this.conceptList=" + this.conceptList);
 		List<Concept> conceptList = new ArrayList<>(this.conceptList);
 		Set<List<Concept>> key = map.keySet();
 		for (List<Concept> keyList : key) {
@@ -60,7 +83,7 @@ public class Belief {
 
 		this.conceptCountMap = new HashMap<>();
 		if (conceptList != null) {
-			System.out.println("getConceptList() conceptList="+conceptList);
+			System.out.println("getConceptList() conceptList=" + conceptList);
 			for (Concept c : conceptList) {
 				Integer count = this.conceptCountMap.get(c.toString());
 				count = (count != null) ? count : 0;
@@ -82,7 +105,7 @@ public class Belief {
 			cList.add(concept);
 		}
 		this.conceptList = cList;
-		System.out.println("getConceptList() cList="+cList);
+		System.out.println("getConceptList() cList=" + cList);
 		return cList;
 	}
 
