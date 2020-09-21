@@ -215,7 +215,7 @@ public class Shape extends Node<Object> {
 	}
 
 	@JsonIgnore
-	protected void updatePoints() {
+	public void updatePoints() {
 		Point point = new Point(center.x, center.y);
 		xpoints[0] = point.x;
 		ypoints[0] = point.y;

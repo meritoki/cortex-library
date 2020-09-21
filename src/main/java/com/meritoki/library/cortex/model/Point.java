@@ -28,8 +28,6 @@ public class Point extends Node {
 	public double x = 0;
 	@JsonProperty
 	public double y = 0;
-//	@JsonProperty
-//	public Belief belief;
 
 	public Point() {
 	}
@@ -45,6 +43,18 @@ public class Point extends Node {
 		super(x+","+y);
 		this.x = x;
 		this.y = y;
+	}
+	
+	public void scale(double scale) {
+		this.x *= scale;
+		this.y *= scale;
+	}
+	
+	@JsonIgnore
+	public static double getDistance(Point a, Point b) {
+		double value = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+//		System.out.println("getDistance("+a+", "+b+") value="+value);
+		return value;
 	}
 
 	@JsonIgnore

@@ -77,7 +77,7 @@ public class Retina {
 	public double x = 0;
 	public double y = 0;
 	public double objectRadius;
-	public Point root = null;
+//	public Point root = null;
 	public Observation observation;
 	public int index;
 	public boolean loop = false;
@@ -157,7 +157,7 @@ public class Retina {
 						this.index++;
 						this.setDistance(this.distance);
 						this.input(graphics2D, concept);
-						this.pointStack.push(this.root);
+//						this.pointStack.push(this.root);
 						System.out.println("this.pointStack.size()=" + this.pointStack.size());
 						this.state = State.PENDING;
 					} else {
@@ -177,6 +177,7 @@ public class Retina {
 			if (this.manual) {
 				this.input(graphics2D, concept);
 				this.drawPointList(graphics2D);
+				this.drawBeliefList(graphics2D);
 //				this.drawPointMatrix(graphics2D);
 			} else {
 				this.drawScaledBufferedImage(graphics2D);
@@ -191,7 +192,7 @@ public class Retina {
 		List<Node> nodeList = point.getChildren();
 		for (Node n : nodeList) {
 			Point p = (Point) n;
-			if (this.getDistance(point, p) * this.scale >= this.getSensorRadius()) {
+			if (Point.getDistance(point, p) * this.scale >= this.getSensorRadius()) {
 				pointList.add(p);
 			}
 		}
@@ -206,16 +207,15 @@ public class Retina {
 //		System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
 		this.drawScaledBufferedImage(graphics2D);
 //		concept = new Concept(UUID.randomUUID().toString());
-		if (!manual && this.root == null) {
+		if (!manual && this.cortex.root == null) {
 			x = this.getCenterX();// this.observation.getObject().getWidth()/2;////*this.scale;
 			y = this.getCenterY();// this.observation.getObject().getHeight()/2;////*this.scale;
 			if (x > 0 && y > 0) {
-				this.root = new Point(x / this.scale, y / this.scale);// Save root
+				this.cortex.root = new Point(x / this.scale, y / this.scale);// Save root
 				this.cortex.setOrigin((int) (x), (int) (y));
 				this.cortex.update();
 				this.cortex.process(graphics2D, scaledBufferedImage, concept);
-				this.cortex.pointList.add(this.root);
-				this.addPoint(this.root);
+				this.addPoint(this.cortex.root);
 			}
 
 		} else {
@@ -225,14 +225,13 @@ public class Retina {
 				x = this.getCenterX();
 				y = this.getCenterY();
 			}
-			if (this.root == null) {
-				this.root = new Point(x / this.scale, y / this.scale);
-				this.cortex.pointList.add(this.root);
+			if (this.cortex.root == null) {
+				this.cortex.root = new Point(x / this.scale, y / this.scale);
 			}
 			this.cortex.setOrigin((int) (x), (int) (y));
 			this.cortex.update();
 			this.cortex.process(graphics2D, scaledBufferedImage, concept);
-			this.addPoint(this.root);
+			this.addPoint(this.cortex.root);
 		}
 		this.drawSensor(graphics2D);
 	}
@@ -269,6 +268,21 @@ public class Retina {
 							(int) (child.x * this.scale), (int) (child.y * this.scale));
 				}
 				count++;
+			}
+		}
+	}
+	
+	public void drawBeliefList(Graphics2D graphics2D) {
+		if (graphics2D != null) {
+			graphics2D.setColor(Color.RED);
+			for(Belief belief: this.cortex.beliefList) {
+				double r = belief.getRadius()*this.scale;
+				double x = belief.center.x*this.scale;
+				double y = belief.center.y*this.scale;
+				double newX = x - r;
+				double newY = y - r;
+				Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
+				graphics2D.draw(ellipse);
 			}
 		}
 	}
@@ -315,48 +329,46 @@ public class Retina {
 	}
 
 	public void addPoint(Point root) {
-		if (this.cortex != null && this.cortex.getBelief() != null) {
-			List<Point> pointList = this.cortex.getBelief().pointList;
+		Belief belief = this.cortex.getBelief();
+//		belief.center.scale(1/this.scale);
+		if (this.cortex != null && belief != null) {
+			List<Point> pointList = belief.pointList;
 			for (Point point : pointList) {
 				point.x /= this.scale;
 				point.y /= this.scale;
-				this.addPoint(root, point);
+				this.cortex.addPoint(root, point);
 			}
 		}
 	}
+//
+//	public void addPoint(Point root, Point point) {
+////		System.out.println("addPoint("+root+", "+point+")");
+//		if (!root.equals(point)) {
+//			List<Node> nodeList = root.getChildren();
+//			double min = Point.getDistance(root, point);
+//			Point minPoint = null;
+//			Iterator<Node> iterator = nodeList.iterator();
+//			while (iterator.hasNext()) {
+//				Node n = iterator.next();
+//				Point childPoint = (Point) n;
+//				double distance = Point.getDistance(childPoint, point);
+//				if (distance < min) {
+//					min = distance;
+//					minPoint = childPoint;
+//				}
+//			}
+//			if (minPoint != null) {
+//				// System.out.println("addPoint("+root+", "+point+") minPoint="+minPoint);
+//				this.addPoint(minPoint, point);
+//			} else {
+//				root.addChild(point);
+////				Node.printTree(root, " ");
+//				this.cortex.pointList.add(point);
+//			}
+//		}
+//	}
 
-	public void addPoint(Point root, Point point) {
-//		System.out.println("addPoint("+root+", "+point+")");
-		if (!root.equals(point)) {
-			List<Node> nodeList = root.getChildren();
-			double min = this.getDistance(root, point);
-			Point minPoint = null;
-			Iterator<Node> iterator = nodeList.iterator();
-			while (iterator.hasNext()) {
-				Node n = iterator.next();
-				Point childPoint = (Point) n;
-				double distance = this.getDistance(childPoint, point);
-				if (distance < min) {
-					min = distance;
-					minPoint = childPoint;
-				}
-			}
-			if (minPoint != null) {
-				// System.out.println("addPoint("+root+", "+point+") minPoint="+minPoint);
-				this.addPoint(minPoint, point);
-			} else {
-				root.addChild(point);
-//				Node.printTree(root, " ");
-				this.cortex.pointList.add(point);
-			}
-		}
-	}
 
-	public double getDistance(Point a, Point b) {
-		double value = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
-//		System.out.println("getDistance("+a+", "+b+") value="+value);
-		return value;
-	}
 
 	public void setCortex(Cortex cortex) {
 		this.cortex = cortex;
@@ -600,7 +612,7 @@ public class Retina {
 //double minDistance = this.getSensorRadius();
 //for (Node n : nodeList) {
 //	Point p = (Point) n;
-//	if (this.getDistance(point, p) > minDistance) {
+//	if (Point.getDistance(point, p) > minDistance) {
 //		System.out.println("node point" + p);
 //		pointStack.push(p);
 //	}

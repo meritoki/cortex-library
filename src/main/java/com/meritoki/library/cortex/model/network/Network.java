@@ -133,6 +133,7 @@ public class Network extends Cortex {
 
 	@JsonIgnore
 	public void load() {
+		super.load();
 		logger.info("load()");
 	}
 
@@ -227,7 +228,7 @@ public class Network extends Cortex {
 				List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
 				Belief belief = new Belief();
 				for (Shape shape : level.getShapeList()) {
-					shape.initCells();
+//					shape.initCells();
 					Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
 					int brightness = shape.coincidence.list.get(0);
 					if(255 > brightness && brightness > 0 ) {
@@ -235,9 +236,9 @@ public class Network extends Cortex {
 						pointList.add(point);
 					}
 					Color color = new Color(brightness, brightness, brightness);
-					graphics2D.setColor(color);
-					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
-							(int) shape.npoints);
+//					graphics2D.setColor(color);
+//					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
+//							(int) shape.npoints);
 					
 					for (int i = 0; i < shape.sides+1; i++) {
 						color = new Color(brightness, brightness, brightness);
@@ -251,9 +252,7 @@ public class Network extends Cortex {
 				belief.conceptList = conceptList;
 				belief.pointList = new ArrayList<>(pointList);
 				belief.bufferedImage = (beliefBufferedImage);
-				belief.x = this.getX();
-				belief.y = this.getY();
-//				System.out.println(belief);
+				belief.center = new Point(this.getX(), this.getY());
 				this.beliefList.add(belief);
 				this.setIndex(belief.uuid);
 			}

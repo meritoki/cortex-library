@@ -113,6 +113,7 @@ public class Hexagonal extends Network {
 	@JsonIgnore
 	@Override
 	public void load() {
+		super.load();
 		logger.info("load()");
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.size=" + this.size);
@@ -134,9 +135,10 @@ public class Hexagonal extends Network {
 				shape = new Hexagon(s);
 				this.shapeMap.put("0:" + shape, shape);
 			} 
-//			else {
-//				shape = new Hexagon(shape);
-//			}
+			else {
+				shape = new Hexagon(shape);
+				this.shapeMap.put("0:" + shape, shape);
+			}
 //			hexagon.setData("0:" + hexagon);
 //			System.out.println(shape);
 //			System.out.println(shape.shortConeArray);

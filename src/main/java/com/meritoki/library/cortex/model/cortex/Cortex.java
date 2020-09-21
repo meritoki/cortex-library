@@ -21,6 +21,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.group.Group;
 import com.meritoki.library.cortex.model.network.Color;
@@ -40,18 +42,14 @@ import com.meritoki.library.cortex.model.network.Configuration;
 import com.meritoki.library.cortex.model.network.Network;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 
-@JsonTypeInfo(use = Id.CLASS,
-include = JsonTypeInfo.As.PROPERTY,
-property = "type")
-@JsonSubTypes({
-@Type(value = Network.class),
-@Type(value = Group.class),
-})
+@JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = Network.class), @Type(value = Group.class), })
 public class Cortex {
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
-	public Color type = Color.BRIGHTNESS ;//int type;//com.meritoki.library.cortex.model.Type type = com.meritoki.library.cortex.model.Type.HEXAGONAL;
+	public Color type = Color.BRIGHTNESS;// int type;//com.meritoki.library.cortex.model.Type type =
+											// com.meritoki.library.cortex.model.Type.HEXAGONAL;
 	@JsonProperty
 	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
@@ -72,11 +70,12 @@ public class Cortex {
 	public int x = 0;
 	@JsonIgnore
 	public int y = 0;
-	@JsonIgnore
+	@JsonProperty
 	public int index = 0;
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
-	//Using the belief List construct a domain where belief is 
+	@JsonProperty
+	public Point root;
 	@JsonIgnore
 	public List<Point> pointList = new ArrayList<>();
 	@JsonIgnore
@@ -84,15 +83,14 @@ public class Cortex {
 	@JsonIgnore
 	public List<Belief[][]> beliefMatrixList;
 	@JsonIgnore
-	public Map<List<Concept>,Concept> conceptMap = new HashMap<>();
-	
-	
+	public Map<List<Concept>, Concept> conceptMap = new HashMap<>();
+
 	@JsonIgnore
 	public boolean setIndex(String uuid) {
 		boolean flag = false;
-		for(int i=0;i<this.beliefList.size();i++) {
+		for (int i = 0; i < this.beliefList.size(); i++) {
 			Belief input = this.beliefList.get(i);
-			if(input.uuid.equals(uuid)) {
+			if (input.uuid.equals(uuid)) {
 				this.index = i;
 				flag = true;
 				break;
@@ -100,7 +98,7 @@ public class Cortex {
 		}
 		return flag;
 	}
-	
+
 	@JsonIgnore
 	public boolean setIndex(int index) {
 		boolean flag = false;
@@ -110,7 +108,7 @@ public class Cortex {
 		}
 		return flag;
 	}
-	
+
 	@JsonIgnore
 	public Belief getBelief() {
 		int size = this.beliefList.size();
@@ -124,21 +122,55 @@ public class Cortex {
 		Belief page = (index < size && size > 0) ? this.beliefList.get(index) : null;
 		return page;
 	}
-	
-	
+
 	@JsonIgnore
-	public void load() {}
-	
+	public void load() {
+		for (Belief belief : this.beliefList) {
+			List<Point> pointList = belief.pointList;
+			for (Point point : pointList) {
+				this.addPoint(this.root, point);
+			}
+		}
+	}
+
+	public void addPoint(Point root, Point point) {
+//		System.out.println("addPoint("+root+", "+point+")");
+		if (!root.equals(point)) {
+			List<Node> nodeList = root.getChildren();
+			double min = Point.getDistance(root, point);
+			Point minPoint = null;
+			Iterator<Node> iterator = nodeList.iterator();
+			while (iterator.hasNext()) {
+				Node n = iterator.next();
+				Point childPoint = (Point) n;
+				double distance = Point.getDistance(childPoint, point);
+				if (distance < min) {
+					min = distance;
+					minPoint = childPoint;
+				}
+			}
+			if (minPoint != null) {
+				// System.out.println("addPoint("+root+", "+point+") minPoint="+minPoint);
+				this.addPoint(minPoint, point);
+			} else {
+				root.addChild(point);
+//				Node.printTree(root, " ");
+				this.pointList.add(point);
+			}
+		}
+	}
+
 	@JsonIgnore
-	public void update() {}
-	
+	public void update() {
+	}
+
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
 //		System.out.println("setOrigin("+x+", "+y+")");
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public int getX() {
 		return this.x;
 	}
@@ -146,8 +178,11 @@ public class Cortex {
 	public int getY() {
 		return this.y;
 	}
+
 	@JsonIgnore
-	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {}
+	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {
+	}
+
 //	@JsonIgnore
 //	public int setPointMap(List<Point> pointList) {
 ////		System.out.println("setPointMap(" + pointList.size() + ")");
@@ -172,29 +207,30 @@ public class Cortex {
 	@JsonIgnore
 	public double getSensorRadius() {
 		double max = 0;
-		for(Entry<String, Shape> e: this.shapeMap.entrySet()) {
+		for (Entry<String, Shape> e : this.shapeMap.entrySet()) {
 			String key = e.getKey();
-			if(key.startsWith("0:")) {
-//				System.out.println("getSensorRedius() key="+key);
+			if (key.startsWith("0:")) {
+				System.out.println("getSensorRedius() key="+key);
 				Shape shape = e.getValue();
 				shape.initCells();
+				shape.updatePoints();
 				double[] xPoints = shape.xpoints;
 				double[] yPoints = shape.ypoints;
 				double nPoints = shape.npoints;
-				for(int i=0;i<nPoints; i++) {
-					double x = xPoints[i]-this.x;//e.getValue().getX();
-					double y = yPoints[i]-this.y;//e.getValue().getY();
-					double r = Math.sqrt(Math.pow(x,2)+Math.pow(y, 2));
-					if(r > max) {
+				for (int i = 0; i < nPoints; i++) {
+					double x = xPoints[i] - this.x;// e.getValue().getX();
+					double y = yPoints[i] - this.y;// e.getValue().getY();
+					double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+					if (r > max) {
 						max = r;
-					}	
+					}
 				}
 			}
 		}
-		
-//		System.out.println("getSensorRedius() max="+max);
+		System.out.println("getSensorRedius() max="+max);
 		return max;
 	}
+
 	@JsonIgnore
 	public BufferedImage scaleBufferedImage(BufferedImage bufferedImage, double scale) {
 		BufferedImage before = bufferedImage;

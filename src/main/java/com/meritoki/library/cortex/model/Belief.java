@@ -25,9 +25,13 @@ public class Belief {
 	@JsonProperty
 	public List<Point> pointList = new ArrayList<>();
 	@JsonProperty
-	public double x;
-	@JsonProperty
-	public double y;
+	public Point center;
+	
+	public double radius;
+//	@JsonProperty
+//	public double x;
+//	@JsonProperty
+//	public double y;
 	@JsonIgnore
 	public BufferedImage bufferedImage;
 	@JsonIgnore
@@ -44,7 +48,22 @@ public class Belief {
 	public Belief() {
 		this.uuid = UUID.randomUUID().toString();
 	}
-
+	
+	public void containsPoint(Point point) {
+		
+	}
+	
+	public double getRadius() {
+		double max = 0;
+		for(Point point:this.pointList) {
+			double distance = Point.getDistance(this.center,point);
+			if(distance > max) {
+				max = distance;
+			}
+		}
+		return max;
+	}
+	
 	public BufferedImage getBufferedImage() {
 //		BufferedImage bufferedImage = null;
 		System.out.println("getBufferedImage()");
@@ -121,6 +140,6 @@ public class Belief {
 	}
 
 	public String toString() {
-		return this.x + " " + this.y + " " + this.uuid;// + " pointList=" + this.pointList;
+		return this.center + " " + this.uuid;// + " pointList=" + this.pointList;
 	}
 }
