@@ -66,10 +66,12 @@ public class Cortex {
 	public int depth = 0;
 	@JsonProperty
 	public Map<String, Shape> shapeMap = new HashMap<>();
-	@JsonIgnore
-	public int x = 0;
-	@JsonIgnore
-	public int y = 0;
+	@JsonProperty
+	public Point origin = new Point(0,0);
+//	@JsonIgnore
+//	public int x = 0;
+//	@JsonIgnore
+//	public int y = 0;
 	@JsonProperty
 	public int index = 0;
 	@JsonProperty
@@ -82,8 +84,8 @@ public class Cortex {
 	public Belief[][] beliefMatrix;
 	@JsonIgnore
 	public List<Belief[][]> beliefMatrixList;
-	@JsonIgnore
-	public Map<List<Concept>, Concept> conceptMap = new HashMap<>();
+	@JsonProperty
+	public Map<String, String> conceptMap = new HashMap<>();
 
 	@JsonIgnore
 	public boolean setIndex(String uuid) {
@@ -166,18 +168,19 @@ public class Cortex {
 
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
-//		System.out.println("setOrigin("+x+", "+y+")");
-		this.x = x;
-		this.y = y;
+		System.out.println("setOrigin("+x+", "+y+")");
+		this.origin = new Point(x,y);
+//		this.x = x;
+//		this.y = y;
 	}
 
-	public int getX() {
-		return this.x;
-	}
-
-	public int getY() {
-		return this.y;
-	}
+//	public int getX() {
+//		return this.x;
+//	}
+//
+//	public int getY() {
+//		return this.y;
+//	}
 
 	@JsonIgnore
 	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {
@@ -210,16 +213,16 @@ public class Cortex {
 		for (Entry<String, Shape> e : this.shapeMap.entrySet()) {
 			String key = e.getKey();
 			if (key.startsWith("0:")) {
-				System.out.println("getSensorRedius() key="+key);
+//				System.out.println("getSensorRedius() key="+key);
 				Shape shape = e.getValue();
 				shape.initCells();
-				shape.updatePoints();
+//				shape.updatePoints();
 				double[] xPoints = shape.xpoints;
 				double[] yPoints = shape.ypoints;
 				double nPoints = shape.npoints;
 				for (int i = 0; i < nPoints; i++) {
-					double x = xPoints[i] - this.x;// e.getValue().getX();
-					double y = yPoints[i] - this.y;// e.getValue().getY();
+					double x = xPoints[i] - this.origin.x;// e.getValue().getX();
+					double y = yPoints[i] - this.origin.y;// e.getValue().getY();
 					double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 					if (r > max) {
 						max = r;

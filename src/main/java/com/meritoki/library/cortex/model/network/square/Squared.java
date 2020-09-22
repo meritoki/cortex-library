@@ -83,8 +83,8 @@ public class Squared extends Network {
 			for (int column = 0; column < dimension; column++) {
 				int xPosition = column - half;
 				int yPosition = row - half;
-				double x = (this.x + (xPosition * length));
-				double y = (this.y + (yPosition * length));
+				double x = (this.origin.x + (xPosition * length));
+				double y = (this.origin.y + (yPosition * length));
 				square = (Square) level.shapeMap.get(xPosition + "," + yPosition);
 				if (square != null) {
 					square.setCenter(new Point(x, y));
@@ -105,7 +105,7 @@ public class Squared extends Network {
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.dimension=" + this.dimension);
 		logger.info("load() this.length=" + this.length);
-		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.x, this.y), this.dimension, this.length,
+		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.dimension, this.length,
 				this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(squareMap.size());
 		if (this.depth == 0) {
@@ -135,7 +135,7 @@ public class Squared extends Network {
 			level = new Level();
 			squareList = new LinkedList<>();
 			squareStack = new LinkedList<>();
-			squareStack.push(squareMap.get(this.x + "," + this.y));
+			squareStack.push(squareMap.get(this.origin.x + "," + this.origin.y));
 			Shape shape;
 			while (!squareStack.isEmpty()) {
 				shape = squareStack.pop();

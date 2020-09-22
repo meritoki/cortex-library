@@ -93,8 +93,8 @@ public class Hexagonal extends Network {
 			for (int col = 0; col < cols; col++) {
 				int xPosition = row < half ? col - row : col - half;
 				int yPosition = row - half;
-				int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
-				int y = (int) (this.y + yOff * (row - half) * 3);
+				int x = (int) (this.origin.x + xOff * (col * 2 + 1 - cols));
+				int y = (int) (this.origin.y + yOff * (row - half) * 3);
 				shape = level.shapeMap.get(xPosition + "," + yPosition);
 				if (shape != null) {
 					shape.setCenter(new Point(x, y));
@@ -119,7 +119,7 @@ public class Hexagonal extends Network {
 		logger.info("load() this.size=" + this.size);
 		logger.info("load() this.radius=" + this.radius);
 		logger.info("load() this.depth=" + this.depth);
-		Map<String, Shape> shapeMap = getShapeMap(-1, new Point(this.x, this.y), this.size, this.radius,
+		Map<String, Shape> shapeMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.size, this.radius,
 				this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(shapeMap.size());
 		if (this.depth == 0) {
@@ -161,7 +161,9 @@ public class Hexagonal extends Network {
 			level = new Level();
 			shapeList = new LinkedList<>();
 			shapeStack = new LinkedList<>();
-			shapeStack.push(shapeMap.get(this.x + "," + this.y));
+//			shapeStack.push(shapeMap.get(this.origin.x + "," + this.origin.y));
+			shapeStack.push(shapeMap.get("0,0"));
+//			shapeStack.push(shapeMap.get(new Point(0,0)));
 			Shape s;
 			while (!shapeStack.isEmpty()) {
 				s = shapeStack.pop();

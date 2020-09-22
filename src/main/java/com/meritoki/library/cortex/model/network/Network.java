@@ -54,20 +54,19 @@ public class Network extends Cortex {
 	public Network(com.meritoki.library.cortex.model.network.Color color, int x, int y) {
 		logger.info("Network(" + color + ", " + x + ", " + y + ")");
 		this.type = color;
-		this.x = x;
-		this.y = y;
+		this.origin = new Point(x, y);
 		this.uuid = UUID.randomUUID().toString();
 	}
 
-	@JsonIgnore
-	public int getX() {
-		return this.x;
-	}
-
-	@JsonIgnore
-	public int getY() {
-		return this.y;
-	}
+//	@JsonIgnore
+//	public int getX() {
+//		return this.x;
+//	}
+//
+//	@JsonIgnore
+//	public int getY() {
+//		return this.y;
+//	}
 
 	@JsonIgnore
 	public Map<String, Shape> getShapeMap() {
@@ -228,31 +227,27 @@ public class Network extends Cortex {
 				List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
 				Belief belief = new Belief();
 				for (Shape shape : level.getShapeList()) {
-//					shape.initCells();
 					Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
 					int brightness = shape.coincidence.list.get(0);
 					if(255 > brightness && brightness > 0 ) {
-//						point.belief = belief;
 						pointList.add(point);
 					}
 					Color color = new Color(brightness, brightness, brightness);
-//					graphics2D.setColor(color);
-//					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
-//							(int) shape.npoints);
+					graphics2D.setColor(color);
+					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
+							(int) shape.npoints);
 					
 					for (int i = 0; i < shape.sides+1; i++) {
 						color = new Color(brightness, brightness, brightness);
-						double x = (shape.xpoints[i]-this.getX());
-						double y = (shape.ypoints[i]-this.getY());
+						double x = (shape.xpoints[i]-this.origin.x);
+						double y = (shape.ypoints[i]-this.origin.y);
 						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
 					}
 				}
-				
-				belief.map = this.conceptMap;
-				belief.conceptList = conceptList;
+				belief.setConceptList(this.conceptMap, conceptList);
 				belief.pointList = new ArrayList<>(pointList);
 				belief.bufferedImage = (beliefBufferedImage);
-				belief.center = new Point(this.getX(), this.getY());
+				belief.center = new Point(this.origin.x, this.origin.y);
 				this.beliefList.add(belief);
 				this.setIndex(belief.uuid);
 			}

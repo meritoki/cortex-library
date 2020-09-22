@@ -245,8 +245,8 @@ public class Retina {
 		if (graphics2D != null) {
 			graphics2D.setColor(Color.BLUE);
 			double r = this.getSensorRadius();
-			double x = this.cortex.getX();
-			double y = this.cortex.getY();
+			double x = this.cortex.origin.x;
+			double y = this.cortex.origin.y;
 			double newX = x - r;
 			double newY = y - r;
 			Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
@@ -323,14 +323,14 @@ public class Retina {
 
 	public void setOrigin(double x, double y) {
 		System.out.println("setOrigin(" + x + ", " + y + ")");
-		this.x = x * this.scale;
-		this.y = y * this.scale;
+		this.x = x;// * this.scale;
+		this.y = y;// * this.scale;
 		this.input = true;
 	}
 
 	public void addPoint(Point root) {
 		Belief belief = this.cortex.getBelief();
-//		belief.center.scale(1/this.scale);
+		belief.center.scale(1/this.scale);
 		if (this.cortex != null && belief != null) {
 			List<Point> pointList = belief.pointList;
 			for (Point point : pointList) {

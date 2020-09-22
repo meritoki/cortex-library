@@ -69,11 +69,11 @@ public class Group extends Cortex {
 		switch (this.configuration) {
 		case HEXAGONAL: {
 			logger.info("HEXAGONAL");
-			this.brightness = new Hexagonal(com.meritoki.library.cortex.model.network.Color.BRIGHTNESS, x, y, size, radius, padding);
-			this.red = new Hexagonal(com.meritoki.library.cortex.model.network.Color.RED, x, y, size, radius, padding);
-			this.green = new Hexagonal(com.meritoki.library.cortex.model.network.Color.GREEN, x, y, size, radius, padding);
-			this.blue = new Hexagonal(com.meritoki.library.cortex.model.network.Color.BLUE, x, y, size, radius, padding);
-			this.shapeMap = Hexagonal.getShapeMap(0, new Point(this.x, this.y), size, radius, padding);
+			this.brightness = new Hexagonal(com.meritoki.library.cortex.model.network.Color.BRIGHTNESS, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+			this.red = new Hexagonal(com.meritoki.library.cortex.model.network.Color.RED, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+			this.green = new Hexagonal(com.meritoki.library.cortex.model.network.Color.GREEN, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+			this.blue = new Hexagonal(com.meritoki.library.cortex.model.network.Color.BLUE, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+			this.shapeMap = Hexagonal.getShapeMap(0, new Point(this.origin.x, this.origin.y), size, radius, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
 			this.green.setShapeMap(this.shapeMap);
@@ -82,11 +82,11 @@ public class Group extends Cortex {
 		}
 		case SQUARED: {
 			logger.info("SQUARED");
-			this.brightness = new Squared(com.meritoki.library.cortex.model.network.Color.BRIGHTNESS, x, y, dimension, length, padding);
-			this.red = new Squared(com.meritoki.library.cortex.model.network.Color.RED, x, y, dimension, length, padding);
-			this.green = new Squared(com.meritoki.library.cortex.model.network.Color.GREEN, x, y, dimension, length, padding);
-			this.blue = new Squared(com.meritoki.library.cortex.model.network.Color.BLUE, x, y, dimension, length, padding);
-			this.shapeMap = Squared.getShapeMap(0, new Point(this.x, this.y), dimension, length, padding);
+			this.brightness = new Squared(com.meritoki.library.cortex.model.network.Color.BRIGHTNESS, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+			this.red = new Squared(com.meritoki.library.cortex.model.network.Color.RED, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+			this.green = new Squared(com.meritoki.library.cortex.model.network.Color.GREEN, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+			this.blue = new Squared(com.meritoki.library.cortex.model.network.Color.BLUE,(int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+			this.shapeMap = Squared.getShapeMap(0, new Point(this.origin.x, this.origin.y), dimension, length, padding);
 			this.brightness.setShapeMap(this.shapeMap);
 			this.red.setShapeMap(this.shapeMap);
 			this.green.setShapeMap(this.shapeMap);
@@ -96,11 +96,11 @@ public class Group extends Cortex {
 		}
 	}
 
-	@JsonIgnore
-	public void setOrigin(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
+//	@JsonIgnore
+//	public void setOrigin(int x, int y) {
+//		this.x = x;
+//		this.y = y;
+//	}
 
 	public Level getLevel() {
 		return this.level;
@@ -169,8 +169,8 @@ public class Group extends Cortex {
 				for (int col = 0; col < cols; col++) {
 					int xPosition = row < half ? col - row : col - half;
 					int yPosition = row - half;
-					int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
-					int y = (int) (this.y + yOff * (row - half) * 3);
+					int x = (int) (this.origin.x + xOff * (col * 2 + 1 - cols));
+					int y = (int) (this.origin.y + yOff * (row - half) * 3);
 					shape = this.shapeMap.get("0:"+xPosition + "," + yPosition);
 					if (shape != null) {
 						shape.setCenter(new Point(x, y));
@@ -190,8 +190,8 @@ public class Group extends Cortex {
 					int xPosition = column - half;
 					int yPosition = row - half;
 //					System.out.println(xPosition+" "+yPosition);
-					double x = (this.x + (xPosition * length));
-					double y = (this.y + (yPosition * length));
+					double x = (this.origin.x + (xPosition * length));
+					double y = (this.origin.y + (yPosition * length));
 					square = (Square) this.shapeMap.get("0:"+xPosition + "," + yPosition);
 					if (square != null) {
 						square.setCenter(new Point(x, y));

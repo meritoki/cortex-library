@@ -3,6 +3,7 @@ package com.meritoki.library.cortex.model;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,7 @@ public class Belief {
 	public String filePath;
 	@JsonProperty
 	public String fileName;
-	@JsonIgnore
-	public Map<List<Concept>, Concept> map = new HashMap<>();
-	@JsonIgnore
-	public Map<String, Integer> conceptCountMap = new HashMap<>();
+
 
 	public Belief() {
 		this.uuid = UUID.randomUUID().toString();
@@ -65,8 +63,6 @@ public class Belief {
 	}
 	
 	public BufferedImage getBufferedImage() {
-//		BufferedImage bufferedImage = null;
-		System.out.println("getBufferedImage()");
 		if (this.bufferedImage == null) {
 			System.out.println("getBufferedImage() filePath="+filePath+" fileName="+fileName);
 			this.file = new File(filePath + NodeController.getSeperator() + fileName);
@@ -76,46 +72,63 @@ public class Belief {
 		}
 		return this.bufferedImage;
 	}
-
+	
+	
+	/**
+	 * Map is xyz -> object
+	 * @param map
+	 * @param conceptList
+	 * @return
+	 */
 	@JsonIgnore
-	public List<Concept> getConceptList() {
-		System.out.println("getConceptList() this.conceptList=" + this.conceptList);
-		List<Concept> conceptList = new ArrayList<>(this.conceptList);
-		Set<List<Concept>> key = map.keySet();
-		for (List<Concept> keyList : key) {
-			Concept concept = map.get(keyList);
-			boolean contains = true;
-			for (Concept k : keyList) {
-				if (!conceptList.contains(k)) {// order does not matter;
-					contains = false;
-				}
+	public void setConceptList(Map<String, String> map, List<Concept> conceptList) {
+//		System.out.println("setConceptList("+map+", "+conceptList+")");
+		conceptList = new ArrayList<>(conceptList);
+		Set<String> keySet = map.keySet();
+		for (String key : keySet) {
+			String value = map.get(key);
+//			System.out.println("setConceptList("+map+", "+conceptList+") key="+key);
+//			System.out.println("setConceptList("+map+", "+conceptList+") value="+value);			
+			for(Concept c: conceptList) {
+//				System.out.println("setConceptList("+map+", "+conceptList+") c="+c);	
+				if(key.equals(c.toString())) {
+					c.value = value;
+				} 
 			}
-			if (contains) {
-				if (!conceptList.contains(concept)) {
-					conceptList.add(0, concept);
-				}
-				for (Concept k : keyList) {
-					conceptList.remove(k);
-				}
-			}
+			
+//			for (Concept k : keyList) {
+//				if (!conceptList.contains(k)) {// order does not matter;
+//					contains = false;
+//				}
+//			}
+//			if (contains) {
+//				if (!conceptList.contains(concept)) {
+//					conceptList.add(0, concept);
+//				}
+//				for (Concept k : keyList) {
+//					conceptList.remove(k);
+//				}
+//			}
 		}
 
-		this.conceptCountMap = new HashMap<>();
+		//
+		Map<String, Integer> conceptCountMap = new HashMap<>();
+		conceptCountMap = new HashMap<>();
 		if (conceptList != null) {
-			System.out.println("getConceptList() conceptList=" + conceptList);
+//			System.out.println("getConceptList() conceptList=" + conceptList);
 			for (Concept c : conceptList) {
-				Integer count = this.conceptCountMap.get(c.toString());
+				Integer count = conceptCountMap.get(c.toString());
 				count = (count != null) ? count : 0;
-				this.conceptCountMap.put(c.toString(), count + 1);
+				conceptCountMap.put(c.toString(), count + 1);
 			}
 		}
-		Integer total = this.getTotal(this.conceptCountMap);
+		Integer total = this.getTotal(conceptCountMap);
 		String value;
 		Integer dividend;
 		Double quotient;
 		Concept concept = null;
 		List<Concept> cList = new ArrayList<>();
-		for (Map.Entry<String, Integer> entry : this.conceptCountMap.entrySet()) {
+		for (Map.Entry<String, Integer> entry : conceptCountMap.entrySet()) {
 			value = entry.getKey();
 			dividend = entry.getValue();
 			quotient = (total > 0) ? (double) dividend / (double) total : 0;
@@ -123,10 +136,62 @@ public class Belief {
 			concept.rank = quotient;
 			cList.add(concept);
 		}
+		Collections.sort(cList, new ConceptComparator());
 		this.conceptList = cList;
-		System.out.println("getConceptList() cList=" + cList);
-		return cList;
+//		System.out.println("getConceptList() cList=" + cList);
 	}
+
+
+//	@JsonIgnore
+//	public List<Concept> setConceptList(Map<String, String> map, List<Concept> conceptList) {
+//		System.out.println("setConceptList("+map+", "+conceptList+")");
+//		conceptList = new ArrayList<>(conceptList);
+//		Set<String> keySet = map.keySet();
+//		for (String key : keySet) {
+//			String concept = map.get(key);
+//			boolean contains = true;
+//			for (Concept k : keyList) {
+//				if (!conceptList.contains(k)) {// order does not matter;
+//					contains = false;
+//				}
+//			}
+//			if (contains) {
+//				if (!conceptList.contains(concept)) {
+//					conceptList.add(0, concept);
+//				}
+//				for (Concept k : keyList) {
+//					conceptList.remove(k);
+//				}
+//			}
+//		}
+//
+//		this.conceptCountMap = new HashMap<>();
+//		if (conceptList != null) {
+//			System.out.println("getConceptList() conceptList=" + conceptList);
+//			for (Concept c : conceptList) {
+//				Integer count = this.conceptCountMap.get(c.toString());
+//				count = (count != null) ? count : 0;
+//				this.conceptCountMap.put(c.toString(), count + 1);
+//			}
+//		}
+//		Integer total = this.getTotal(this.conceptCountMap);
+//		String value;
+//		Integer dividend;
+//		Double quotient;
+//		Concept concept = null;
+//		List<Concept> cList = new ArrayList<>();
+//		for (Map.Entry<String, Integer> entry : this.conceptCountMap.entrySet()) {
+//			value = entry.getKey();
+//			dividend = entry.getValue();
+//			quotient = (total > 0) ? (double) dividend / (double) total : 0;
+//			concept = new Concept(value);
+//			concept.rank = quotient;
+//			cList.add(concept);
+//		}
+//		this.conceptList = cList;
+//		System.out.println("getConceptList() cList=" + cList);
+//		return cList;
+//	}
 
 	@JsonIgnore
 	public int getTotal(Map<String, Integer> map) {
