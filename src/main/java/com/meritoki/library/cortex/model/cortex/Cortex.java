@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
+import com.meritoki.library.cortex.model.BinaryNode;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
@@ -68,16 +69,14 @@ public class Cortex {
 	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonProperty
 	public Point origin = new Point(0,0);
-//	@JsonIgnore
-//	public int x = 0;
-//	@JsonIgnore
-//	public int y = 0;
 	@JsonProperty
 	public int index = 0;
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
 	@JsonProperty
-	public Point root;
+	public Point root = new Point(0,0);
+	@JsonIgnore
+	public BinaryNode binaryNode;
 	@JsonIgnore
 	public List<Point> pointList = new ArrayList<>();
 	@JsonIgnore
@@ -124,6 +123,13 @@ public class Cortex {
 		Belief page = (index < size && size > 0) ? this.beliefList.get(index) : null;
 		return page;
 	}
+	
+	@JsonIgnore
+	public Belief getLastBelief() {
+		int size = this.beliefList.size();
+		Belief page = (size > 0)?this.beliefList.get(size-1):null;
+		return page;
+	}
 
 	@JsonIgnore
 	public void load() {
@@ -137,7 +143,7 @@ public class Cortex {
 
 	public void addPoint(Point root, Point point) {
 //		System.out.println("addPoint("+root+", "+point+")");
-		if (!root.equals(point)) {
+		if (point != null && !root.equals(point)) {
 			List<Node> nodeList = root.getChildren();
 			double min = Point.getDistance(root, point);
 			Point minPoint = null;

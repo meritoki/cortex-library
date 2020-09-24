@@ -26,13 +26,8 @@ public class Belief {
 	@JsonProperty
 	public List<Point> pointList = new ArrayList<>();
 	@JsonProperty
-	public Point center;
-	
+	public Point origin;
 	public double radius;
-//	@JsonProperty
-//	public double x;
-//	@JsonProperty
-//	public double y;
 	@JsonIgnore
 	public BufferedImage bufferedImage;
 	@JsonIgnore
@@ -54,7 +49,7 @@ public class Belief {
 	public double getRadius() {
 		double max = 0;
 		for(Point point:this.pointList) {
-			double distance = Point.getDistance(this.center,point);
+			double distance = Point.getDistance(this.origin,point);
 			if(distance > max) {
 				max = distance;
 			}
@@ -205,6 +200,6 @@ public class Belief {
 	}
 
 	public String toString() {
-		return this.center + " " + this.uuid;// + " pointList=" + this.pointList;
+		return this.origin + " " + this.uuid;// + " pointList=" + this.pointList;
 	}
 }

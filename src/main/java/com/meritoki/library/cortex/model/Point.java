@@ -28,6 +28,8 @@ public class Point extends Node {
 	public double x = 0;
 	@JsonProperty
 	public double y = 0;
+	@JsonIgnore
+	public boolean center;
 
 	public Point() {
 	}
@@ -37,6 +39,10 @@ public class Point extends Node {
 		this.x = p.x;
 		this.y = p.y;
 //		this.belief = p.belief;
+	}
+	
+	public Point subtract(Point point) {
+		return (point != null)?new Point(this.x - point.x,this.y-point.y):null;
 	}
 
 	public Point(double x, double y) {

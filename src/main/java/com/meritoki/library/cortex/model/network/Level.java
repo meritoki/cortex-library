@@ -158,6 +158,31 @@ public class Level {
 			}
 		}
 	}
+	
+	public void addCoincidenceConceptList(Coincidence coincidence, List<Concept> conceptList) {
+		List<Concept> cList = null;
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			Shape shape = entry.getValue();
+			cList = shape.conceptListMap.get(coincidence.toString());
+			if(cList != null) {
+				cList.addAll(conceptList);
+				shape.conceptListMap.put(coincidence.toString(),cList);
+			}
+		}
+	}
+	
+	public void removeCoincidenceConceptList(Coincidence coincidence, List<Concept> conceptList) {
+		List<Concept> cList = null;
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			Shape shape = entry.getValue();
+			cList = shape.conceptListMap.get(coincidence.toString());
+			if(cList != null) {
+				cList.removeAll(conceptList);
+				shape.conceptListMap.put(coincidence.toString(),cList);
+			}
+		}
+	}
+
 
 	@JsonIgnore
 	public List<Concept> getCoincidenceConceptList() {
@@ -236,6 +261,15 @@ public class Level {
 		}
 		logger.info("getPredictionConceptList() conceptList=" + conceptList);
 		return conceptList;
+	}
+	
+	public List<Coincidence> getCoincidenceList() {
+		List<Coincidence> coincidenceList = new ArrayList<>();
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			Shape shape = entry.getValue();
+			coincidenceList.add(shape.coincidence);
+		}
+		return coincidenceList;
 	}
 
 	@JsonIgnore

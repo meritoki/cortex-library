@@ -245,11 +245,12 @@ public class Network extends Cortex {
 					}
 				}
 				belief.setConceptList(this.conceptMap, conceptList);
+				belief.coincidence = this.getRootLevel().getCoincidenceList().get(0);
 				belief.pointList = new ArrayList<>(pointList);
 				belief.bufferedImage = (beliefBufferedImage);
-				belief.center = new Point(this.origin.x, this.origin.y);
+				belief.origin = new Point(this.origin.x, this.origin.y);
 				this.beliefList.add(belief);
-				this.setIndex(belief.uuid);
+				System.out.println("this.setIndex(...) flag="+this.setIndex(this.beliefList.size()-1));
 			}
 		}
 	}

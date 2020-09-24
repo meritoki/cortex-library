@@ -9,9 +9,11 @@ import com.meritoki.library.cortex.model.Point;
 
 public class Observation {
 
+	public String uuid;
 	public BufferedImage bufferedImage;
 	public double radius = 0;
 	public BufferedImage object;
+	public double distance;
 
 	public Observation(BufferedImage bufferedImage) {
 		this.bufferedImage = bufferedImage;
@@ -92,6 +94,7 @@ public class Observation {
 		g.drawImage(this.bufferedImage,x,y,this.bufferedImage.getWidth(),this.bufferedImage.getHeight(),null);
 //		g.drawRect(x, y, this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
 //		System.out.println("getObject() b.getWidth()="+b.getWidth()+" b.getHeight()="+b.getHeight());
+
 		return b;
 	}
 }
