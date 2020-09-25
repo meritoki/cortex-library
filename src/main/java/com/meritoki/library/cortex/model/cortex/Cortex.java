@@ -76,13 +76,7 @@ public class Cortex {
 	@JsonProperty
 	public Point root = new Point(0,0);
 	@JsonIgnore
-	public BinaryNode binaryNode;
-	@JsonIgnore
 	public List<Point> pointList = new ArrayList<>();
-	@JsonIgnore
-	public Belief[][] beliefMatrix;
-	@JsonIgnore
-	public List<Belief[][]> beliefMatrixList;
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();
 

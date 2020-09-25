@@ -23,6 +23,7 @@ import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cortex.Cortex;
+import com.meritoki.library.cortex.model.motor.Motor;
 import com.meritoki.library.cortex.model.Node;
 
 /**
@@ -65,6 +66,7 @@ public class Retina {
 	// This is where we connect the point and add it to the list.
 
 	public Cortex cortex;
+	public Motor motor;
 	public BufferedImage bufferedImage;
 	public BufferedImage scaledBufferedImage;
 	public double focalLength = 8;
@@ -104,6 +106,7 @@ public class Retina {
 		this.cortex = cortex;
 		this.sensorRadius = this.cortex.getSensorRadius();
 		this.maxDistance = this.getMaxDistance();
+		this.motor = new Motor(this.cortex);
 	}
 
 	public void setBufferedImage(BufferedImage bufferedImage) {
