@@ -21,8 +21,10 @@ import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.time.TimeController;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Matrix;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cortex.Cortex;
+import com.meritoki.library.cortex.model.motor.Delta;
 import com.meritoki.library.cortex.model.motor.Motor;
 import com.meritoki.library.cortex.model.Node;
 
@@ -65,30 +67,34 @@ public class Retina {
 	// decrease the minDistance.
 	// This is where we connect the point and add it to the list.
 
+	public final int DIMENSION = 100;
+	public Dimension dimension;
+
 	public Cortex cortex;
-	public Motor motor;
+	public Motor motor = new Motor();
+
+	public BufferedImage object;
 	public BufferedImage bufferedImage;
-	public BufferedImage scaledBufferedImage;
-	public double focalLength = 8;
-	public double minDistance = 8;
+	public BufferedImage inputBufferedImage;// Object should be what is input into cortex
+
+	public double focalLength = 8; // mm
+	public double minDistance = 8;// mm
 	public double distance = minDistance;
 	public double maxDistance;
-	public double previousDistance;
 
-	public final double MILLIMETER = 0.2645833333;
 	public double scale = 1;
+	public double radius = 0;
 	public double sensorRadius;
-	public int defaultDimension = 100;
+
 	public Point origin;
 	public Point previous;
-	public double objectRadius;
-	public Observation observation;
+
 	public int index;
 	private int interval = 8;
 	private int size;
 	public int step = 8;
 	public State state = State.NEW;
-	public Dimension dimension;
+	public List<Belief> beliefList;
 
 	public Retina() {
 	}
@@ -98,41 +104,48 @@ public class Retina {
 		// Gets the newest Dimension
 		this.dimension = dimension;
 		// Gets correct X and Y;
-		this.scaledBufferedImage = this.getScaledBufferedImage();
-		this.setOrigin(this.getImageCenterX(), this.getImageCenterY());
+		this.inputBufferedImage = this.getInputBufferedImage();
+		Point origin = new Point(this.getInputCenterX(), this.getInputCenterY());
+		origin.center = true;
+		this.setOrigin(origin);
 	}
 
 	public void setCortex(Cortex cortex) {
 		this.cortex = cortex;
-		this.sensorRadius = this.cortex.getSensorRadius();
+		this.sensorRadius = this.cortex.getRadius();
 		this.maxDistance = this.getMaxDistance();
-		this.motor = new Motor(this.cortex);
+		this.motor.setCortex(this.cortex);
 	}
 
 	public void setBufferedImage(BufferedImage bufferedImage) {
 		if (bufferedImage != null) {
 			if (this.bufferedImage != bufferedImage) {
 				this.bufferedImage = bufferedImage;
-				this.observation = new Observation(this.bufferedImage);
+				this.radius = this.getMaxRadius();
+				this.object = this.getObject();
+//				this.observation = new Observation(this.bufferedImage);
 			}
 		} else {
-			this.bufferedImage = new BufferedImage(this.defaultDimension, this.defaultDimension,
-					BufferedImage.TYPE_INT_RGB);
-			this.observation = new Observation(this.bufferedImage);
+			this.bufferedImage = new BufferedImage(this.DIMENSION, this.DIMENSION, BufferedImage.TYPE_INT_RGB);
+			this.radius = this.getMaxRadius();
+			this.object = this.getObject();
+//			this.observation = new Observation(this.bufferedImage);
 		}
 	}
 
-	public void setOrigin(double x, double y) {
-		System.out.println("setOrigin(" + x + ", " + y + ")");
+	public void setOrigin(Point origin) {
+		System.out.println("setOrigin(" + origin + ")");
 		this.previous = this.origin;
 		if (this.previous == null) {
-			this.previous = new Point(this.getImageCenterX(), this.getImageCenterY());
+			this.previous = new Point(this.getInputCenterX(), this.getInputCenterY());
 			this.previous.center = true;
 		}
-		this.origin = new Point(x, y);// Origin is set;
-		if (x == this.getImageCenterX() && y == this.getImageCenterY()) {
-			this.origin.center = true;
-		}
+		this.origin = origin;
+		System.out.println("setOrigin(" + origin + ") origin.center=" + this.origin.center);
+		// Origin is set;
+//		if (x == this.getInputCenterX() && y == this.getInputCenterY()) {
+//			this.origin.center = true;
+//		}
 	}
 
 	public void scan(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
@@ -148,126 +161,133 @@ public class Retina {
 	public void iterate(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
 //		System.out.println("iterate(" + String.valueOf(graphics2D != null) + ", "
 //				+ String.valueOf(bufferedImage != null) + ", " + String.valueOf(cortex != null) + ")");
-//		if (this.pointStack.size() > 0) {
-////				System.out.println("this.pointStack=" + this.pointStack);
-//			Point point = this.pointStack.pop();
-//			System.out.println(point);
-//			this.setOrigin(point.x, point.y);
-//			this.input(graphics2D, bufferedImage, cortex, concept);
-//			List<Point> pointList = this.traverse(point);
-//			for (Point p : pointList) {
-//				this.pointStack.push(p);
-//			}
-//			System.out.println("this.pointStack.size()=" + this.pointStack.size());
-//		} else {
-		this.setBufferedImage(bufferedImage);
-		this.setCortex(cortex);
-		System.out.println("this.getMagnification()=" + this.getMagnification());
-		System.out.println("this.distance=" + this.distance);
-		if (this.distance == 0) {
-			System.out.println("this.distance == 0");
-			this.maxDistance = this.getMaxDistance();
-			this.distance = this.maxDistance;
-			this.size = (int) (this.getMaxDistance() - this.focalLength - this.minDistance);
-			System.out.println("size=" + size);
-			this.index = 0;
-//				this.setDistance(this.distance);
+		Delta delta = this.motor.getDelta();
+		if (delta != null) {
+			System.out.println("iterate(...) delta="+delta);
+			this.setOrigin(delta.stop);
 			this.input(graphics2D, bufferedImage, cortex, concept);
-//					this.pointStack.push(this.root);
-//				System.out.println("this.pointStack.size()=" + this.pointStack.size());
-			this.state = State.NEW;
+			Point origin = new Point(this.getInputCenterX(), this.getInputCenterY());
+			this.motor.input(origin, delta.stop,  this.scale);
 		} else {
-			this.interval = this.size / this.step;
-			if ((index * this.interval) < this.size) {
-				System.out.println("index=" + index);
-				this.distance = size;
-				this.distance -= index * this.interval;
-				this.index++;
-//					this.setDistance(this.distance);
-				this.setOrigin(this.getImageCenterX(), this.getImageCenterY());
+			this.setBufferedImage(bufferedImage);
+			this.setCortex(cortex);
+//			System.out.println("this.getMagnification()=" + this.getMagnification());
+			System.out.println("this.distance=" + this.distance);
+			if (this.distance == 0) {
+//				System.out.println("this.distance == 0");
+				this.maxDistance = this.getMaxDistance();
+				this.distance = this.maxDistance;
+				this.size = (int) (this.getMaxDistance() - this.focalLength - this.minDistance);
+//				System.out.println("size=" + size);
+				this.index = 0;
+//				this.setDistance(this.distance);
+				Point origin = new Point(this.getInputCenterX(), this.getInputCenterY());
+				origin.center = true;
+				this.setOrigin(origin);
 				this.input(graphics2D, bufferedImage, cortex, concept);
-//						this.pointStack.push(this.root);
-//					System.out.println("this.pointStack.size()=" + this.pointStack.size());
+				this.motor.input(origin, origin,  this.scale);
 				this.state = State.PENDING;
-			} else {
-				this.state = State.COMPLETE;
-			}
-		}
-//		}
-	}
-
-	public List<Point> traverse(Point point) {
-		List<Point> pointList = new ArrayList<>();
-		List<Node> nodeList = point.getChildren();
-		for (Node n : nodeList) {
-			Point p = (Point) n;
-			if (Point.getDistance(point, p) * this.scale >= this.getSensorRadius()) {
-				pointList.add(p);
-			}
-		}
-		return pointList;
-	}
-
-	public void input(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
-		System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
-
-//		System.out.println("angle="+this.getAngle());
-//		System.out.println("lensEquivalence="+this.lensEquivalence());
-//		System.out.println("objectEquivalence="+this.objectEquivalence());
-//		System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
-		this.setBufferedImage(bufferedImage);
-		this.setCortex(cortex);
-		this.setDistance(this.distance);
-		this.drawScaledBufferedImage(graphics2D);
-		if (origin != null) {
-			this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
-			this.cortex.update();
-			this.scaledBufferedImage = this.getScaledBufferedImage();
-			this.cortex.process(graphics2D, this.scaledBufferedImage, concept);
-			this.addPoint(this.cortex.root);
-			this.drawSensor(graphics2D);
-			this.drawPointList(graphics2D);
-//			this.drawRoot(graphics2D);
-		}
-//		this.drawBeliefList(graphics2D);
-	}
-
-	public void addPoint(Point root) {
-		Belief belief = this.cortex.getBelief();
-		if (belief != null) {
-			belief.origin.scale(1 / this.scale);
-			if (this.cortex != null && belief != null) {
-				List<Point> pointList = belief.pointList;
-				for (Point point : pointList) {
-					// Scale divide makes points the same size in a domain.
-					point.x /= this.scale;
-					point.y /= this.scale;
-					// Without this code, Points appear where they are drawn
-					// With this code, points appear at root 0,0.
-					point.x -= belief.origin.x;
-					point.y -= belief.origin.y;
-
-					if (!previous.center) {
-						// Delta is a movement between two points.
-						// If "same" center, then delta is zero.
-						Point delta = this.origin.subtract(this.previous);
-						point.x += delta.x;
-						point.y += delta.y;
-
-					}
-					this.cortex.addPoint(root, point);
+			} 
+			else {
+				this.interval = this.size / this.step;
+				if ((index * this.interval) < this.size) {
+					System.out.println("index=" + index);
+					this.distance = size;
+					this.distance -= index * this.interval;
+					this.index++;
+//					this.setDistance(this.distance);
+					Point origin = new Point(this.getInputCenterX(), this.getInputCenterY());
+					origin.center = true;
+					this.setOrigin(origin);
+					this.input(graphics2D, bufferedImage, cortex, concept);
+					this.motor.input(origin, origin,  this.scale);
+					this.state = State.PENDING;
+				} else {
+					this.state = State.COMPLETE;
 				}
 			}
 		}
 	}
 
-	public void drawPointList(Graphics2D graphics2D) {
+	public void input(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
+		System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
+		this.setBufferedImage(bufferedImage);
+		this.setCortex(cortex);
+		this.setDistance(this.distance);
+		this.drawInputBufferedImage(graphics2D);
+		if (origin != null) {
+			this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
+			this.cortex.update();
+			this.inputBufferedImage = this.getInputBufferedImage();
+			this.cortex.process(graphics2D, this.inputBufferedImage, concept);
+			this.processBelief();
+			this.drawGlobalBeliefList(graphics2D);
+			this.drawRelativeBeliefList(graphics2D);
+			this.drawInputCenter(graphics2D);
+//			this.drawCortexPointList(graphics2D);
+			this.drawMotorPointList(graphics2D);
+			this.drawCortex(graphics2D);
+			this.drawOrigin(graphics2D);
+		}
+
+	}
+
+	/**
+	 * Consider moving this implementation into Motor
+	 * and calling Motor input(...) instead of processBelief()
+	 * from input(...)
+	 * Deltas are still handled in iterate(...)
+	 */
+	public void processBelief() {
+		Belief belief = this.cortex.getBelief();
+		Point root = this.cortex.root;
+		if (!this.cortex.pointList.contains(root)) {
+			this.cortex.pointList.add(root);
+		}
+		if (belief != null) {
+			//Up to this point, belief has global
+			//coordinates where input center is regarded as the origin
+			//need two representations, 
+//			belief.scale(this.scale);//, this.previous);
+			//Whatever belief and origin are normalize();
+			belief.normalize(this.scale);//Point List is centered around 0,0
+			belief.setGlobal(this.getInputCenter(), this.scale);
+			belief.setRelative(this.scale,this.origin,this.previous);
+			//Now we have a belief in global coordinates that can be scaled
+			//and visualized.
+			//We lost the function to view a belief relative to the center
+			//Here the belief is now around 0,0;
+			//What we had before was the the belief would be mapped relative to this.origin
+			//which can be anywhere, 
+			//The easiest solution to this problem is the following:
+			//1) Make Point List relative to 0,0 so that any origin can be applied.
+			//2) Give belief two origins, one is the global origin, the other is the relative origin.
+			//To draw global and points must be translated
+			//to the center of the screen.
+			//Now we are focused on the root Point.
+			belief.global.round();
+			this.cortex.addPoint(this.cortex.root, belief.global);
+			for (Point point : belief.getGlobalPointList()) {
+				this.cortex.addPoint(belief.global, point);
+			}
+//			this.cortex.addRelativePoint(this.cortex.relative, belief.global);
+//			for (Point point : belief.getGlobalPointList()) {
+//				this.cortex.addRelativePoint(belief.global, point);
+//			}
+			this.cortex.add(belief);//Entry into Mind radius system.
+			this.cortex.traverseInOrder(this.cortex.mind);
+		}
+	}
+
+
+
+	public void drawCortexPointList(Graphics2D graphics2D) {
 		if (graphics2D != null) {
 			graphics2D.setColor(Color.WHITE);
 			int size = this.cortex.pointList.size();
 			int count = 0;
-			double x = this.origin.x;
-			double y = this.origin.y;
+			double x = this.getInputCenterX();//this.origin.x;
+			double y = this.getInputCenterY();//this.origin.y;
 			for (Point point : this.cortex.pointList) {
 				List<Node> nodeList = point.getChildren();
 				point = new Point(point);
@@ -283,54 +303,167 @@ public class Retina {
 					child.x += x;
 					child.y += y;
 					graphics2D.setColor(this.getColor(0.8, count, size));
-//					graphics2D.drawLine((int) (point.x * this.scale), (int) (point.y * this.scale),
-//							(int) (child.x * this.scale), (int) (child.y * this.scale));
 					graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
 				}
 				count++;
 			}
-		}
-	}
 
-//	public void drawRoot(Graphics2D graphics2D) {
-//		System.out.println("drawRoot(...)");
-//		if (graphics2D != null) {
-//			graphics2D.setColor(Color.CYAN);
-//			double x = this.cortex.root.x;
-//			double y = this.cortex.root.y;
-//			System.out.println(this.cortex.root);
-//			Ellipse2D.Double ellipse = new Ellipse2D.Double(x, y, 8, 8);
-//			graphics2D.draw(ellipse);
-//		}
-//	}
-
-	public void drawScaledBufferedImage(Graphics2D graphics2D) {
-		if (graphics2D != null) {
-//			int width = this.scaledBufferedImage.getWidth();
-//			int height = this.scaledBufferedImage.getHeight();
-//			int centerX = width/2;
-//			int centerY = height/2;
-//			int x = 0;
-//			int y = 0;
-////			int width = this.scaledBufferedImage.getWidth();
-////			int height = this.scaledBufferedImage.getHeight();
-////			int centerX = width/2;
-////			int centerY = height/2;
-//			if(this.dimension != null) {
-//				x = ((int)(this.dimension.getWidth()/2)-centerX);
-//				y = ((int)(this.dimension.getHeight()/2)-centerY);
-////				graphics2D.setColor(Color.white);
-////				graphics2D.fillRect(0, 0, dimension.getWidth(), dimension.getHeight());
-////				graphics2D.translate((int) (dimension.getWidth() / 2.0), (int) (dimension.getHeight() / 2.0));
-////				dimension.getWidth();
-////				dimension.getHeight();
+//			List<Point> pList = new ArrayList<>();
+//			for (Point p : this.cortex.pointList) {
+//				p = new Point(p);
+//				p.x *= this.scale;
+//				p.y *= this.scale;
+//				p.x += this.getInputCenterX();
+//				p.y += this.getInputCenterY();
+////				ellipse = new Ellipse2D.Double(p.x, p.y, 2, 2);
+////				graphics2D.draw(ellipse);
+//				pList.add(p);
 //			}
-			graphics2D.drawImage(this.scaledBufferedImage, null, null);
+//
+//			Matrix matrix = new Matrix(pList, 4 * this.scale);
+//			List<ArrayList<Point>> rowList = matrix.getRowList();
+//			for (int i = 0; i < rowList.size(); i++) {
+//				List<Point> pointList = rowList.get(i);
+//				Point previous = null;
+//				Point current;
+//				for (int j = 0; j < pointList.size(); j++) {
+//					current = pointList.get(j);
+////					current.x *= this.scale;
+////					current.y *= this.scale;
+////					current.x += x;
+////					current.y += y;
+//					if (previous != null) {
+//						graphics2D.drawLine((int) (current.x), (int) (current.y), (int) (previous.x),
+//								(int) (previous.y));
+//					}
+//					previous = current;
+//				}
+//			}
 		}
+	}
+	
+	public void drawMotorPointList(Graphics2D graphics2D) {
+		if (graphics2D != null) {
+			
+//			int size = this.cortex.pointList.size();
+//			int count = 0;
+//			double x = this.getInputCenterX();//this.origin.x;
+//			double y = this.getInputCenterY();//this.origin.y;
+//			for (Point point : this.cortex.pointList) {
+//				List<Node> nodeList = point.getChildren();
+//				point = new Point(point);
+//				point.x *= this.scale;
+//				point.y *= this.scale;
+//				point.x += x;
+//				point.y += y;
+//				for (Node n : nodeList) {
+//					Point child = (Point) n;
+//					child = new Point(child);
+//					child.x *= this.scale;
+//					child.y *= this.scale;
+//					child.x += x;
+//					child.y += y;
+//					graphics2D.setColor(this.getColor(0.8, count, size));
+//					graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
+//				}
+//				count++;
+//			}
+			
+			graphics2D.setColor(Color.BLACK);
 
+			List<Point> pList = new ArrayList<>();
+			for (Point p : this.cortex.pointList) {
+				p = new Point(p);
+				p.x *= this.scale;
+				p.y *= this.scale;
+				p.x += this.getInputCenterX();
+				p.y += this.getInputCenterY();
+//				ellipse = new Ellipse2D.Double(p.x, p.y, 2, 2);
+//				graphics2D.draw(ellipse);
+				pList.add(p);
+			}
+
+			Matrix matrix = new Matrix(pList, 4 * this.scale);
+			List<ArrayList<Point>> rowList = matrix.getRowList();
+			for (int i = 0; i < rowList.size(); i++) {
+				List<Point> pointList = rowList.get(i);
+				Point previous = null;
+				Point current;
+				for (int j = 0; j < pointList.size(); j++) {
+					current = pointList.get(j);
+//					current.x *= this.scale;
+//					current.y *= this.scale;
+//					current.x += x;
+//					current.y += y;
+					if (previous != null) {
+						graphics2D.drawLine((int) (current.x), (int) (current.y), (int) (previous.x),
+								(int) (previous.y));
+					}
+					previous = current;
+				}
+			}
+		}
+	}
+	
+
+	public void drawGlobalBeliefList(Graphics2D graphics2D) {
+//		System.out.println("drawGlobalBeliefList(...)");
+		if (graphics2D != null) {
+			graphics2D.setColor(Color.RED);
+			double x = this.getInputCenterX();//this.origin.x;
+			double y = this.getInputCenterY();//0;//this.origin.y;
+			for (Belief belief : this.cortex.beliefList) {
+//				System.out.println(belief);
+				Point point = new Point(belief.global);
+				double r = belief.getRadius()* this.scale;
+				point.x *= this.scale;
+				point.y *= this.scale;
+				point.x += x;
+				point.y += y;
+//				double x = belief.origin.x * this.scale;
+//				double y = belief.origin.y * this.scale;
+				double newX = point.x - r;
+				double newY = point.y - r;
+				Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
+				graphics2D.draw(ellipse);
+
+
+			}
+		}
+	}
+	
+	public void drawRelativeBeliefList(Graphics2D graphics2D) {
+//		System.out.println("drawRelativeBeliefList(...)");
+		if (graphics2D != null) {
+			graphics2D.setColor(Color.YELLOW);
+			double x = this.origin.x;
+			double y = this.origin.y;
+			for (Belief belief : this.cortex.beliefList) {
+//				System.out.println(belief);
+				Point point = new Point(belief.relative);
+				double r = belief.getRadius()* this.scale;
+				point.x *= this.scale;
+				point.y *= this.scale;
+				point.x += x;
+				point.y += y;
+//				double x = belief.origin.x * this.scale;
+//				double y = belief.origin.y * this.scale;
+				double newX = point.x - r;
+				double newY = point.y - r;
+				Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
+				graphics2D.draw(ellipse);
+
+			}
+		}
 	}
 
-	public void drawSensor(Graphics2D graphics2D) {
+	public void drawInputBufferedImage(Graphics2D graphics2D) {
+		if (graphics2D != null) {
+			graphics2D.drawImage(this.inputBufferedImage, null, null);
+		}
+	}
+
+	public void drawCortex(Graphics2D graphics2D) {
 		if (graphics2D != null) {
 			graphics2D.setColor(Color.BLUE);
 			double r = this.getSensorRadius();
@@ -343,38 +476,25 @@ public class Retina {
 		}
 	}
 
-	public void drawBeliefList(Graphics2D graphics2D) {
+	public void drawOrigin(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-			graphics2D.setColor(Color.RED);
-			for (Belief belief : this.cortex.beliefList) {
-				double r = belief.getRadius() * this.scale;
-				double x = belief.origin.x * this.scale;
-				double y = belief.origin.y * this.scale;
-				double newX = x - r;
-				double newY = y - r;
-				Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
-				graphics2D.draw(ellipse);
-			}
+			graphics2D.setColor(Color.CYAN);
+			double r = 8;
+			double x = this.origin.x;
+			double y = this.origin.y;
+			double newX = x - r;
+			double newY = y - r;
+			Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
+			graphics2D.draw(ellipse);
 		}
 	}
 
-	public void drawPointMatrix(Graphics2D graphics2D) {
+	public void drawInputCenter(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-//			int max = this.cortex.setPointMap(this.cortex.pointList);
-////			if ((this.getMagnification() <= 1)) {
-//			for (int i = 0; i < this.cortex.beliefMatrix.length; i++) {
-//				for (int j = 0; j < this.cortex.beliefMatrix[i].length; j++) {
-//					Belief belief = this.cortex.beliefMatrix[i][j];
-//					if(belief != null) {
-//						int count = belief.conceptList.size();
-//						if (count > 0) {
-//							graphics2D.setColor(this.getColor(0.8, count, max));
-//							graphics2D.drawOval((int) (i * this.scale), (int) (j * this.scale), 2, 2);
-//						}
-//					}
-//				}
-//			}
-////			}
+			Point point = new Point(this.getInputCenterX(), this.getInputCenterY());
+			graphics2D.setColor(Color.white);
+			graphics2D.drawLine((int) point.x, 0, (int) point.x, (int) point.y);
+			graphics2D.drawLine(0, (int) point.y, (int) point.x, (int) point.y);
 		}
 	}
 
@@ -398,13 +518,18 @@ public class Retina {
 
 	public void setDistance(double distance) {
 		System.out.println("setDistance(" + distance + ")");
-		this.previousDistance = this.distance;
+//		this.previousDistance = this.distance;
 		this.distance = distance;// millimeter
 		if (this.distance > 0) {
-			this.scale = (this.getObjectHeight() / this.observation.getObject().getHeight());
-			System.out.println("this.scale=" + this.scale);
-			this.scaledBufferedImage = this.getScaledBufferedImage();
+			this.scale = (this.getObjectHeight() / this.object.getHeight());
+//			System.out.println("this.scale=" + this.scale);
+			this.inputBufferedImage = this.getInputBufferedImage();
 		}
+	}
+	
+	public double round(double value) {
+		DecimalFormat decimalFormat = new DecimalFormat("#.##");
+		return Double.parseDouble(decimalFormat.format(value));
 	}
 
 	// When distance is maxDistance, angle is formed with the point that is left,
@@ -413,13 +538,17 @@ public class Retina {
 	public double getAngle() {
 		return 2 * Math.atan(this.toMillimeter(this.getSensorWidth()) / (2 * this.focalLength));
 	}
-
-	public double getImageCenterX() {
-		return (this.scaledBufferedImage != null) ? this.scaledBufferedImage.getWidth() / 2 : 0;
+	
+	public Point getInputCenter() {
+		return new Point(this.getInputCenterX(), this.getInputCenterY());
 	}
 
-	public double getImageCenterY() {
-		return (this.scaledBufferedImage != null) ? this.scaledBufferedImage.getHeight() / 2 : 0;
+	public double getInputCenterX() {
+		return (this.inputBufferedImage != null) ? this.inputBufferedImage.getWidth() / 2 : 0;
+	}
+
+	public double getInputCenterY() {
+		return (this.inputBufferedImage != null) ? this.inputBufferedImage.getHeight() / 2 : 0;
 	}
 
 	public double getCenterX() {
@@ -443,7 +572,7 @@ public class Retina {
 	 * @return
 	 */
 	public double getMaxDistance() {
-		return (this.toMillimeter(this.observation.getObject().getHeight()) * this.focalLength)
+		return (this.toMillimeter(this.object.getHeight()) * this.focalLength)
 				/ this.toMillimeter(this.getSensorWidth());
 	}
 
@@ -469,17 +598,11 @@ public class Retina {
 	}
 
 	public double getObjectHeight(double distance) {
-		return (this.observation != null)
-				? this.toPixel(
-						(this.focalLength * this.toMillimeter(this.observation.getObject().getHeight())) / distance)
-				: 0;
+		return this.toPixel((this.focalLength * this.toMillimeter(this.object.getHeight())) / distance);
 	}
 
 	public double getObjectWidth(double distance) {
-		return (this.observation != null)
-				? this.toPixel(
-						(this.focalLength * this.toMillimeter(this.observation.getObject().getWidth())) / distance)
-				: 0;
+		return this.toPixel((this.focalLength * this.toMillimeter(this.object.getWidth())) / distance);
 	}
 
 	// Object width and height are dependant on distance. All objects have their own
@@ -487,15 +610,11 @@ public class Retina {
 	// If I get the center of the Object at minDistance, then it will remain
 	// constant.
 	public double getObjectHeight() {
-		return (this.observation != null) ? this.toPixel(
-				(this.focalLength * this.toMillimeter(this.observation.getObject().getHeight())) / this.distance) : 0;
+		return this.toPixel((this.focalLength * this.toMillimeter(this.object.getHeight())) / this.distance);
 	}
 
 	public double getObjectWidth() {
-		return (this.observation != null)
-				? this.toPixel(
-						(this.focalLength * this.toMillimeter(this.observation.getObject().getWidth())) / this.distance)
-				: 0;
+		return this.toPixel((this.focalLength * this.toMillimeter(this.object.getWidth())) / this.distance);
 	}
 
 	public boolean lensEquivalence() {
@@ -507,7 +626,7 @@ public class Retina {
 
 	public boolean objectEquivalence() {
 		return this.toMillimeter(this.getObjectHeight())
-				/ this.focalLength == (this.toMillimeter(this.observation.getObject().getHeight())) / this.distance;
+				/ this.focalLength == (this.toMillimeter(this.object.getHeight())) / this.distance;
 	}
 
 	public boolean magnificationEquivalence() {
@@ -531,15 +650,15 @@ public class Retina {
 	}
 
 	@JsonIgnore
-	public BufferedImage getScaledBufferedImage() {
+	public BufferedImage getInputBufferedImage() {
 		BufferedImage after = null;
-		if (this.observation != null && this.observation.getObject() != null) {
-			BufferedImage before = this.observation.getObject();// this.bufferedImage;
-			after = new BufferedImage((int) (before.getWidth() * this.scale),
-					(int) (before.getHeight() * this.scale), BufferedImage.TYPE_INT_RGB);// new
-																							// BufferedImage(before.getWidth(),
-																							// before.getHeight(),
-																							// BufferedImage.TYPE_INT_RGB);
+		if (this.object != null) {
+			BufferedImage before = this.object;// this.bufferedImage;
+			after = new BufferedImage((int) (before.getWidth() * this.scale), (int) (before.getHeight() * this.scale),
+					BufferedImage.TYPE_INT_RGB);// new
+												// BufferedImage(before.getWidth(),
+												// before.getHeight(),
+												// BufferedImage.TYPE_INT_RGB);
 			AffineTransform affineTransform = new AffineTransform();
 			affineTransform.scale(this.scale, this.scale);// this handles scaling the bufferedImage
 			AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform,
@@ -572,12 +691,89 @@ public class Retina {
 		return bufferedImage;
 	}
 
+	public BufferedImage getObject() {
+		int width = (int) this.getWidth();
+		int height = (int) this.getHeight();
+		Point center = this.getCenter();
+		BufferedImage b = new BufferedImage((int) (width), (int) (height), BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.createGraphics();
+		Point bufferedImageCenter = this.getBufferedImageCenter(this.bufferedImage);
+		// System.out.println("bufferedImageCenter="+bufferedImageCenter);
+		int x = (int) (center.x - bufferedImageCenter.x);// (int)((width/2)-(center.x-bufferedImageCenter.x));
+		int y = (int) (center.y - bufferedImageCenter.y);// ;//(int)((height/2)-
+		// System.out.println("difference x="+x+" y="+y);
+		// System.out.println("this.bufferedImage.getWidth()="+this.bufferedImage.getWidth()+"
+		// this.bufferedImage.getHeight()="+this.bufferedImage.getHeight());
+		g.drawImage(this.bufferedImage, x, y, this.bufferedImage.getWidth(), this.bufferedImage.getHeight(), null);
+		// g.drawRect(x, y, this.bufferedImage.getWidth(),
+		// this.bufferedImage.getHeight());
+		// System.out.println("getObject() b.getWidth()="+b.getWidth()+"
+		// b.getHeight()="+b.getHeight());
+
+		return b;
+	}
+
 	public double toMillimeter(double value) {
-		return value * MILLIMETER;
+		return value * 0.2645833333;
 	}
 
 	public double toPixel(double value) {
-		return value / MILLIMETER;
+		return value / 0.2645833333;
+	}
+
+	public List<Point> getCornerList() {
+		List<Point> cornerList = new ArrayList<>();
+		Point topLeft = new Point(0, 0);
+		Point topRight = new Point(this.bufferedImage.getWidth(), 0);
+		Point bottomLeft = new Point(0, this.bufferedImage.getHeight());
+		Point bottomRight = new Point(this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
+		cornerList.add(topLeft);
+		cornerList.add(topRight);
+		cornerList.add(bottomLeft);
+		cornerList.add(bottomRight);
+		return cornerList;
+	}
+
+	public List<Point> getCenteredCornerList() {
+		List<Point> cornerList = this.getCornerList();
+		Point center = this.getBufferedImageCenter(this.bufferedImage);
+		for (Point corner : cornerList) {
+			corner.x -= center.x;
+			corner.y -= center.y;
+		}
+		return cornerList;
+	}
+
+	public double getMaxRadius() {
+		List<Point> cornerList = this.getCenteredCornerList();
+		double max = 0;
+		for (Point p : cornerList) {
+			double radius = Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y, 2));
+			if (radius > max) {
+				max = radius;
+			}
+		}
+		return max;
+	}
+
+	public double getWidth() {
+		return 2 * this.radius;
+	}
+
+	public double getHeight() {
+		return 2 * this.radius;
+	}
+
+	public Point getCenter() {
+		Point center = new Point(this.getWidth() / 2, this.getHeight() / 2);
+		center.center = true;
+		return center;
+	}
+
+	public Point getBufferedImageCenter(BufferedImage bufferedImage) {
+		Point center = new Point(bufferedImage.getWidth() / 2, bufferedImage.getHeight() / 2);
+//		System.out.println("getCenter() center="+center);
+		return center;
 	}
 }
 
@@ -865,3 +1061,123 @@ public class Retina {
 ////	}
 //}
 //}
+
+//public void drawRoot(Graphics2D graphics2D) {
+//	System.out.println("drawRoot(...)");
+//	if (graphics2D != null) {
+//		graphics2D.setColor(Color.CYAN);
+//		double x = this.cortex.root.x;
+//		double y = this.cortex.root.y;
+//		System.out.println(this.cortex.root);
+//		Ellipse2D.Double ellipse = new Ellipse2D.Double(x, y, 8, 8);
+//		graphics2D.draw(ellipse);
+//	}
+//}
+
+//int width = this.scaledBufferedImage.getWidth();
+//int height = this.scaledBufferedImage.getHeight();
+//int centerX = width/2;
+//int centerY = height/2;
+//int x = 0;
+//int y = 0;
+////int width = this.scaledBufferedImage.getWidth();
+////int height = this.scaledBufferedImage.getHeight();
+////int centerX = width/2;
+////int centerY = height/2;
+//if(this.dimension != null) {
+//	x = ((int)(this.dimension.getWidth()/2)-centerX);
+//	y = ((int)(this.dimension.getHeight()/2)-centerY);
+////	graphics2D.setColor(Color.white);
+////	graphics2D.fillRect(0, 0, dimension.getWidth(), dimension.getHeight());
+////	graphics2D.translate((int) (dimension.getWidth() / 2.0), (int) (dimension.getHeight() / 2.0));
+////	dimension.getWidth();
+////	dimension.getHeight();
+//}
+
+//belief.origin.scale(1 / this.scale);
+//belief.origin.x -= this.origin.x;
+//belief.origin.y -= this.origin.y;
+//if (!previous.center) {
+//	// Delta is a movement between two points.
+//	// If "same" center, then delta is zero.
+//	Point delta = this.origin.subtract(this.previous);
+//	belief.origin.x += delta.x;
+//	belief.origin.y += delta.y;
+////
+//}
+//this.cortex.addPoint(root, belief.origin);
+////belief.origin.subtract(this.origin);
+//if (this.cortex != null && belief != null) {
+//	
+//	List<Point> pointList = belief.pointList;
+//	for (Point point : pointList) {
+//		// Scale divide makes points the same size in a domain.
+//		point.x /= this.scale;
+//		point.y /= this.scale;
+//		// Without this code, Points appear where they are drawn
+//		// With this code, points appear at root 0,0.
+//
+////With this code the belief pointList is completly altered these transforms need to be applied to the belief center;
+//
+//		point.x -= this.origin.x;
+//		point.y -= this.origin.y;
+//
+//		if (!previous.center) {
+//			// Delta is a movement between two points.
+//			// If "same" center, then delta is zero.
+//			Point delta = this.origin.subtract(this.previous);
+//			point.x += delta.x;
+//			point.y += delta.y;
+//
+//		}
+////		this.cortex.addPoint(root, point);
+//	}
+//
+//}
+
+//System.out.println("angle="+this.getAngle());
+//System.out.println("lensEquivalence="+this.lensEquivalence());
+//System.out.println("objectEquivalence="+this.objectEquivalence());
+//System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
+
+
+//public List<Point> traverse(Point point) {
+//List<Point> pointList = new ArrayList<>();
+//List<Node> nodeList = point.getChildren();
+//for (Node n : nodeList) {
+//	Point p = (Point) n;
+//	if (Point.getDistance(point, p) * this.scale >= this.getSensorRadius()) {
+//		pointList.add(p);
+//	}
+//}
+//return pointList;
+//}
+
+
+//graphics2D.setColor(Color.MAGENTA);
+//List<Point> pList = new ArrayList<>();
+//for (Point p : belief.pointList) {
+//	p = new Point(p);
+//	p.x *= this.scale;
+//	p.y *= this.scale;
+//	p.x += x;
+//	p.y += y;
+////	ellipse = new Ellipse2D.Double(p.x, p.y, 2, 2);
+////	graphics2D.draw(ellipse);
+//	pList.add(p);
+//}
+
+//int size = belief.pointList.size();
+//int count = 0;
+//for (Point child : belief.pointList) {
+//	child = new Point(child);
+//	child.x *= this.scale;
+//	child.y *= this.scale;
+//	child.x += x;
+//	child.y += y;
+//	graphics2D.setColor(this.getColor(0.8, count, size));
+////	graphics2D.drawLine((int) (point.x * this.scale), (int) (point.y * this.scale),
+////			(int) (child.x * this.scale), (int) (child.y * this.scale));
+//	graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
+//}
+//count++;

@@ -28,4 +28,8 @@ public class Delta {
 	public double getYIntercept(Point point) {
 		return (point.y - (this.getSlope()*point.x));
 	}
+	
+	public String toString() {
+		return start+":"+stop;
+	}
 }

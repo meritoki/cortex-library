@@ -221,7 +221,7 @@ public class Network extends Cortex {
 			//Can draw on image
 			if (graphics2D != null) {
 //				System.out.println("graphics2D != null");
-				int dimension = (int)(this.getSensorRadius()*2);
+				int dimension = (int)(this.getRadius()*2);
 				BufferedImage beliefBufferedImage = new BufferedImage(dimension, dimension, BufferedImage.TYPE_INT_RGB);
 				List<Point> pointList = new ArrayList<>();
 				List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
@@ -244,12 +244,26 @@ public class Network extends Cortex {
 						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
 					}
 				}
+				//When belief is initialized, it has the global coordinates of where Cortex was
+				//on a plane.
+				//We actually want this information
+				//Beliefs are drawn where they are found in a plane.
+				//Point List consists of points that are centered around 
+				//belief origin. @ least one point in Point List is equal to origin.
 				belief.setConceptList(this.conceptMap, conceptList);
 				belief.coincidence = this.getRootLevel().getCoincidenceList().get(0);
 				belief.pointList = new ArrayList<>(pointList);
 				belief.bufferedImage = (beliefBufferedImage);
-				belief.origin = new Point(this.origin.x, this.origin.y);
+				belief.origin = new Point(this.origin);
+//				this.addBelief(belief);
 				this.beliefList.add(belief);
+				//Normailization ruins this information, but we still
+				//want the result of normalization.
+				//We want beliefs represented relative to origin.
+				//The same implementation we have now, for the most part.
+				//
+				
+//				this.add(belief);
 				System.out.println("this.setIndex(...) flag="+this.setIndex(this.beliefList.size()-1));
 			}
 		}
