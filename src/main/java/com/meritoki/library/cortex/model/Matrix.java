@@ -97,16 +97,13 @@ public class Matrix {
 				}
 			}
 		}
-		System.out.println("getCurrentLine("+center+") line="+line);
+//		System.out.println("getCurrentLine("+center+") line="+line);
 		return line;
 	}
 
 	public Point getNextPoint(Point origin, double radius, Direction direction) {
 		Point point = null;
 		List<Point> line = this.getCurrentLine(origin);
-//		if(origin.equals(line.get(line.size()-1))) {
-//			return null;
-//		} else
 		if (line != null) {
 			double distance = Point.getDistance(origin, line.get(line.size() - 1));
 			if (radius < distance) {
@@ -123,7 +120,6 @@ public class Matrix {
 				case RIGHT: {
 					for (Point p : line) {
 						distance = this.round(Point.getDistance(origin, p));
-						
 						if (p.x > origin.x && distance == radius) {
 							System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
 							point = p;
@@ -157,7 +153,7 @@ public class Matrix {
 	 * @return
 	 */
 	public List<Point> getPerpendicularLine(Point input, double radius, Direction direction) {
-
+		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ")");
 		// Get line
 		List<Point> line = null;
 		double threshold = 2.0;
@@ -193,7 +189,7 @@ public class Matrix {
 				}
 			}
 		}
-		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
+//		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
 		return line;
 
 	}

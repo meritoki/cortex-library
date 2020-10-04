@@ -92,7 +92,7 @@ public class Retina {
 	public int index;
 	private int interval = 8;
 	private int size;
-	public int step = 8;
+	public int step = 4;
 	public State state = State.NEW;
 	public List<Belief> beliefList;
 
@@ -210,7 +210,7 @@ public class Retina {
 	}
 
 	public void input(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
-		System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
+//		System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
 		this.setBufferedImage(bufferedImage);
 		this.setCortex(cortex);
 		this.setDistance(this.distance);
@@ -222,7 +222,7 @@ public class Retina {
 			this.cortex.process(graphics2D, this.inputBufferedImage, concept);
 			this.processBelief();
 			this.drawGlobalBeliefList(graphics2D);
-			this.drawRelativeBeliefList(graphics2D);
+//			this.drawRelativeBeliefList(graphics2D);
 			this.drawInputCenter(graphics2D);
 //			this.drawCortexPointList(graphics2D);
 			this.drawMotorPointList(graphics2D);

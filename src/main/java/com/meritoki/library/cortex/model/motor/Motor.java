@@ -25,12 +25,8 @@ public class Motor {
 	public LinkedList<Delta> deltaStack = new LinkedList<>();
 	public Point point;
 	public List<Point> pointList = new ArrayList<Point>();
-	public Direction vertical = Direction.DOWN;
-	public Direction horizontal = Direction.RIGHT;
-	//Consider global variable for current line;
-	public List<Point> line = null;
-	public Point index;
-	public boolean flag = false;
+	public Direction vertical = Direction.CENTER;
+	public Direction horizontal = Direction.CENTER;
 
 	public Motor() {
 	}
@@ -78,7 +74,7 @@ public class Motor {
 		System.out.println("relative=" + relative);
 		//Point list is updated with the points from the current belief
 		List<Point> pointList = this.cortex.getPointList(center, scale);// list has origin equal to input image center
-		Matrix matrix = new Matrix(pointList, 4 * scale);
+		Matrix matrix = new Matrix(pointList, 8 * scale);
 		Mind mind = this.cortex.getMind(beliefRadius);//Mind returns list of Beliefs @ Value equal to Relative Point Radius
 		if(mind != null) {
 			for(Belief b: mind.beliefList) {
@@ -86,8 +82,7 @@ public class Motor {
 			}
 		}
 		// We are going to apply the left to right, top to bottom method, relative to Cortex size.
-		// Algorithm Version 0.1.20201002
-		// Starting direction UP.
+		// Starting direction CENTER.
 		// The start position is the center.
 		// Move to the beginning of a new line that is perpendicular to and less than or equal to the belief radius away
 		// Move to the max point on the line that is less than or equal to belief radius. (Repeats until end of line is reached).
@@ -111,9 +106,6 @@ public class Motor {
 		// One or more beliefs can be found that are at a point we are interested in
 		// going to.
 		// Each of these beliefs has concepts.
-
-
-
 		// With this data it is possible to do the following:
 		// 1) If I am at a specific location, I can check if I've been there before
 		// and choose a different point.
@@ -122,34 +114,78 @@ public class Motor {
 		// concept.
 		// 3) Choose a point in the matrix rowlist.
 		Point move = null;	
-			
 		if (input.equals(center)) {
 			//Switch directions when input is equal to center.
+			//There is a problem here that I predict.
+			//Problem has to do with where vertical starts.
+			//We want to start at CENTER, because it converts to UP in the first iteration.
 			switch (this.vertical) {
 			case UP: {
+				List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
+				move = line.get(0);
 				this.vertical = Direction.DOWN;
 				break;
 			}
 			case DOWN: {
-				this.vertical = Direction.UP;
+				List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
+				move = line.get(0);
+				this.vertical = Direction.CENTER;
 				break;
 			}
+			case CENTER: {
+				this.vertical = Direction.UP;
 			}
-			this.line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
-			move = this.line.get(0);
+			default: {
+				System.err.println("this.vertical="+this.vertical);
+			}
+			}
+			
 		} else {
 			Point point = matrix.getNextPoint(origin, beliefRadius, Direction.RIGHT);
 			if(point != null) {
 				move = point;
 			} else {
 				//Move to center or find new perpendicular line
-				move = center;
+				//Can center be reached from the current point?
+				//
+//				I am working on something complicated.
+//				Use history of movement to center to move to center.
+//				If cannot reach center, keep going up or down. Belief has origin and radius, center is known. If distance is greater than radius, cannot reach center.
+				
+				//Hardest part
+				//If Mind is working correctly, then there should exist a way to "jump"
+				//from the last point of the current line to center.
+				//This ability is mapped to the last point of the current line.
+				//It can be checked for. In some cases we will want to ignore the jump, if there is more than one jump possible
+				//When do we jump and not jump?
+				
+				//When a point returns to center from where it was, it creates a relative belief 
+//				If find belief at radius equal to center in Mind.
+				//then I have a candidate to return to center
+				
+				double distance = Point.getDistance(belief.origin, center);
+				if(beliefRadius >= distance) { 
+					System.out.println("distance="+distance);
+					move = center;
+				} else {
+					System.out.println("cannot reach center");
+					//else find next perpendicular line
+					//For now, the easiest solution to for this algorithm is to fail to return a line and go to center.
+					List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
+					if(line != null) {
+						move = line.get(0);
+					} else {
+						System.out.println("move to center");
+						move = center;
+					}
+				}
+				
 			}
 		}
-		
+		 
 		//We are finally returning a move. Now must figure out how to not send a move.
 		
-		if (move != null) {
+		if (move != null && !move.equals(input)) {
 			Delta delta = new Delta(input, move);
 			System.out.println("delta=" + delta);
 			this.deltaStack.push(delta);
