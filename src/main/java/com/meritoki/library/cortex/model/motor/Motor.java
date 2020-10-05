@@ -40,48 +40,7 @@ public class Motor {
 	/**
 	 * First imlementation of input is based on left to right, top to bottom
 	 * movement The Matrix is used in conjunction with radius
-	 * 
-	 * @param center
-	 * @param input
-	 * @param scale
-	 */
-	public void input(Point center, Point input, double scale) {
-		System.out.println("input(" + center + ", " + input + ", " + scale + ")");
-//		this.pointList.add(input);
-		int size = this.pointList.size();
-		if (size > 0) {
-			Point previous = this.pointList.get(size - 1);
-		}
-		this.pointList.add(input);
-		double cortexRadius = this.cortex.getRadius();// Size of sensor
-		Belief belief = this.cortex.getBelief();
-		double beliefRadius = belief.getRadius() * scale;// Size of curret belief
-		cortexRadius = this.round(cortexRadius);
-		beliefRadius = this.round(beliefRadius);
-		Point origin = new Point(belief.origin); //Origin is the position from the Mouse x, y;
-		Point global = new Point(belief.global); //Global is the position translated to 0,0 using the Input Image center Point
-		Point relative = new Point(belief.relative); //Relative is the position translated to 0,0 using Input Image Point
-		origin.scale(scale);
-		global.scale(scale);
-		relative.scale(scale);
-		origin.round();
-		global.round();
-		relative.round();
-		System.out.println("beliefRadius=" + beliefRadius);
-		System.out.println("cortexRadius=" + cortexRadius);
-		System.out.println("origin=" + origin);
-		System.out.println("global=" + global);
-		System.out.println("relative=" + relative);
-		//Point list is updated with the points from the current belief
-		List<Point> pointList = this.cortex.getPointList(center, scale);// list has origin equal to input image center
-		Matrix matrix = new Matrix(pointList, 8 * scale);
-		Mind mind = this.cortex.getMind(beliefRadius);//Mind returns list of Beliefs @ Value equal to Relative Point Radius
-		if(mind != null) {
-			for(Belief b: mind.beliefList) {
-				System.out.println(b);
-			}
-		}
-		// We are going to apply the left to right, top to bottom method, relative to Cortex size.
+	 * 		// We are going to apply the left to right, top to bottom method, relative to Cortex size.
 		// Starting direction CENTER.
 		// The start position is the center.
 		// Move to the beginning of a new line that is perpendicular to and less than or equal to the belief radius away
@@ -113,27 +72,71 @@ public class Motor {
 		// 2) Based on the prediction of Cortex, I can choose a belief with the same
 		// concept.
 		// 3) Choose a point in the matrix rowlist.
-		Point move = null;	
+	 * @param center
+	 * @param input
+	 * @param scale
+	 */
+	public void input(Point center, Point input, double scale) {
+		System.out.println("input(" + center + ", " + input + ", " + scale + ")");
+		int size = this.pointList.size();
+		if (size > 0) {
+			Point previous = this.pointList.get(size - 1);
+		}
+		this.pointList.add(input);
+		double cortexRadius = this.cortex.getRadius();// Size of sensor
+		Belief belief = this.cortex.getBelief();
+		double beliefRadius = belief.getRadius() * scale;// Size of curret belief
+		cortexRadius = this.round(cortexRadius);
+		beliefRadius = this.round(beliefRadius);
+		Point origin = new Point(belief.origin); //Origin is the position from the Mouse x, y;
+		Point global = new Point(belief.global); //Global is the position translated to 0,0 using the Input Image center Point
+		Point relative = new Point(belief.relative); //Relative is the position translated to 0,0 using Input Image Point
+		origin.scale(scale);
+		global.scale(scale);
+		relative.scale(scale);
+		origin.round();
+		global.round();
+		relative.round();
+		System.out.println("beliefRadius=" + beliefRadius);
+		System.out.println("cortexRadius=" + cortexRadius);
+		System.out.println("origin=" + origin);
+		System.out.println("global=" + global);
+		System.out.println("relative=" + relative);
+		//Point list is updated with the points from the current belief
+		List<Point> pointList = this.cortex.getPointList(center, scale);// list has origin equal to input image center
+		Matrix matrix = new Matrix(pointList, 4 * scale);
+//		Mind mind = this.cortex.getMind(beliefRadius);//Mind returns list of Beliefs @ Value equal to Relative Point Radius
+//		if(mind != null) {
+//			for(Belief b: mind.beliefList) {
+//				System.out.println(b);
+//			}
+//		}
+		Point move = null;
+		//The idea was that when Direction is center, there is no output.
 		if (input.equals(center)) {
 			//Switch directions when input is equal to center.
 			//There is a problem here that I predict.
 			//Problem has to do with where vertical starts.
 			//We want to start at CENTER, because it converts to UP in the first iteration.
+			System.out.println("input(...) this.vertical="+this.vertical);
 			switch (this.vertical) {
 			case UP: {
 				List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
-				move = line.get(0);
+				if(line != null)
+					move = line.get(0);
 				this.vertical = Direction.DOWN;
 				break;
 			}
 			case DOWN: {
 				List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
-				move = line.get(0);
+				if(line != null)
+					move = line.get(0);
 				this.vertical = Direction.CENTER;
 				break;
 			}
 			case CENTER: {
 				this.vertical = Direction.UP;
+				break;
 			}
 			default: {
 				System.err.println("this.vertical="+this.vertical);
@@ -167,6 +170,7 @@ public class Motor {
 				if(beliefRadius >= distance) { 
 					System.out.println("distance="+distance);
 					move = center;
+					this.vertical = Direction.CENTER;
 				} else {
 					System.out.println("cannot reach center");
 					//else find next perpendicular line
@@ -177,6 +181,7 @@ public class Motor {
 					} else {
 						System.out.println("move to center");
 						move = center;
+						this.vertical = Direction.CENTER;
 					}
 				}
 				

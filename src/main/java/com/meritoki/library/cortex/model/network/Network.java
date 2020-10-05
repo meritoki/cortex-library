@@ -264,7 +264,8 @@ public class Network extends Cortex {
 				//
 				
 //				this.add(belief);
-				System.out.println("this.setIndex(...) flag="+this.setIndex(this.beliefList.size()-1));
+//				System.out.println("this.setIndex(...) flag="+);
+				this.setIndex(this.beliefList.size()-1);
 			}
 		}
 	}

@@ -120,8 +120,8 @@ public class Matrix {
 				case RIGHT: {
 					for (Point p : line) {
 						distance = this.round(Point.getDistance(origin, p));
-						if (p.x > origin.x && distance == radius) {
-							System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
+						if (p.x > origin.x && distance <= radius) {//list is in order, so latest is max
+//							System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
 							point = p;
 						}
 					}
