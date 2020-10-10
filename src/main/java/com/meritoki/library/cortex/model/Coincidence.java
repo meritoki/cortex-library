@@ -47,7 +47,7 @@ public class Coincidence {
 	@JsonProperty
 	public List<Integer> list = new ArrayList<>();
 	@JsonProperty
-	public double threshold = .90;
+	public double threshold = .99;
 	@JsonProperty
 	public double quotient = 0;
 
@@ -56,6 +56,10 @@ public class Coincidence {
 
 	public Coincidence(List<Integer> list) {
 		this.list = list;
+	}
+	
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 
 	public Coincidence(String list) {

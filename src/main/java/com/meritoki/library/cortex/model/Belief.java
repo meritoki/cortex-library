@@ -47,6 +47,10 @@ public class Belief {
 		this.uuid = UUID.randomUUID().toString();
 	}
 	
+	public boolean contains(Concept concept) {
+		return this.conceptList.contains(concept);
+	}
+	
 	@JsonIgnore
 	@Override
 	public boolean equals(Object belief) {
@@ -257,6 +261,7 @@ public class Belief {
 			cList.add(concept);
 		}
 		Collections.sort(cList, new ConceptComparator());
+		Collections.reverse(cList);
 		this.conceptList = cList;
 //		System.out.println("getConceptList() cList=" + cList);
 	}

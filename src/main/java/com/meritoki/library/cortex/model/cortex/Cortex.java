@@ -84,6 +84,10 @@ public class Cortex {
 	@JsonIgnore
 	public Mind mind;
 	
+	public Cortex() {
+		this.pointList.add(this.root);
+	}
+	
 	public List<Point> getPointList(Point origin, double scale) {
 		List<Point> pList = new ArrayList<>();
 		for (Point p : this.pointList) {
@@ -225,58 +229,15 @@ public class Cortex {
 
 	@JsonIgnore
 	public void load() {
-		for (Belief belief : this.beliefList) {
-			List<Point> pointList = belief.pointList;
-			for (Point point : pointList) {
-				this.addPoint(this.root, point);
-			}
-		}
-	}
-	
-	public void addBelief(Belief belief) {
-//		if (belief != null) {
-//			belief.origin.scale(1 / this.scale);
-//			belief.origin.x -= this.origin.x;
-//			belief.origin.y -= this.origin.y;
-//			if (!previous.center) {
-//				// Delta is a movement between two points.
-//				// If "same" center, then delta is zero.
-//				Point delta = this.origin.subtract(this.previous);
-//				belief.origin.x += delta.x;
-//				belief.origin.y += delta.y;
-////
-//			}
-//			this.cortex.addPoint(root, belief.origin);
-////			belief.origin.subtract(this.origin);
-//			if (this.cortex != null && belief != null) {
-//				
-//				List<Point> pointList = belief.pointList;
-//				for (Point point : pointList) {
-//					// Scale divide makes points the same size in a domain.
-//					point.x /= this.scale;
-//					point.y /= this.scale;
-//					// Without this code, Points appear where they are drawn
-//					// With this code, points appear at root 0,0.
-//
-////With this code the belief pointList is completly altered these transforms need to be applied to the belief center;
-//
-//					point.x -= this.origin.x;
-//					point.y -= this.origin.y;
-//
-//					if (!previous.center) {
-//						// Delta is a movement between two points.
-//						// If "same" center, then delta is zero.
-//						Point delta = this.origin.subtract(this.previous);
-//						point.x += delta.x;
-//						point.y += delta.y;
-//
-//					}
-////					this.cortex.addPoint(root, point);
-//				}
-//
+//		for (Belief belief : this.beliefList) {
+//		
+//			for (Point point : pointList) {
+//				this.addPoint(this.root, point);
 //			}
 //		}
 	}
+	
+
 
 	public void addPoint(Point root, Point point) {
 //		System.out.println("addPoint("+root+", "+point+")");
@@ -391,3 +352,48 @@ public class Cortex {
 		return after;
 	}
 }
+
+//public void addBelief(Belief belief) {
+////if (belief != null) {
+////belief.origin.scale(1 / this.scale);
+////belief.origin.x -= this.origin.x;
+////belief.origin.y -= this.origin.y;
+////if (!previous.center) {
+////	// Delta is a movement between two points.
+////	// If "same" center, then delta is zero.
+////	Point delta = this.origin.subtract(this.previous);
+////	belief.origin.x += delta.x;
+////	belief.origin.y += delta.y;
+//////
+////}
+////this.cortex.addPoint(root, belief.origin);
+//////belief.origin.subtract(this.origin);
+////if (this.cortex != null && belief != null) {
+////	
+////	List<Point> pointList = belief.pointList;
+////	for (Point point : pointList) {
+////		// Scale divide makes points the same size in a domain.
+////		point.x /= this.scale;
+////		point.y /= this.scale;
+////		// Without this code, Points appear where they are drawn
+////		// With this code, points appear at root 0,0.
+////
+//////With this code the belief pointList is completly altered these transforms need to be applied to the belief center;
+////
+////		point.x -= this.origin.x;
+////		point.y -= this.origin.y;
+////
+////		if (!previous.center) {
+////			// Delta is a movement between two points.
+////			// If "same" center, then delta is zero.
+////			Point delta = this.origin.subtract(this.previous);
+////			point.x += delta.x;
+////			point.y += delta.y;
+////
+////		}
+//////		this.cortex.addPoint(root, point);
+////	}
+////
+////}
+////}
+//}

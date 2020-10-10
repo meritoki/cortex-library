@@ -36,6 +36,10 @@ public class Matrix {
 
 	@JsonIgnore
 	public double threshold = 16;
+	@JsonIgnore
+	public double max;
+	@JsonIgnore
+	public double min;
 
 	@JsonIgnore
 	public List<Point> pointList;
@@ -71,6 +75,8 @@ public class Matrix {
 		}
 		return radiusList;
 	}
+	
+	
 
 	public double round(double value) {
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -101,48 +107,93 @@ public class Matrix {
 		return line;
 	}
 
-	public Point getNextPoint(Point origin, double radius, Direction direction) {
+//	public Point getNextPoint(Point origin, double radius, Direction direction) {
+//		Point point = null;
+//		List<Point> line = this.getCurrentLine(origin);
+//		double min = Double.MAX_VALUE;//;input.y;
+//		double max = Double.MIN_VALUE;//input.y;
+//		if (line != null) {
+//			double distance = Point.getDistance(origin, line.get(line.size() - 1));
+//			if (radius < distance) {
+//				switch (direction) {
+//				case LEFT: {
+//					for (Point p : line) {
+//						distance = this.round(Point.getDistance(origin, p));
+//						if (p.x < origin.x && distance == radius) {
+//							point = p;
+//						}
+//					}
+//					break;
+//				}
+//				case RIGHT: {
+//					for (Point p : line) {
+//						distance = this.round(Point.getDistance(origin, p));
+//						if (p.x > origin.x && distance >= radius && distance < min) {//list is in order, so latest is max
+//							min = distance;
+////							System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
+//							point = p;
+//						}
+//					}
+//					break;
+//				}
+//				default: {
+//					System.err.println("direction=" + direction);
+//				}
+//				}
+//			} else {
+//				point = line.get(line.size() - 1);
+//				if(point.equals(origin)) {
+//					point = null;
+//				}
+//			}
+//		}
+//		System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") point="+point);
+//		if(point != null)
+//			point.round();
+//		return point;
+//	}
+	
+	public Point getNextPoint(Point input, double radius, Direction direction) {
+		System.out.println("getNextPoint(" + input + ", " + radius + ", " + direction + ")");
+		// Get line
 		Point point = null;
-		List<Point> line = this.getCurrentLine(origin);
-		if (line != null) {
-			double distance = Point.getDistance(origin, line.get(line.size() - 1));
-			if (radius < distance) {
-				switch (direction) {
-				case LEFT: {
-					for (Point p : line) {
-						distance = this.round(Point.getDistance(origin, p));
-						if (p.x < origin.x && distance == radius) {
-							point = p;
+		// Direction UP/DOWN
+		// if direction UP, get point closet to input, which minimizes y
+		// if direction DOWN, get point closet to input, which maximizes y
+		double min = Double.MAX_VALUE;//;input.y;
+		double max = Double.MIN_VALUE;//input.y;
+
+		for (int i = 0; i < this.size(); i++) {
+			for (int j = 0; j < this.getPointList(i).size(); j++) {
+				Point data = this.getPoint(i, j);
+				if (data != null) {
+					if (input.y - 2 < data.y && data.y < input.y + 2) {// found points that line on the same vertical line.
+						// To the algorithm, must add current input.y and radius.
+						switch (direction) {
+						case LEFT: {
+							if (data.x < (input.x - radius) && data.x > max) {
+								max = data.x;
+								point = data;
+							}
+							break;
+						}
+						case RIGHT: {
+							if (data.x > (input.x + radius) && data.x < min) {
+								min = data.x;
+								point = data;
+							}
+							break;
+						}
 						}
 					}
-					break;
-				}
-				case RIGHT: {
-					for (Point p : line) {
-						distance = this.round(Point.getDistance(origin, p));
-						if (p.x > origin.x && distance <= radius) {//list is in order, so latest is max
-//							System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
-							point = p;
-						}
-					}
-					break;
-				}
-				default: {
-					System.err.println("direction=" + direction);
-				}
-				}
-			} else {
-				point = line.get(line.size() - 1);
-				if(point.equals(origin)) {
-					point = null;
 				}
 			}
 		}
-		System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") point="+point);
-		if(point != null)
-			point.round();
+//		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
 		return point;
+
 	}
+
 
 	/**
 	 * Must incorporate radius into algorithm
@@ -160,26 +211,29 @@ public class Matrix {
 		// Direction UP/DOWN
 		// if direction UP, get point closet to input, which minimizes y
 		// if direction DOWN, get point closet to input, which maximizes y
-		double min = input.y;
-		double max = input.y;
+		double min = Double.MAX_VALUE;//;input.y;
+		double max = Double.MIN_VALUE;//input.y;
 
 		for (int i = 0; i < this.size(); i++) {
 			for (int j = 0; j < this.getPointList(i).size(); j++) {
 				Point data = this.getPoint(i, j);
 				if (data != null) {
-					if (data.x == input.x) {// found points that line on the same vertical line.
+					if (input.x -5 < data.x && data.x < input.x + 5) {// found points that line on the same vertical line.
 						// To the algorithm, must add current input.y and radius.
 						switch (direction) {
 						case UP: {
-							if (data.y < min && data.y > (input.y - radius)) {
-								min = data.y;
+//							if (data.y < min && data.y > (input.y - radius)) {
+							if (data.y < (input.y - radius) && data.y > max) {
+								max = data.y;
 								line = this.getPointList(i);
 							}
 							break;
 						}
 						case DOWN: {
-							if (data.y > max && data.y < (input.y + radius)) {
-								max = data.y;
+							if (data.y > (input.y + radius) && data.y < min) {
+//							if (data.y > max && data.y < (input.y + radius)) {
+//							if (data.y >= (input.y + radius)) {
+								min = data.y;
 								line = this.getPointList(i);
 							}
 							break;
@@ -215,6 +269,7 @@ public class Matrix {
 			boolean flag = true;
 			for (int i = 0; i < pointList.size(); i++) {
 				point = pointList.get(i);
+				if(point.getChildren().size()==0) {
 				for (List<Point> rowList : list) {
 					if (this.isPointListYInThreshold(rowList, point)) {
 						rowList.add(point);
@@ -229,7 +284,7 @@ public class Matrix {
 					flag = true;
 				}
 				this.sortShapeMatrix(list);
-
+				}
 			}
 //			this.print(list);
 		}
