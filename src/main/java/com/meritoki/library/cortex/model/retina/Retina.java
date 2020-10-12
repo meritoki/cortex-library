@@ -68,6 +68,7 @@ public class Retina {
 	// This is where we connect the point and add it to the list.
 
 	public final int DIMENSION = 100;
+	public String uuid;
 	public Dimension dimension;
 
 	public Cortex cortex;
@@ -77,7 +78,7 @@ public class Retina {
 	public BufferedImage bufferedImage;
 	public BufferedImage inputBufferedImage;// Object should be what is input into cortex
 
-	public double focalLength = 8; // mm
+	public double focalLength = 22; // mm
 	public double minDistance = 8;// mm
 	public double distance = minDistance;
 	public double maxDistance;
@@ -96,6 +97,7 @@ public class Retina {
 	public State state = State.NEW;
 
 	public Retina(BufferedImage bufferedImage, Cortex cortex) {
+		this.uuid = UUID.randomUUID().toString();
 		this.setBufferedImage(bufferedImage);
 		this.setCortex(cortex);
 	}
@@ -110,10 +112,12 @@ public class Retina {
 
 	// Called multiple times
 	public void setCortex(Cortex cortex) {
-		this.cortex = cortex;
-		this.cortexRadius = this.cortex.getRadius();
-		this.maxDistance = this.getMaxDistance();
-		this.motor.setCortex(this.cortex);
+		if (cortex != null) {
+			this.cortex = cortex;
+			this.cortexRadius = this.cortex.getRadius();
+			this.maxDistance = this.getMaxDistance();
+			this.motor.setCortex(this.cortex);
+		}
 	}
 
 	// Called Multiple times
@@ -245,66 +249,45 @@ public class Retina {
 	public void processBelief() {
 		Belief belief = this.cortex.getBelief();
 		if (belief != null) {
-
 			belief.normalize(this.scale);// Point List is centered around 0,0
 			belief.setGlobal(this.getInputCenter(), this.scale);
 			belief.setRelative(this.scale, this.origin, this.previous);
-			// Now we have a belief in global coordinates that can be scaled
-			// and visualized.
-			// We lost the function to view a belief relative to the center
-			// Here the belief is now around 0,0;
-			// What we had before was the the belief would be mapped relative to this.origin
-			// which can be anywhere,
-			// The easiest solution to this problem is the following:
-			// 1) Make Point List relative to 0,0 so that any origin can be applied.
-			// 2) Give belief two origins, one is the global origin, the other is the
-			// relative origin.
-			// To draw global and points must be translated
-			// to the center of the screen.
-			// Now we are focused on the root Point.
 			belief.global.round();
-//			if (belief.pointList.size() > 0) {
+			belief.retinaUUID = this.uuid;
 //				this.cortex.addPoint(this.cortex.root, belief.global);
-				for (Point point : belief.getGlobalPointList()) {
-//					this.cortex.addPoint(belief.global, point);
-					this.cortex.addPoint(this.cortex.root, point);
-				}
-//			}
-//			this.cortex.addRelativePoint(this.cortex.relative, belief.global);
 //			for (Point point : belief.getGlobalPointList()) {
-//				this.cortex.addRelativePoint(belief.global, point);
+////					this.cortex.addPoint(belief.global, point);
+//				this.cortex.addPoint(this.cortex.root, point);
 //			}
-//			this.cortex.add(belief);//Entry into Mind radius system.
-//			this.cortex.traverseInOrder(this.cortex.mind);
 		}
 	}
 
 	public void drawCortexPointList(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-			graphics2D.setColor(Color.WHITE);
-			int size = this.cortex.pointList.size();
-			int count = 0;
-			double x = this.getInputCenterX();// this.origin.x;
-			double y = this.getInputCenterY();// this.origin.y;
-			for (Point point : this.cortex.pointList) {
-				List<Node> nodeList = point.getChildren();
-				point = new Point(point);
-				point.x *= this.scale;
-				point.y *= this.scale;
-				point.x += x;
-				point.y += y;
-				for (Node n : nodeList) {
-					Point child = (Point) n;
-					child = new Point(child);
-					child.x *= this.scale;
-					child.y *= this.scale;
-					child.x += x;
-					child.y += y;
-					graphics2D.setColor(this.getColor(0.8, count, size));
-					graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
-				}
-				count++;
-			}
+//			graphics2D.setColor(Color.WHITE);
+//			int size = this.cortex.pointList.size();
+//			int count = 0;
+//			double x = this.getInputCenterX();// this.origin.x;
+//			double y = this.getInputCenterY();// this.origin.y;
+//			for (Point point : this.cortex.pointList) {
+//				List<Node> nodeList = point.getChildren();
+//				point = new Point(point);
+//				point.x *= this.scale;
+//				point.y *= this.scale;
+//				point.x += x;
+//				point.y += y;
+//				for (Node n : nodeList) {
+//					Point child = (Point) n;
+//					child = new Point(child);
+//					child.x *= this.scale;
+//					child.y *= this.scale;
+//					child.x += x;
+//					child.y += y;
+//					graphics2D.setColor(this.getColor(0.8, count, size));
+//					graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
+//				}
+//				count++;
+//			}
 		}
 	}
 
@@ -1177,3 +1160,31 @@ public class Retina {
 //need two representations, 
 //belief.scale(this.scale);//, this.previous);
 //Whatever belief and origin are normalize();
+
+// Now we have a belief in global coordinates that can be scaled
+// and visualized.
+// We lost the function to view a belief relative to the center
+// Here the belief is now around 0,0;
+// What we had before was the the belief would be mapped relative to this.origin
+// which can be anywhere,
+// The easiest solution to this problem is the following:
+// 1) Make Point List relative to 0,0 so that any origin can be applied.
+// 2) Give belief two origins, one is the global origin, the other is the
+// relative origin.
+// To draw global and points must be translated
+// to the center of the screen.
+// Now we are focused on the root Point.
+//belief.global.round();
+////if (belief.pointList.size() > 0) {
+////	this.cortex.addPoint(this.cortex.root, belief.global);
+//	for (Point point : belief.getGlobalPointList()) {
+////		this.cortex.addPoint(belief.global, point);
+//		this.cortex.addPoint(this.cortex.root, point);
+//	}
+//}
+//this.cortex.addRelativePoint(this.cortex.relative, belief.global);
+//for (Point point : belief.getGlobalPointList()) {
+//	this.cortex.addRelativePoint(belief.global, point);
+//}
+//this.cortex.add(belief);//Entry into Mind radius system.
+//this.cortex.traverseInOrder(this.cortex.mind);

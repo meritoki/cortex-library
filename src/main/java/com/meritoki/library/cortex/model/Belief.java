@@ -5,6 +5,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.library.controller.node.NodeController;
-import com.meritoki.library.cortex.model.network.shape.Shape;
 
 public class Belief {
 
@@ -42,6 +42,10 @@ public class Belief {
 	public String filePath;
 	@JsonProperty
 	public String fileName;
+	@JsonProperty
+	public Date date;
+	@JsonProperty
+	public String retinaUUID;
 
 	public Belief() {
 		this.uuid = UUID.randomUUID().toString();

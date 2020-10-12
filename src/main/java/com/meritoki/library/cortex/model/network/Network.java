@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -255,6 +256,7 @@ public class Network extends Cortex {
 				belief.pointList = new ArrayList<>(pointList);
 				belief.bufferedImage = (beliefBufferedImage);
 				belief.origin = new Point(this.origin);
+				belief.date = new Date();
 //				this.addBelief(belief);
 				this.beliefList.add(belief);
 				//Normailization ruins this information, but we still
