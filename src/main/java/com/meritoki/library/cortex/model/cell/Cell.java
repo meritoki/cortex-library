@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.cell;
 
 import java.util.Map;
 import java.util.logging.Logger;
@@ -26,15 +26,15 @@ public class Cell {
 	public Integer green = 0;
 	public Integer blue = 0;
 
-	public String rgbToString(Integer red, Integer green, Integer blue) {
+	public String rgbToString(Long red, Long green, Long blue) {
 		if (red == null) {
-			red = 0;
+			red = (long) 0;
 		}
 		if (green == null) {
-			green = 0;
+			green = (long) 0;
 		}
 		if (blue == null) {
-			blue = 0;
+			blue = (long) 0;
 		}
 		return "(" + red + "," + green + "," + blue + ")";
 	}

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.hexagon;
+package com.meritoki.library.cortex.model.network.hexagon;
 
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.Shape;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 
 public class Hexagon extends Shape {
 

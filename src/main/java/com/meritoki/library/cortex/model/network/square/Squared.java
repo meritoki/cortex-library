@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.square;
+package com.meritoki.library.cortex.model.network.square;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,11 +22,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Level;
-import com.meritoki.library.cortex.model.Network;
 import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.Shape;
+import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.Level;
+import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 
 /**
  * In Network, squares are referenced by level and relative coordinates, i.e.
@@ -38,36 +39,31 @@ import com.meritoki.library.cortex.model.Shape;
 public class Squared extends Network {
 
 	public static void main(String[] args) {
-		Squared n = new Squared(Squared.BRIGHTNESS, 0, 0, 5, 1, 0);
+		Squared n = new Squared(Color.BRIGHTNESS, 0, 0, 5, 1, 0);
 		n.load();
 	}
 	@JsonIgnore
 	protected Logger logger = Logger.getLogger(Squared.class.getName());
-//	@JsonProperty
-//	private int dimension = 13;
-//	@JsonProperty
-//	private int length = 1;
-//	@JsonProperty
-//	private int padding = 0;
-//	@JsonProperty
-//	private int depth = 0;
 
 	public Squared() {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
+		this.length = 9;
 	}
 
 	public Squared(int dimension, int length, int padding) {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
+//		this.length = 9;//
 	}
 
-	public Squared(int type, int x, int y, int dimension, int length, int padding) {
+	public Squared(Color type, int x, int y, int dimension, int length, int padding) {
 		super(type, x, y);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
+//		this.length = 9;
 	}
 
 	/**
@@ -87,8 +83,8 @@ public class Squared extends Network {
 			for (int column = 0; column < dimension; column++) {
 				int xPosition = column - half;
 				int yPosition = row - half;
-				double x = (this.x + (xPosition * length));
-				double y = (this.y + (yPosition * length));
+				double x = (this.origin.x + (xPosition * length));
+				double y = (this.origin.y + (yPosition * length));
 				square = (Square) level.shapeMap.get(xPosition + "," + yPosition);
 				if (square != null) {
 					square.setCenter(new Point(x, y));
@@ -109,7 +105,7 @@ public class Squared extends Network {
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.dimension=" + this.dimension);
 		logger.info("load() this.length=" + this.length);
-		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.x, this.y), this.dimension, this.length,
+		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.dimension, this.length,
 				this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(squareMap.size());
 		if (this.depth == 0) {
@@ -126,7 +122,7 @@ public class Squared extends Network {
 			}
 			square.setData("0:" + square);
 			square.initCells();
-			level.addShape(square);
+			level.addShape(null,square);
 		}
 		this.addLevel(level);
 		LinkedList<Shape> squareStack = null;
@@ -139,7 +135,7 @@ public class Squared extends Network {
 			level = new Level();
 			squareList = new LinkedList<>();
 			squareStack = new LinkedList<>();
-			squareStack.push(squareMap.get(this.x + "," + this.y));
+			squareStack.push(squareMap.get(this.origin.x + "," + this.origin.y));
 			Shape shape;
 			while (!squareStack.isEmpty()) {
 				shape = squareStack.pop();
@@ -155,6 +151,7 @@ public class Squared extends Network {
 				Shape s = this.shapeMap.get(i + ":" + m);
 				if (s == null) {
 					s = new Square(m);
+					s.length = 9;
 					this.shapeMap.put(i + ":" + s, s);
 				}
 				List<Shape> list = this.getGroupZeroSquareList(squareMap, s.getX(), s.getY(), exponent - 1);
@@ -162,13 +159,13 @@ public class Squared extends Network {
 					s.addChild(n);
 				}
 				s.setData(i + ":" + s);
-				level.addShape(s);
+				level.addShape(null,s);
 			}
 			this.addLevel(level);
 		}
 		 level = this.getRootLevel();
 		 Shape h = level.getShapeList().get(0);
-		 Node.printTree(h, " ");
+//		 Node.printTree(h, " ");
 	}
 
 	@JsonIgnore
@@ -244,6 +241,7 @@ public class Squared extends Network {
 				double x = (origin.x + (xPosition * length));
 				double y = (origin.y + (yPosition * length));
 				square = new Square(xPosition, yPosition, new Point(x, y), radius);
+				square.length = 9;
 				if (level > -1)
 					shapeMap.put(level + ":" + xPosition + "," + yPosition, square);
 				else

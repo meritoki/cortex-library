@@ -13,17 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.cell;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class Document {
-
-	@JsonProperty
-	public Cortex cortex;
+public class Cone extends Cell {
 	
-	public Document() {
-//		this.cortex = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 7, 1, 0);
-//		this.cortex = new Group(Group.SQUARED);
+	public Wavelength wavelength = Wavelength.SHORT;
+	
+	public Cone(Wavelength wavelength) {
+		this.wavelength = wavelength;
+	}
+	
+	public void input(long color) {
+//		logger.info("input("+color+")");
+		long blue = color & 0xff;
+		long green = (color & 0xff00) >> 8;
+		long red = (color & 0xff0000) >> 16;		
+		switch(wavelength) {
+		case SHORT: {
+			this.input((int)red, 0, 0);
+			break;
+		}
+		case MEDIUM: {
+			this.input(0,(int)green,0);
+			break;
+		}
+		case LONG: {
+			this.input(0,0,(int)blue);
+			break;
+		}
+		default: {
+			
+		}
+		}
 	}
 }

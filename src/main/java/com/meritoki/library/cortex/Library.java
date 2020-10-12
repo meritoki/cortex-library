@@ -15,7 +15,7 @@
  */
 package com.meritoki.library.cortex;
 
-import com.meritoki.library.cortex.model.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 
 public class Library {
 	public static void main(String[] args) {
