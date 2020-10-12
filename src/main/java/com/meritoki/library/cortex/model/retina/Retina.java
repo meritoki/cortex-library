@@ -95,7 +95,9 @@ public class Retina {
 	public int step = 16;
 	public State state = State.NEW;
 
-	public Retina() {
+	public Retina(BufferedImage bufferedImage, Cortex cortex) {
+		this.setBufferedImage(bufferedImage);
+		this.setCortex(cortex);
 	}
 
 	public void setDimension(Dimension dimension) {
@@ -155,7 +157,7 @@ public class Retina {
 		MemoryController.log();
 		TimeController.start();
 		while (this.state != State.COMPLETE) {
-			this.iterate(graphics2D, bufferedImage, cortex, concept);
+			this.iterate(graphics2D, concept);
 		}
 		TimeController.stop();
 		MemoryController.log();
@@ -169,17 +171,15 @@ public class Retina {
 	 * @param cortex
 	 * @param concept
 	 */
-	public void iterate(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
+	public void iterate(Graphics2D graphics2D, Concept concept) {
 //		System.out.println("iterate(" + String.valueOf(graphics2D != null) + ", "
 //				+ String.valueOf(bufferedImage != null) + ", " + String.valueOf(cortex != null) + ")");
 		Delta delta = this.motor.getDelta();
 		if (delta != null) {
 			System.out.println("iterate(...) delta=" + delta);
 			this.setOrigin(delta.stop);
-			this.input(graphics2D, bufferedImage, cortex, concept);
+			this.input(graphics2D, concept);
 		} else {
-			this.setBufferedImage(bufferedImage);// DEFECT
-			this.setCortex(cortex);// DEFECT
 			System.out.println("this.distance=" + this.distance);
 			if (this.distance == 0) {
 				this.maxDistance = this.getMaxDistance();
@@ -188,7 +188,7 @@ public class Retina {
 				this.index = 0;
 				Point origin = this.getInputCenter();
 				this.setOrigin(origin);
-				this.input(graphics2D, bufferedImage, cortex, concept);
+				this.input(graphics2D, concept);
 				this.state = State.PENDING;
 			} else {
 				this.interval = this.size / this.step;
@@ -199,7 +199,7 @@ public class Retina {
 					this.index++;
 					Point origin = this.getInputCenter();
 					this.setOrigin(origin);
-					this.input(graphics2D, bufferedImage, cortex, concept);
+					this.input(graphics2D, concept);
 					this.state = State.PENDING;
 				} else {
 					this.state = State.COMPLETE;
@@ -217,15 +217,12 @@ public class Retina {
 	 * @param cortex
 	 * @param concept
 	 */
-	public void input(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
+	public void input(Graphics2D graphics2D, Concept concept) {
 //		System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
-		this.setBufferedImage(bufferedImage);// DEFECT
-		this.setCortex(cortex);// DEFECT
 		this.setDistance(this.distance);
 		this.drawInputBufferedImage(graphics2D);
 		this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
 		this.cortex.update();
-		this.inputBufferedImage = this.getInputBufferedImage();
 		this.cortex.process(graphics2D, this.inputBufferedImage, concept);
 		this.processBelief();
 		this.motor.input(this.getInputCenter(), origin, this.scale);
