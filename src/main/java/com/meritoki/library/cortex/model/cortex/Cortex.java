@@ -74,12 +74,7 @@ public class Cortex {
 	public int index = 0;
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
-//	@JsonProperty
-//	public Point root = new Point(0,0);
-////	@JsonProperty
-////	public Point global = new Point(0,0);
-//	@JsonIgnore
-//	public List<Point> pointList = new ArrayList<>();
+
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();
 	@JsonIgnore
@@ -91,7 +86,7 @@ public class Cortex {
 
 	public List<Point> getPointList(Point origin, double scale) {
 		List<Point> pList = new ArrayList<>();
-		for (Belief belief : this.getBeliefList(7)) {
+		for (Belief belief : this.getBeliefList(32)) {
 			for (Point p : belief.getGlobalPointList()) {
 				p = new Point(p);
 				p.x *= scale;
@@ -406,3 +401,10 @@ public class Cortex {
 ////}
 ////}
 //}
+
+//@JsonProperty
+//public Point root = new Point(0,0);
+////@JsonProperty
+////public Point global = new Point(0,0);
+//@JsonIgnore
+//public List<Point> pointList = new ArrayList<>();

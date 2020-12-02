@@ -269,7 +269,7 @@ public class Matrix {
 			boolean flag = true;
 			for (int i = 0; i < pointList.size(); i++) {
 				point = pointList.get(i);
-				if(point.getChildren().size()==0) {
+//				if(point.getChildren().size()==0) {
 				for (List<Point> rowList : list) {
 					if (this.isPointListYInThreshold(rowList, point)) {
 						rowList.add(point);
@@ -284,7 +284,7 @@ public class Matrix {
 					flag = true;
 				}
 				this.sortShapeMatrix(list);
-				}
+//				}
 			}
 //			this.print(list);
 		}

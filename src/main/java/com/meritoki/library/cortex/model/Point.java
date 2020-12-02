@@ -20,7 +20,7 @@ import java.text.DecimalFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Point extends Node {
+public class Point  { //extends Node {
 
 	@JsonProperty
 	public double x = 0;
@@ -33,7 +33,7 @@ public class Point extends Node {
 	}
 
 	public Point(Point p) {
-		super(p.x+","+p.y);
+//		super(p.x+","+p.y);
 		this.x = p.x;
 		this.y = p.y;
 		this.center = p.center;
@@ -41,7 +41,7 @@ public class Point extends Node {
 	}
 
 	public Point(double x, double y) {
-		super(x + "," + y);
+//		super(x + "," + y);
 		this.x = this.round(x);
 		this.y = this.round(y);
 	}
