@@ -20,6 +20,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,8 +34,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
-import com.meritoki.library.cortex.model.BinaryNode;
+import com.meritoki.library.cortex.model.Binary;
 import com.meritoki.library.cortex.model.Concept;
+import com.meritoki.library.cortex.model.Mind;
 import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.group.Group;
@@ -49,8 +51,7 @@ public class Cortex {
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
-	public Color type = Color.BRIGHTNESS;// int type;//com.meritoki.library.cortex.model.Type type =
-											// com.meritoki.library.cortex.model.Type.HEXAGONAL;
+	public Color type = Color.BRIGHTNESS;
 	@JsonProperty
 	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
@@ -68,17 +69,124 @@ public class Cortex {
 	@JsonProperty
 	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonProperty
-	public Point origin = new Point(0,0);
+	public Point origin = new Point(0, 0);
 	@JsonProperty
 	public int index = 0;
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
-	@JsonProperty
-	public Point root = new Point(0,0);
-	@JsonIgnore
-	public List<Point> pointList = new ArrayList<>();
+
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();
+	@JsonIgnore
+	public Mind mind;
+
+	public Cortex() {
+//		this.pointList.add(this.root);
+	}
+
+	public List<Point> getPointList(Point origin, double scale) {
+		List<Point> pList = new ArrayList<>();
+		for (Belief belief : this.getBeliefList(32)) {
+			for (Point p : belief.getGlobalPointList()) {
+				p = new Point(p);
+				p.x *= scale;
+				p.y *= scale;
+				p.x += origin.x;
+				p.y += origin.y;
+				p.round();
+				pList.add(p);
+			}
+		}
+		return pList;
+	}
+	
+	public List<Belief> getBeliefList(int seconds) {
+		List<Belief> beliefList = new ArrayList<>();
+		Date now = new Date();
+		for(Belief b: this.beliefList) {
+			long millisecond = Math.abs(b.date.getTime() - now.getTime());
+			long second = millisecond/1000;
+			if(seconds > second) {
+				beliefList.add(b);
+			}
+		}
+		return beliefList;
+	}
+
+	@JsonIgnore
+	private Binary addRecursive(Binary current, Belief belief) {
+		double value = belief.getRelativeRadius();
+		if (current == null) {
+			return new Mind(belief);
+		}
+		if (value < current.value) {
+			current.left = addRecursive(current.left, belief);
+		} else if (value > current.value) {
+			current.right = addRecursive(current.right, belief);
+		} else {
+			// value already exists
+			return current;
+		}
+		return current;
+	}
+
+	@JsonIgnore
+	public void add(Belief belief) {
+		boolean flag = this.containsMind(this.mind, belief.getRelativeRadius());
+		if (flag) {
+			this.mind = (Mind) this.getMind(this.mind, belief.getRelativeRadius());
+			this.mind.beliefList.add(belief);
+		} else {
+			this.mind = (Mind) addRecursive(this.mind, belief);
+		}
+	}
+
+	@JsonIgnore
+	public boolean containsMind(double value) {
+		return this.containsMind(this.mind, value);
+	}
+
+	@JsonIgnore
+	public Mind getMind(double value) {
+		return (Mind) this.getMind(this.mind, value);
+	}
+
+	@JsonIgnore
+	private boolean containsMind(Binary current, double value) {
+		if (current == null) {
+			return false;
+		}
+		if (value == current.value) {
+			return true;
+		}
+		return value < current.value ? containsMind(current.left, value) : containsMind(current.right, value);
+	}
+
+	@JsonIgnore
+	private Binary getMind(Binary current, double value) {
+		if (current == null) {
+			return null;
+		}
+		if (value == current.value) {
+			return current;
+		}
+		return value < current.value ? getMind(current.left, value) : getMind(current.right, value);
+	}
+
+	@JsonIgnore
+	private int findSmallestValue(Binary root) {
+		return (int) (root.left == null ? root.value : findSmallestValue(root.left));
+	}
+
+	@JsonIgnore
+	public void traverseInOrder(Binary node) {
+		if (node != null) {
+			traverseInOrder(node.left);
+			System.out.println(" " + node.value);
+			System.out.println(" " + ((Mind) node).beliefList.size());
+			traverseInOrder(node.right);
+		}
+	}
 
 	@JsonIgnore
 	public boolean setIndex(String uuid) {
@@ -117,50 +225,51 @@ public class Cortex {
 		Belief page = (index < size && size > 0) ? this.beliefList.get(index) : null;
 		return page;
 	}
-	
+
 	@JsonIgnore
 	public Belief getLastBelief() {
 		int size = this.beliefList.size();
-		Belief page = (size > 0)?this.beliefList.get(size-1):null;
+		Belief page = (size > 0) ? this.beliefList.get(size - 1) : null;
 		return page;
 	}
 
 	@JsonIgnore
 	public void load() {
-		for (Belief belief : this.beliefList) {
-			List<Point> pointList = belief.pointList;
-			for (Point point : pointList) {
-				this.addPoint(this.root, point);
-			}
-		}
+//		for (Belief belief : this.beliefList) {
+//		
+//			for (Point point : pointList) {
+//				this.addPoint(this.root, point);
+//			}
+//		}
 	}
 
-	public void addPoint(Point root, Point point) {
-//		System.out.println("addPoint("+root+", "+point+")");
-		if (point != null && !root.equals(point)) {
-			List<Node> nodeList = root.getChildren();
-			double min = Point.getDistance(root, point);
-			Point minPoint = null;
-			Iterator<Node> iterator = nodeList.iterator();
-			while (iterator.hasNext()) {
-				Node n = iterator.next();
-				Point childPoint = (Point) n;
-				double distance = Point.getDistance(childPoint, point);
-				if (distance < min) {
-					min = distance;
-					minPoint = childPoint;
-				}
-			}
-			if (minPoint != null) {
-				// System.out.println("addPoint("+root+", "+point+") minPoint="+minPoint);
-				this.addPoint(minPoint, point);
-			} else {
-				root.addChild(point);
-//				Node.printTree(root, " ");
-				this.pointList.add(point);
-			}
-		}
-	}
+//	public void addPoint(Point root, Point point) {
+////		System.out.println("addPoint("+root+", "+point+")");
+//		if (point != null && root != null && !point.equals(root)) {
+////			point.round()
+//			List<Node> nodeList = root.getChildren();
+//			double min = Point.getDistance(root, point);
+//			Point minPoint = null;
+//			Iterator<Node> iterator = nodeList.iterator();
+//			while (iterator.hasNext()) {
+//				Node n = iterator.next();
+//				Point childPoint = (Point) n;
+//				double distance = Point.getDistance(childPoint, point);
+//				if (distance < min) {
+//					min = distance;
+//					minPoint = childPoint;
+//				}
+//			}
+//			if (minPoint != null) {
+//				// System.out.println("addPoint("+root+", "+point+") minPoint="+minPoint);
+//				this.addPoint(minPoint, point);
+//			} else {
+//				root.addChild(point);
+////				Node.printTree(root, " ");
+//				this.pointList.add(point);
+//			}
+//		}
+//	}
 
 	@JsonIgnore
 	public void update() {
@@ -168,8 +277,8 @@ public class Cortex {
 
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
-		System.out.println("setOrigin("+x+", "+y+")");
-		this.origin = new Point(x,y);
+		System.out.println("setOrigin(" + x + ", " + y + ")");
+		this.origin = new Point(x, y);
 //		this.x = x;
 //		this.y = y;
 	}
@@ -208,7 +317,7 @@ public class Cortex {
 //		return max;
 //	}
 	@JsonIgnore
-	public double getSensorRadius() {
+	public double getRadius() {
 		double max = 0;
 		for (Entry<String, Shape> e : this.shapeMap.entrySet()) {
 			String key = e.getKey();
@@ -230,7 +339,7 @@ public class Cortex {
 				}
 			}
 		}
-		System.out.println("getSensorRedius() max="+max);
+//		System.out.println("getRadius() max="+max);
 		return max;
 	}
 
@@ -247,3 +356,55 @@ public class Cortex {
 		return after;
 	}
 }
+
+//public void addBelief(Belief belief) {
+////if (belief != null) {
+////belief.origin.scale(1 / this.scale);
+////belief.origin.x -= this.origin.x;
+////belief.origin.y -= this.origin.y;
+////if (!previous.center) {
+////	// Delta is a movement between two points.
+////	// If "same" center, then delta is zero.
+////	Point delta = this.origin.subtract(this.previous);
+////	belief.origin.x += delta.x;
+////	belief.origin.y += delta.y;
+//////
+////}
+////this.cortex.addPoint(root, belief.origin);
+//////belief.origin.subtract(this.origin);
+////if (this.cortex != null && belief != null) {
+////	
+////	List<Point> pointList = belief.pointList;
+////	for (Point point : pointList) {
+////		// Scale divide makes points the same size in a domain.
+////		point.x /= this.scale;
+////		point.y /= this.scale;
+////		// Without this code, Points appear where they are drawn
+////		// With this code, points appear at root 0,0.
+////
+//////With this code the belief pointList is completly altered these transforms need to be applied to the belief center;
+////
+////		point.x -= this.origin.x;
+////		point.y -= this.origin.y;
+////
+////		if (!previous.center) {
+////			// Delta is a movement between two points.
+////			// If "same" center, then delta is zero.
+////			Point delta = this.origin.subtract(this.previous);
+////			point.x += delta.x;
+////			point.y += delta.y;
+////
+////		}
+//////		this.cortex.addPoint(root, point);
+////	}
+////
+////}
+////}
+//}
+
+//@JsonProperty
+//public Point root = new Point(0,0);
+////@JsonProperty
+////public Point global = new Point(0,0);
+//@JsonIgnore
+//public List<Point> pointList = new ArrayList<>();

@@ -282,6 +282,11 @@ public class Shape extends Node<Object> {
 		if (coincidence != null && coincidence.list.size() > 0) {
 			for (int i = 0; i < this.coincidenceList.size(); i++) {
 				c = this.coincidenceList.get(i);
+				if(concept == null) {
+					c.setThreshold(0.95);
+				} else {
+					c.setThreshold(0.99);
+				}
 				if (c.similar(coincidence, max)) {
 					max = c.quotient;
 					inferredCoincidence = c;
