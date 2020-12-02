@@ -15,40 +15,85 @@
  */
 package com.meritoki.library.cortex.model;
 
+import java.text.DecimalFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Point {
+public class Point  { //extends Node {
 
 	@JsonProperty
 	public double x = 0;
 	@JsonProperty
 	public double y = 0;
+	@JsonIgnore
+	public boolean center;
 
 	public Point() {
 	}
 
 	public Point(Point p) {
+//		super(p.x+","+p.y);
 		this.x = p.x;
 		this.y = p.y;
+		this.center = p.center;
+//		this.belief = p.belief;
 	}
 
 	public Point(double x, double y) {
-		this.x = x;
-		this.y = y;
+//		super(x + "," + y);
+		this.x = this.round(x);
+		this.y = this.round(y);
+	}
+	
+	public void round() {
+		this.x = this.round(this.x);
+		this.y = this.round(this.y);
+	}
+	
+	public double round(double value) {
+		DecimalFormat decimalFormat = new DecimalFormat("#.##");
+		return Double.parseDouble(decimalFormat.format(value));
+	}
+	
+	public double getRadius(Point p) {
+		return Math.sqrt(Math.pow(this.x-p.x,2)+Math.pow(this.y-p.y, 2));
+	}
+
+	public Point subtract(Point point) {
+		return (point != null) ? new Point(this.x - point.x, this.y - point.y) : null;
+	}
+
+	public Point add(Point point) {
+		return (point != null) ? new Point(this.x + point.x, this.y + point.y) : null;
+	}
+
+	public void scale(double scale) {
+		this.x *= scale;
+		this.y *= scale;
+//		this.x = this.round(this.x);
+//		this.y = this.round(this.y);
+	}
+
+	@JsonIgnore
+	public static double getDistance(Point a, Point b) {
+		double value = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+//		System.out.println("getDistance("+a+", "+b+") value="+value);
+		return value;
 	}
 
 	@JsonIgnore
 	public boolean equals(Point point) {
+//		System.out.println(this+".equals("+point+")");
 		boolean flag = false;
 		if (this.x == point.x && this.y == point.y) {
 			flag = true;
 		}
 		return flag;
 	}
-	
+
 	@JsonIgnore
 	public String toString() {
-		return "{"+this.x+","+this.y+"}";
+		return "{" + this.x + "," + this.y + ","+center+"}";
 	}
 }

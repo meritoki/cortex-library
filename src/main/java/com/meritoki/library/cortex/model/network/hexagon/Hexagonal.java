@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.hexagon;
+package com.meritoki.library.cortex.model.network.hexagon;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,10 +22,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Level;
-import com.meritoki.library.cortex.model.Network;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.Shape;
+import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.Level;
+import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.shape.Shape;
 
 /**
  * In Network, hexagons are referenced by level and relative coordinates, i.e.
@@ -37,7 +38,7 @@ import com.meritoki.library.cortex.model.Shape;
 public class Hexagonal extends Network {
 
 	public static void main(String[] args) {
-		Hexagonal n = new Hexagonal(Hexagonal.BRIGHTNESS, 0, 0, 13, 1, 0);
+		Hexagonal n = new Hexagonal(Color.BRIGHTNESS, 0, 0, 13, 1, 0);
 		n.load();
 //		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
 //		
@@ -53,21 +54,24 @@ public class Hexagonal extends Network {
 
 
 	public Hexagonal() {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
+		this.length = 7;
 	}
 
 	public Hexagonal(int size, int radius, int padding) {
-		super(BRIGHTNESS, 0, 0);
+		super(Color.BRIGHTNESS, 0, 0);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
+		this.length = 7;
 	}
 
-	public Hexagonal(int type, int x, int y, int size, int radius, int padding) {
+	public Hexagonal(Color type, int x, int y, int size, int radius, int padding) {
 		super(type, x, y);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
+		this.length = 7;
 	}
 
 	/**
@@ -82,18 +86,20 @@ public class Hexagonal extends Network {
 		double yOff = Math.sin(radians) * (radius + padding);
 		int half = size / 2;
 		Level level = null;
-		Shape hexagon = null;
+		Shape shape = null;
 		level = this.getInputLevel();
 		for (int row = 0; row < size; row++) {
 			int cols = size - java.lang.Math.abs(row - half);
 			for (int col = 0; col < cols; col++) {
 				int xPosition = row < half ? col - row : col - half;
 				int yPosition = row - half;
-				int x = (int) (this.x + xOff * (col * 2 + 1 - cols));
-				int y = (int) (this.y + yOff * (row - half) * 3);
-				hexagon = level.shapeMap.get(xPosition + "," + yPosition);
-				if (hexagon != null) {
-					hexagon.setCenter(new Point(x, y));
+				int x = (int) (this.origin.x + xOff * (col * 2 + 1 - cols));
+				int y = (int) (this.origin.y + yOff * (row - half) * 3);
+				shape = level.shapeMap.get(xPosition + "," + yPosition);
+				if (shape != null) {
+					shape.setCenter(new Point(x, y));
+				} else {
+					logger.warning("update() shape == null");
 				}
 			}
 		}
@@ -107,12 +113,13 @@ public class Hexagonal extends Network {
 	@JsonIgnore
 	@Override
 	public void load() {
+		super.load();
 		logger.info("load()");
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.size=" + this.size);
 		logger.info("load() this.radius=" + this.radius);
 		logger.info("load() this.depth=" + this.depth);
-		Map<String, Shape> shapeMap = getShapeMap(-1, new Point(this.x, this.y), this.size, this.radius,
+		Map<String, Shape> shapeMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.size, this.radius,
 				this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(shapeMap.size());
 		if (this.depth == 0) {
@@ -120,20 +127,28 @@ public class Hexagonal extends Network {
 		}
 		Level level = new Level();
 		List<Shape> shapeList = this.getShapeList(shapeMap);
-		Shape hexagon = null;
+		Shape shape = null;
 		logger.info("load() shapeList.size()="+shapeList.size());
 		for (Shape s : shapeList) {
-			hexagon = this.shapeMap.get("0:" + s);
-			if (hexagon == null) {
-				hexagon = new Hexagon(s);
-				this.shapeMap.put("0:" + hexagon, hexagon);
+			shape = this.shapeMap.get("0:" + s);
+			if (shape == null) {
+				shape = new Hexagon(s);
+				this.shapeMap.put("0:" + shape, shape);
+			} 
+			else {
+				shape = new Hexagon(shape);
+				this.shapeMap.put("0:" + shape, shape);
 			}
-			hexagon.setData("0:" + hexagon);
-			hexagon.initCells();
-			level.addShape(hexagon);
+//			hexagon.setData("0:" + hexagon);
+//			System.out.println(shape);
+//			System.out.println(shape.shortConeArray);
+//			
+			shape.initCells();
+//			level.shapeMap.put("0:" + hexagon, hexagon);
+			level.addShape(null,shape);
 		}
 		this.addLevel(level);
-		LinkedList<Shape> hexagonStack = null;
+		LinkedList<Shape> shapeStack = null;
 		int exponent = 0;
 //		Map<String, Shape> shapeMap;
 		for (int i = 1; i < depth; i++) {
@@ -145,22 +160,24 @@ public class Hexagonal extends Network {
 			shapeMap = this.getLastLevel().getShapeMap();
 			level = new Level();
 			shapeList = new LinkedList<>();
-			hexagonStack = new LinkedList<>();
-			hexagonStack.push(shapeMap.get(this.x + "," + this.y));
-			Shape shape;
-			while (!hexagonStack.isEmpty()) {
-				shape = hexagonStack.pop();
+			shapeStack = new LinkedList<>();
+//			shapeStack.push(shapeMap.get(this.origin.x + "," + this.origin.y));
+			shapeStack.push(shapeMap.get("0,0"));
+//			shapeStack.push(shapeMap.get(new Point(0,0)));
+			Shape s;
+			while (!shapeStack.isEmpty()) {
+				s = shapeStack.pop();
 				LinkedList<Shape> list = null;
 				if (i % 2 == 1) {
-					list = getGroupOneHexagonList(shapeMap, shape.getX(), shape.getY(), exponent); // get list for x, y
+					list = getGroupOneHexagonList(shapeMap, s.getX(), s.getY(), exponent); // get list for x, y
 				} else {
-					list = getGroupZeroHexagonList(shapeMap, shape.getX(), shape.getY(), exponent); // get list for x,
+					list = getGroupZeroHexagonList(shapeMap, s.getX(), s.getY(), exponent); // get list for x,
 					// y
 				}
 				for (Shape h : list) {
 					if (!shapeList.contains(h)) {
 						shapeList.add(h);
-						hexagonStack.push(h);
+						shapeStack.push(h);
 					}
 				}
 			}
@@ -168,19 +185,26 @@ public class Hexagonal extends Network {
 				Shape h = this.shapeMap.get(i + ":" + m);
 				if (h == null) {
 					h = new Hexagon(m);
+					h.length = 7;
 					this.shapeMap.put(i + ":" + h, h);
-				}
+				} 
+//				else {
+//					h = new Hexagon(h);
+//				}
 				List<Shape> list = null;
 				if (i % 2 == 1) {
 					list = this.getGroupZeroHexagonList(shapeMap, h.getX(), h.getY(), exponent);
 				} else {
 					list = this.getGroupOneHexagonList(shapeMap, h.getX(), h.getY(), exponent - 1);
 				}
+//				logger.info("load() list.size()="+list.size());
 				for (Shape n : list) {
+//					n = new Hexagon(n);
 					h.addChild(n);
 				}
-				h.setData(i + ":" + h);
-				level.addShape(h);
+//				h.setData(i + ":" + h);
+				level.addShape(null,h);
+//				level.shapeMap.put("0:" + h, h);
 			}
 			this.addLevel(level);
 		}
@@ -294,6 +318,7 @@ public class Hexagonal extends Network {
 				int x = (int) (origin.x + xOff * (col * 2 + 1 - cols));
 				int y = (int) (origin.y + yOff * (row - half) * 3);
 				hexagon = new Hexagon(xPosition, yPosition, new Point(x, y), radius);
+				hexagon.length = 7;
 				if (level > -1)
 					hexagonMap.put(level + ":" + xPosition + "," + yPosition, hexagon);
 				else

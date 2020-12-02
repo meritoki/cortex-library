@@ -5,7 +5,7 @@
 
 	<groupId>com.meritoki.library</groupId>
 	<artifactId>cortex</artifactId>
-	<version>0.4.202006</version>
+	<version>0.5.202008-alpha</version>
 	<packaging>jar</packaging>
 
 	<name>vision</name>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.meritoki.library</groupId>
 			<artifactId>controller</artifactId>
-			<version>0.1.202007</version>
+			<version>0.2.202008</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -13,37 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.cell;
 
-public class Cone extends Cell {
-	
-	public Wavelength wavelength = Wavelength.SHORT;
-	
-	public Cone(Wavelength wavelength) {
-		this.wavelength = wavelength;
-	}
-	
-	public void input(int color) {
-//		logger.info("input("+color+")");
-		int blue = color & 0xff;
-		int green = (color & 0xff00) >> 8;
-		int red = (color & 0xff0000) >> 16;		
-		switch(wavelength) {
-		case SHORT: {
-			this.input(0, 0, blue);
-			break;
-		}
-		case MEDIUM: {
-			this.input(0,green,0);
-			break;
-		}
-		case LONG: {
-			this.input(0,0,blue);
-			break;
-		}
-		default: {
-			
-		}
-		}
-	}
+public enum Wavelength {
+	SHORT,
+	MEDIUM,
+	LONG
 }
