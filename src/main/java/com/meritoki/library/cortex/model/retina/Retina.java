@@ -11,8 +11,6 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,12 +19,10 @@ import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.time.TimeController;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
-import com.meritoki.library.cortex.model.Matrix;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cortex.Cortex;
 import com.meritoki.library.cortex.model.motor.Delta;
 import com.meritoki.library.cortex.model.motor.Motor;
-import com.meritoki.library.cortex.model.Node;
 
 /**
  * Retina is a class that combines all the functions to perform a scan of an
@@ -78,7 +74,7 @@ public class Retina {
 	public BufferedImage bufferedImage;
 	public BufferedImage inputBufferedImage;// Object should be what is input into cortex
 
-	public double focalLength = 22; // mm
+	public double focalLength = 8; // mm
 	public double minDistance = 8;// mm
 	public double distance = minDistance;
 	public double maxDistance;
@@ -93,7 +89,7 @@ public class Retina {
 	public int index;
 	private int interval = 8;
 	private int size;
-	public int step = 16;
+	public int step = 128;
 	public State state = State.NEW;
 
 	public Retina(BufferedImage bufferedImage, Cortex cortex) {

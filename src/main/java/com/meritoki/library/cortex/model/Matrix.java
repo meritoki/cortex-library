@@ -207,31 +207,33 @@ public class Matrix {
 		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ")");
 		// Get line
 		List<Point> line = null;
-		double threshold = 2.0;
+		double threshold = 2;
 		// Direction UP/DOWN
 		// if direction UP, get point closet to input, which minimizes y
 		// if direction DOWN, get point closet to input, which maximizes y
 		double min = Double.MAX_VALUE;//;input.y;
-		double max = Double.MIN_VALUE;//input.y;
+		double max = -Double.MIN_VALUE;//input.y;
 
 		for (int i = 0; i < this.size(); i++) {
 			for (int j = 0; j < this.getPointList(i).size(); j++) {
 				Point data = this.getPoint(i, j);
 				if (data != null) {
-					if (input.x -5 < data.x && data.x < input.x + 5) {// found points that line on the same vertical line.
+					System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") data="+data);
+					if (input.x -threshold < data.x && data.x < input.x + threshold) {// found points that line on the same vertical line.
+						System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") data filtered");
 						// To the algorithm, must add current input.y and radius.
 						switch (direction) {
 						case UP: {
-//							if (data.y < min && data.y > (input.y - radius)) {
-							if (data.y < (input.y - radius) && data.y > max) {
+							if (data.y < min && data.y > (input.y - radius)) {
+//							if (data.y < (input.y - radius) && data.y > max) {
 								max = data.y;
 								line = this.getPointList(i);
 							}
 							break;
 						}
 						case DOWN: {
-							if (data.y > (input.y + radius) && data.y < min) {
-//							if (data.y > max && data.y < (input.y + radius)) {
+//							if (data.y > (input.y + radius) && data.y < min) {
+							if (data.y > max && data.y < (input.y + radius)) {
 //							if (data.y >= (input.y + radius)) {
 								min = data.y;
 								line = this.getPointList(i);

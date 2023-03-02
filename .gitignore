@@ -4,3 +4,4 @@ target/
 .project
 reference/
 test/
+/bin/

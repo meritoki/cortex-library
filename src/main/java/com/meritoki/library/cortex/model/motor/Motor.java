@@ -124,9 +124,11 @@ public class Motor {
 			switch (this.vertical) {
 			case UP: {
 				List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
+				System.out.println("input(...) line="+line);
 				if (line != null)
 					move = line.get(0);
 				this.vertical = Direction.DOWN;
+				System.out.println("input(...) move="+move);
 				break;
 			}
 			case DOWN: {
