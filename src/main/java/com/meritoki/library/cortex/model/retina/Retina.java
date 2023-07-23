@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.time.TimeController;
@@ -62,12 +65,13 @@ public class Retina {
 	// Eventually a child will win that has or does not have children, but cannot
 	// decrease the minDistance.
 	// This is where we connect the point and add it to the list.
-
+	protected static Logger logger = LoggerFactory.getLogger(Retina.class.getName());
 	public final int DIMENSION = 100;
 	public String uuid;
 	public Dimension dimension;
 
 	public Cortex cortex;
+	public boolean motorFlag = false;
 	public Motor motor = new Motor();
 
 	public BufferedImage object;
@@ -99,7 +103,7 @@ public class Retina {
 	}
 
 	public void setDimension(Dimension dimension) {
-		System.out.println("setDimension(" + dimension + ")");
+		logger.info("setDimension(" + dimension + ")");
 		this.dimension = dimension;
 		this.inputBufferedImage = this.getInputBufferedImage();
 		Point origin = this.getInputCenter();
@@ -112,7 +116,8 @@ public class Retina {
 			this.cortex = cortex;
 			this.cortexRadius = this.cortex.getRadius();
 			this.maxDistance = this.getMaxDistance();
-			this.motor.setCortex(this.cortex);
+			if(this.motorFlag)
+				this.motor.setCortex(this.cortex);
 		}
 	}
 
@@ -132,23 +137,23 @@ public class Retina {
 	}
 
 	public void setOrigin(Point origin) {
-//		System.out.println("setOrigin(" + origin + ")");
+//		logger.info("setOrigin(" + origin + ")");
 		this.previous = this.origin;
 		if (this.previous == null) {
 			this.previous = this.getInputCenter();
 			this.previous.center = true;
 		}
 		this.origin = origin;
-//		System.out.println("setOrigin(" + origin + ") origin.center=" + this.origin.center);
+//		logger.info("setOrigin(" + origin + ") origin.center=" + this.origin.center);
 	}
 
 	public void setDistance(double distance) {
-		System.out.println("setDistance(" + distance + ")");
+		logger.info("setDistance(" + distance + ")");
 		// this.previousDistance = this.distance;
 		this.distance = distance;// millimeter
 		if (this.distance > 0) {
 			this.scale = (this.getObjectHeight() / this.object.getHeight());
-			// System.out.println("this.scale=" + this.scale);
+			// logger.info("this.scale=" + this.scale);
 			this.inputBufferedImage = this.getInputBufferedImage();
 		}
 	}
@@ -172,15 +177,15 @@ public class Retina {
 	 * @param concept
 	 */
 	public void iterate(Graphics2D graphics2D, Concept concept) {
-//		System.out.println("iterate(" + String.valueOf(graphics2D != null) + ", "
+//		logger.info("iterate(" + String.valueOf(graphics2D != null) + ", "
 //				+ String.valueOf(bufferedImage != null) + ", " + String.valueOf(cortex != null) + ")");
-		Delta delta = this.motor.getDelta();
+		Delta delta = (this.motorFlag)?this.motor.getDelta():null;
 		if (delta != null) {
-			System.out.println("iterate(...) delta=" + delta);
+			logger.info("iterate(...) delta=" + delta);
 			this.setOrigin(delta.stop);
 			this.input(graphics2D, concept);
 		} else {
-			System.out.println("this.distance=" + this.distance);
+			logger.info("this.distance=" + this.distance);
 			if (this.distance == 0) {
 				this.maxDistance = this.getMaxDistance();
 				this.distance = this.maxDistance;
@@ -193,7 +198,7 @@ public class Retina {
 			} else {
 				this.interval = this.size / this.step;
 				if ((index * this.interval) < this.size) {
-					System.out.println("index=" + index);
+					logger.info("index=" + index);
 					this.distance = size;
 					this.distance -= index * this.interval;
 					this.index++;
@@ -218,15 +223,16 @@ public class Retina {
 	 * @param concept
 	 */
 	public void input(Graphics2D graphics2D, Concept concept) {
-//		System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
+//		logger.info("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
 		this.setDistance(this.distance);
 		this.drawInputBufferedImage(graphics2D);
 		this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
 		this.cortex.update();
 		this.cortex.process(graphics2D, this.inputBufferedImage, concept);
 		this.processBelief();
-		this.motor.input(this.getInputCenter(), origin, this.scale);
-		concept = (this.cortex.getBelief().conceptList.size() > 0) ? this.cortex.getBelief().conceptList.get(0) : null;
+		if(this.motorFlag)
+			this.motor.input(this.getInputCenter(), origin, this.scale);
+		concept = (this.cortex.getBelief() != null && this.cortex.getBelief().conceptList.size() > 0) ? this.cortex.getBelief().conceptList.get(0) : null;
 		this.drawGlobalBeliefList(graphics2D, concept);
 //			this.drawRelativeBeliefList(graphics2D);
 		this.drawInputCenter(graphics2D);
@@ -289,7 +295,8 @@ public class Retina {
 
 	public void drawMotor(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-			this.motor.paint(graphics2D);
+			if(this.motorFlag)
+				this.motor.paint(graphics2D);
 //			int size = this.cortex.pointList.size();
 //			int count = 0;
 //			double x = this.getInputCenterX();//this.origin.x;
@@ -350,14 +357,14 @@ public class Retina {
 	}
 
 	public void drawGlobalBeliefList(Graphics2D graphics2D, Concept concept) {
-//		System.out.println("drawGlobalBeliefList(...)");
+//		logger.info("drawGlobalBeliefList(...)");
 		if (graphics2D != null) {
 
 			double x = this.getInputCenterX();// this.origin.x;
 			double y = this.getInputCenterY();// 0;//this.origin.y;
 			for (int i = 0; i < this.cortex.beliefList.size(); i++) {// Belief belief : this.cortex.beliefList) {
 				Belief belief = this.cortex.beliefList.get(i);
-//				System.out.println(belief);
+//				logger.info(belief);
 				if (belief.contains(concept)) {
 					graphics2D.setColor(Color.BLACK);
 				} else {
@@ -381,13 +388,13 @@ public class Retina {
 	}
 
 	public void drawRelativeBeliefList(Graphics2D graphics2D) {
-//		System.out.println("drawRelativeBeliefList(...)");
+//		logger.info("drawRelativeBeliefList(...)");
 		if (graphics2D != null) {
 			graphics2D.setColor(Color.YELLOW);
 			double x = this.origin.x;
 			double y = this.origin.y;
 			for (Belief belief : this.cortex.beliefList) {
-//				System.out.println(belief);
+//				logger.info(belief);
 				Point point = new Point(belief.relative);
 				double r = belief.getRadius() * this.scale;
 				point.x *= this.scale;
@@ -524,7 +531,7 @@ public class Retina {
 	}
 
 //	public double getSensorRadius() {
-////		System.out.println("getSensorRadius() this.sensorRadius="+this.sensorRadius);
+////		logger.info("getSensorRadius() this.sensorRadius="+this.sensorRadius);
 //		return this.cortexRadius;
 //	}
 
@@ -559,7 +566,7 @@ public class Retina {
 	public boolean lensEquivalence() {
 		double a = (this.getSensorWidth()) / this.focalLength;
 		double b = this.getFieldHeight() / this.distance;
-//		System.out.println("lenEquivalence() a="+a+" b="+b);
+//		logger.info("lenEquivalence() a="+a+" b="+b);
 		return a == b;
 	}
 
@@ -572,7 +579,7 @@ public class Retina {
 		NumberFormat formatter = new DecimalFormat("#0.00");
 		double a = this.getMagnification();
 		double b = this.getObjectHeight() / this.getSensorObjectHeight();
-//		System.out.println("magnificationEquivalence() a="+a+" b="+b);
+//		logger.info("magnificationEquivalence() a="+a+" b="+b);
 		return formatter.format(a).equals(formatter.format(b));
 	}
 
@@ -637,16 +644,16 @@ public class Retina {
 		BufferedImage b = new BufferedImage((int) (width), (int) (height), BufferedImage.TYPE_INT_RGB);
 		Graphics g = b.createGraphics();
 		Point bufferedImageCenter = this.getBufferedImageCenter(this.bufferedImage);
-		// System.out.println("bufferedImageCenter="+bufferedImageCenter);
+		// logger.info("bufferedImageCenter="+bufferedImageCenter);
 		int x = (int) (center.x - bufferedImageCenter.x);// (int)((width/2)-(center.x-bufferedImageCenter.x));
 		int y = (int) (center.y - bufferedImageCenter.y);// ;//(int)((height/2)-
-		// System.out.println("difference x="+x+" y="+y);
-		// System.out.println("this.bufferedImage.getWidth()="+this.bufferedImage.getWidth()+"
+		// logger.info("difference x="+x+" y="+y);
+		// logger.info("this.bufferedImage.getWidth()="+this.bufferedImage.getWidth()+"
 		// this.bufferedImage.getHeight()="+this.bufferedImage.getHeight());
 		g.drawImage(this.bufferedImage, x, y, this.bufferedImage.getWidth(), this.bufferedImage.getHeight(), null);
 		// g.drawRect(x, y, this.bufferedImage.getWidth(),
 		// this.bufferedImage.getHeight());
-		// System.out.println("getObject() b.getWidth()="+b.getWidth()+"
+		// logger.info("getObject() b.getWidth()="+b.getWidth()+"
 		// b.getHeight()="+b.getHeight());
 
 		return b;
@@ -711,21 +718,21 @@ public class Retina {
 
 	public Point getBufferedImageCenter(BufferedImage bufferedImage) {
 		Point center = new Point(bufferedImage.getWidth() / 2, bufferedImage.getHeight() / 2);
-//		System.out.println("getCenter() center="+center);
+//		logger.info("getCenter() center="+center);
 		return center;
 	}
 }
 
 //this.setDistance(16);
-//System.out.println("scale="+scale);
-//System.out.println(this.getObjectHeightMM());
-//System.out.println(this.getObjectWidthMM());
-//System.out.println(this.getObjectHeight());
-//System.out.println(this.getObjectWidth());
+//logger.info("scale="+scale);
+//logger.info(this.getObjectHeightMM());
+//logger.info(this.getObjectWidthMM());
+//logger.info(this.getObjectHeight());
+//logger.info(this.getObjectWidth());
 //this.dimension  = new Dimension(this.getObjectWidth(),this.getObjectHeight());
 //this.scale = (this.getObjectHeight()<this.bufferedImage.getHeight())?this.getObjectHeight()/this.bufferedImage.getHeight():this.bufferedImage.getHeight()/this.getObjectHeight();
 //this.scale = (this.getObjectHeight()/this.bufferedImage.getHeight());
-//System.out.println("this.scale="+this.scale);
+//logger.info("this.scale="+this.scale);
 
 //this.cortex.setOrigin(this.scaledBufferedImage.getWidth()/2, this.scaledBufferedImage.getHeight()/2);
 //this.cortex.update();
@@ -738,10 +745,10 @@ public class Retina {
 //} else { 
 //	this.setDistance(this.distance);
 //}
-//System.out.println("angle="+this.getAngle());
-//System.out.println("lensEquivalence="+this.lensEquivalence());
-//System.out.println("objectEquivalence="+this.objectEquivalence());
-//System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
+//logger.info("angle="+this.getAngle());
+//logger.info("lensEquivalence="+this.lensEquivalence());
+//logger.info("objectEquivalence="+this.objectEquivalence());
+//logger.info("magnificationEquivalence="+this.magnificationEquivalence());
 //graphics2D.drawImage(this.scaledBufferedImage, null, null);
 //Concept concept = new Concept(UUID.randomUUID().toString());
 //
@@ -776,7 +783,7 @@ public class Retina {
 //double y = this.cortex.getY();
 //double newX = x - r;
 //double newY = y - r;
-//System.out.println("r="+r+" x="+x+" y="+y);
+//logger.info("r="+r+" x="+x+" y="+y);
 //Ellipse2D.Double ellipse = new Ellipse2D.Double(newX, newY, r * 2, r * 2);
 //graphics2D.draw(ellipse);
 //
@@ -792,7 +799,7 @@ public class Retina {
 //}
 
 //Iterator<Point> iterator = new ArrayList(this.pointList).iterator();
-//System.out.println(this.pointList.size());
+//logger.info(this.pointList.size());
 //while(iterator.hasNext()) {
 //	Point p = iterator.next();
 //	this.cortex.setOrigin((int)(p.x), (int)(p.y));
@@ -802,7 +809,7 @@ public class Retina {
 //}
 
 //if (point.addScale < this.scale) {
-//System.out.println(point);
+//logger.info(point);
 //this.setOrigin(point.x, point.y);
 //this.input(graphics2D,concept);
 //List<Node> nodeList = point.getChildren();
@@ -810,7 +817,7 @@ public class Retina {
 //for (Node n : nodeList) {
 //	Point p = (Point) n;
 //	if (Point.getDistance(point, p) > minDistance) {
-//		System.out.println("node point" + p);
+//		logger.info("node point" + p);
 //		pointStack.push(p);
 //	}
 //}
@@ -834,7 +841,7 @@ public class Retina {
 ////random = min + (int)(Math.random() * ((max - min) + 1));
 ////if(random == value) {
 ////	Point p = (Point) n;
-////	System.out.println("node point" + p);
+////	logger.info("node point" + p);
 ////	pointStack.push(p);
 ////}
 //}
@@ -859,28 +866,28 @@ public class Retina {
 //}
 
 //public void iterate(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex, Concept concept) {
-////System.out.println("iterate(" + String.valueOf(graphics2D != null) + ", "
+////logger.info("iterate(" + String.valueOf(graphics2D != null) + ", "
 ////	+ String.valueOf(bufferedImage != null) + ", " + String.valueOf(cortex != null) + ")");
 //if (this.loop) {
 //if (this.pointStack.size() > 0) {
-////	System.out.println("this.pointStack=" + this.pointStack);
+////	logger.info("this.pointStack=" + this.pointStack);
 //	Point point = this.pointStack.pop();
-//	System.out.println(point);
+//	logger.info(point);
 //	this.setOrigin(point.x, point.y);
 //	this.input(graphics2D, concept);
 //	List<Point> pointList = this.traverse(point);
 //	for (Point p : pointList) {
 //		this.pointStack.push(p);
 //	}
-//	System.out.println("this.pointStack.size()=" + this.pointStack.size());
+//	logger.info("this.pointStack.size()=" + this.pointStack.size());
 //} else {
 //	this.setBufferedImage(bufferedImage);
 //	this.setCortex(cortex);
-//	System.out.println("this.getMagnification()=" + this.getMagnification());
-//	System.out.println("this.distance=" + this.distance);
+//	logger.info("this.getMagnification()=" + this.getMagnification());
+//	logger.info("this.distance=" + this.distance);
 //	if (this.distance == 0) {
-//		System.out.println("this.distance == 0");//	public void centerBeliefList() {
-//System.out.println("centerBeliefList()");
+//		logger.info("this.distance == 0");//	public void centerBeliefList() {
+//logger.info("centerBeliefList()");
 //if(this.cortex != null && this.cortex.root!=null) { 
 //	Point center = new Point(this.getCenterX(),this.getCenterY());
 //	double deltaX = center.x - this.cortex.root.x;
@@ -896,24 +903,24 @@ public class Retina {
 //		this.maxDistance = this.getMaxDistance();
 //		this.distance = this.maxDistance;
 //		this.size = (int) (this.getMaxDistance() - this.focalLength - this.minDistance);
-//		System.out.println("size=" + size);
+//		logger.info("size=" + size);
 //		this.index = 0;
 //		this.setDistance(this.distance);
 //		this.input(graphics2D, concept);
 ////		this.pointStack.push(this.root);
-//		System.out.println("this.pointStack.size()=" + this.pointStack.size());
+//		logger.info("this.pointStack.size()=" + this.pointStack.size());
 //		this.state = State.NEW;
 //	} else {
 //		this.interval = this.size / this.step;
 //		if ((index * this.interval) < this.size) {
-//			System.out.println("index=" + index);
+//			logger.info("index=" + index);
 //			this.distance = size;
 //			this.distance -= index * this.interval;
 //			this.index++;
 //			this.setDistance(this.distance);
 //			this.input(graphics2D, concept);
 ////			this.pointStack.push(this.root);
-//			System.out.println("this.pointStack.size()=" + this.pointStack.size());
+//			logger.info("this.pointStack.size()=" + this.pointStack.size());
 //			this.state = State.PENDING;
 //		} else {
 //			this.state = State.COMPLETE;
@@ -943,11 +950,11 @@ public class Retina {
 //}
 
 //public void input(Graphics2D graphics2D, BufferedImage bufferedImage, Cortex cortex,Concept concept) {
-//System.out.println("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
-////System.out.println("angle="+this.getAngle());
-////System.out.println("lensEquivalence="+this.lensEquivalence());
-////System.out.println("objectEquivalence="+this.objectEquivalence());
-////System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
+//logger.info("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
+////logger.info("angle="+this.getAngle());
+////logger.info("lensEquivalence="+this.lensEquivalence());
+////logger.info("objectEquivalence="+this.objectEquivalence());
+////logger.info("magnificationEquivalence="+this.magnificationEquivalence());
 //this.setBufferedImage(bufferedImage);
 //this.setCortex(cortex);
 //this.drawScaledBufferedImage(graphics2D);
@@ -987,7 +994,7 @@ public class Retina {
 //}
 
 //public void centerBeliefList() {
-//System.out.println("centerBeliefList()");
+//logger.info("centerBeliefList()");
 //if(this.cortex != null && this.cortex.root!=null) { 
 //	Point center = new Point(this.getCenterX(),this.getCenterY());
 //	double deltaX = center.x - this.cortex.root.x;
@@ -1002,12 +1009,12 @@ public class Retina {
 //}
 
 //public void drawRoot(Graphics2D graphics2D) {
-//	System.out.println("drawRoot(...)");
+//	logger.info("drawRoot(...)");
 //	if (graphics2D != null) {
 //		graphics2D.setColor(Color.CYAN);
 //		double x = this.cortex.root.x;
 //		double y = this.cortex.root.y;
-//		System.out.println(this.cortex.root);
+//		logger.info(this.cortex.root);
 //		Ellipse2D.Double ellipse = new Ellipse2D.Double(x, y, 8, 8);
 //		graphics2D.draw(ellipse);
 //	}
@@ -1074,10 +1081,10 @@ public class Retina {
 //
 //}
 
-//System.out.println("angle="+this.getAngle());
-//System.out.println("lensEquivalence="+this.lensEquivalence());
-//System.out.println("objectEquivalence="+this.objectEquivalence());
-//System.out.println("magnificationEquivalence="+this.magnificationEquivalence());
+//logger.info("angle="+this.getAngle());
+//logger.info("lensEquivalence="+this.lensEquivalence());
+//logger.info("objectEquivalence="+this.objectEquivalence());
+//logger.info("magnificationEquivalence="+this.magnificationEquivalence());
 
 //public List<Point> traverse(Point point) {
 //List<Point> pointList = new ArrayList<>();

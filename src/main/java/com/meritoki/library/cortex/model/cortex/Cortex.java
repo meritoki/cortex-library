@@ -22,10 +22,12 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,7 +39,6 @@ import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Binary;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Mind;
-import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.group.Group;
 import com.meritoki.library.cortex.model.network.Color;
@@ -48,6 +49,7 @@ import com.meritoki.library.cortex.model.network.shape.Shape;
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Network.class), @Type(value = Group.class), })
 public class Cortex {
+	protected static Logger logger = LoggerFactory.getLogger(Cortex.class.getName());
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
@@ -182,8 +184,8 @@ public class Cortex {
 	public void traverseInOrder(Binary node) {
 		if (node != null) {
 			traverseInOrder(node.left);
-			System.out.println(" " + node.value);
-			System.out.println(" " + ((Mind) node).beliefList.size());
+			logger.info(" " + node.value);
+			logger.info(" " + ((Mind) node).beliefList.size());
 			traverseInOrder(node.right);
 		}
 	}
@@ -244,7 +246,7 @@ public class Cortex {
 	}
 
 //	public void addPoint(Point root, Point point) {
-////		System.out.println("addPoint("+root+", "+point+")");
+////		logger.info("addPoint("+root+", "+point+")");
 //		if (point != null && root != null && !point.equals(root)) {
 ////			point.round()
 //			List<Node> nodeList = root.getChildren();
@@ -261,7 +263,7 @@ public class Cortex {
 //				}
 //			}
 //			if (minPoint != null) {
-//				// System.out.println("addPoint("+root+", "+point+") minPoint="+minPoint);
+//				// logger.info("addPoint("+root+", "+point+") minPoint="+minPoint);
 //				this.addPoint(minPoint, point);
 //			} else {
 //				root.addChild(point);
@@ -277,7 +279,7 @@ public class Cortex {
 
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
-		System.out.println("setOrigin(" + x + ", " + y + ")");
+		logger.info("setOrigin(" + x + ", " + y + ")");
 		this.origin = new Point(x, y);
 //		this.x = x;
 //		this.y = y;
@@ -297,7 +299,7 @@ public class Cortex {
 
 //	@JsonIgnore
 //	public int setPointMap(List<Point> pointList) {
-////		System.out.println("setPointMap(" + pointList.size() + ")");
+////		logger.info("setPointMap(" + pointList.size() + ")");
 //		int max = 0;
 //		for (Point p : pointList) {
 //			Belief belief = this.beliefMatrix[(int) p.x][(int) p.y];
@@ -311,7 +313,7 @@ public class Cortex {
 //				}
 //				belief.conceptList.addAll(p.belief.conceptList);
 //			}
-////			System.out.println("setPointMap("+pointList.size()+") count="+count);
+////			logger.info("setPointMap("+pointList.size()+") count="+count);
 //			this.beliefMatrix[(int) p.x][(int) p.y] = belief;
 //		}
 //		return max;
@@ -322,7 +324,7 @@ public class Cortex {
 		for (Entry<String, Shape> e : this.shapeMap.entrySet()) {
 			String key = e.getKey();
 			if (key.startsWith("0:")) {
-//				System.out.println("getSensorRedius() key="+key);
+//				logger.info("getSensorRedius() key="+key);
 				Shape shape = e.getValue();
 				shape.initCells();
 //				shape.updatePoints();
@@ -339,7 +341,7 @@ public class Cortex {
 				}
 			}
 		}
-//		System.out.println("getRadius() max="+max);
+//		logger.info("getRadius() max="+max);
 		return max;
 	}
 

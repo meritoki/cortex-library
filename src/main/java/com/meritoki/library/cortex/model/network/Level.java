@@ -22,14 +22,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Coincidence;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.ConceptComparator;
 import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.network.shape.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * In a level, shapes are always referenced by their relative coordinates, i.e.
@@ -41,7 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Level {
 
 	@JsonIgnore
-	protected Logger logger = Logger.getLogger(Level.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Level.class.getName());
 	@JsonIgnore
 	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonIgnore
@@ -105,7 +107,7 @@ public class Level {
 			s = entry.getValue();
 			nodeList = s.getChildren();
 			if (nodeFlag) {
-//				System.out.println("propogate(...) nodeList.size()=" + nodeList.size());
+//				logger.info("propogate(...) nodeList.size()=" + nodeList.size());
 				for (int i = 0; i < nodeList.size(); i++) {
 					Node n = nodeList.get(i);
 					Shape shape = (Shape) n;
@@ -115,7 +117,7 @@ public class Level {
 			} else {
 				int size = s.length;
 				if (size > 0) {
-//					System.out.println("propogate(...) size=" + size);
+//					logger.info("propogate(...) size=" + size);
 					for (int i = 0; i < s.length; i++) {
 						if (i < nodeList.size()) {
 							Node n = nodeList.get(i);
@@ -147,7 +149,7 @@ public class Level {
 					Shape shape = (Shape) n;
 					length = (nodeFlag) ? nodeList.size() : shape.length;
 					if (length > 0) {
-//						System.out.println("feedback(...) length=" + length);
+//						logger.info("feedback(...) length=" + length);
 						List<Integer> list = s.coincidence.getSublist(length, i);
 						if (list != null) {
 							shape.addCoincidence(new Coincidence(list), concept, false);

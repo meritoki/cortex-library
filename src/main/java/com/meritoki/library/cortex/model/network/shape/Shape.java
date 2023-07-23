@@ -20,7 +20,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,11 +33,10 @@ import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cell.Cone;
 import com.meritoki.library.cortex.model.cell.Wavelength;
 import com.meritoki.library.cortex.model.network.Color;
-import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 
 public class Shape extends Node<Object> {
 
-	protected Logger logger = Logger.getLogger(Shape.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Shape.class.getName());
 	@JsonProperty
 	private int x = 0;
 	@JsonProperty
@@ -282,11 +283,11 @@ public class Shape extends Node<Object> {
 		if (coincidence != null && coincidence.list.size() > 0) {
 			for (int i = 0; i < this.coincidenceList.size(); i++) {
 				c = this.coincidenceList.get(i);
-				if(concept == null) {
-					c.setThreshold(0.95);
-				} else {
-					c.setThreshold(0.99);
-				}
+//				if(concept == null) {
+//					c.setThreshold(0.95);
+//				} else {
+//					c.setThreshold(0.99);
+//				}
 				if (c.similar(coincidence, max)) {
 					max = c.quotient;
 					inferredCoincidence = c;

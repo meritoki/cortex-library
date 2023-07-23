@@ -16,10 +16,12 @@
 package com.meritoki.library.cortex.model.cell;
 
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import java.util.logging.Logger;
 
 public class Cell {
-	protected Logger logger = Logger.getLogger(Cell.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Cell.class.getName());
 	public int x;
 	public int y;
 	public Integer red = 0;

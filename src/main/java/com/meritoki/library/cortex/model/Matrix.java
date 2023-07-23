@@ -15,9 +15,6 @@
  */
 package com.meritoki.library.cortex.model;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -26,14 +23,17 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.meritoki.library.cortex.model.motor.Direction;
 
 public class Matrix {
 
+	protected static Logger logger = LoggerFactory.getLogger(Matrix.class.getName());
 	@JsonIgnore
 	public double threshold = 16;
 	@JsonIgnore
@@ -66,8 +66,8 @@ public class Matrix {
 												// own points
 						if (radiusList == null)
 							radiusList = new ArrayList<>();
-						System.out.println(i + ":" + j);
-						System.out.println("dataRadius=" + dataRadius);
+						logger.info(i + ":" + j);
+						logger.info("dataRadius=" + dataRadius);
 						radiusList.add(data);
 					}
 				}
@@ -103,7 +103,7 @@ public class Matrix {
 				}
 			}
 		}
-//		System.out.println("getCurrentLine("+center+") line="+line);
+//		logger.info("getCurrentLine("+center+") line="+line);
 		return line;
 	}
 
@@ -130,7 +130,7 @@ public class Matrix {
 //						distance = this.round(Point.getDistance(origin, p));
 //						if (p.x > origin.x && distance >= radius && distance < min) {//list is in order, so latest is max
 //							min = distance;
-////							System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
+////							logger.info("getNextPoint("+origin+", "+radius+", "+direction+") distance="+distance);
 //							point = p;
 //						}
 //					}
@@ -147,14 +147,14 @@ public class Matrix {
 //				}
 //			}
 //		}
-//		System.out.println("getNextPoint("+origin+", "+radius+", "+direction+") point="+point);
+//		logger.info("getNextPoint("+origin+", "+radius+", "+direction+") point="+point);
 //		if(point != null)
 //			point.round();
 //		return point;
 //	}
 	
 	public Point getNextPoint(Point input, double radius, Direction direction) {
-		System.out.println("getNextPoint(" + input + ", " + radius + ", " + direction + ")");
+		logger.info("getNextPoint(" + input + ", " + radius + ", " + direction + ")");
 		// Get line
 		Point point = null;
 		// Direction UP/DOWN
@@ -189,7 +189,7 @@ public class Matrix {
 				}
 			}
 		}
-//		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
+//		logger.info("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
 		return point;
 
 	}
@@ -204,7 +204,7 @@ public class Matrix {
 	 * @return
 	 */
 	public List<Point> getPerpendicularLine(Point input, double radius, Direction direction) {
-		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ")");
+		logger.info("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ")");
 		// Get line
 		List<Point> line = null;
 		double threshold = 2;
@@ -218,9 +218,9 @@ public class Matrix {
 			for (int j = 0; j < this.getPointList(i).size(); j++) {
 				Point data = this.getPoint(i, j);
 				if (data != null) {
-					System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") data="+data);
+					logger.info("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") data="+data);
 					if (input.x -threshold < data.x && data.x < input.x + threshold) {// found points that line on the same vertical line.
-						System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") data filtered");
+						logger.info("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") data filtered");
 						// To the algorithm, must add current input.y and radius.
 						switch (direction) {
 						case UP: {
@@ -245,7 +245,7 @@ public class Matrix {
 				}
 			}
 		}
-//		System.out.println("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
+//		logger.info("getPerpendicularLine(" + input + ", " + radius + ", " + direction + ") line=" + line);
 		return line;
 
 	}
@@ -325,7 +325,7 @@ public class Matrix {
 			}
 		}
 		if (string != null) {
-			System.out.println(string);
+			logger.info(string);
 		}
 	}
 

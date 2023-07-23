@@ -19,7 +19,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Point;
@@ -50,7 +52,7 @@ public class Hexagonal extends Network {
 	}
 
 	@JsonIgnore
-	protected Logger logger = Logger.getLogger(Hexagonal.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Hexagonal.class.getName());
 
 
 	public Hexagonal() {
@@ -99,7 +101,7 @@ public class Hexagonal extends Network {
 				if (shape != null) {
 					shape.setCenter(new Point(x, y));
 				} else {
-					logger.warning("update() shape == null");
+					logger.warn("update() shape == null");
 				}
 			}
 		}
@@ -115,7 +117,7 @@ public class Hexagonal extends Network {
 	public void load() {
 		super.load();
 		logger.info("load()");
-		logger.info("load() this.shapeMap=" + this.shapeMap);
+		logger.info("load() this.shapeMap.size()=" + ((this.shapeMap != null)?this.shapeMap.size()+"":0));
 		logger.info("load() this.size=" + this.size);
 		logger.info("load() this.radius=" + this.radius);
 		logger.info("load() this.depth=" + this.depth);
@@ -152,8 +154,8 @@ public class Hexagonal extends Network {
 		int exponent = 0;
 //		Map<String, Shape> shapeMap;
 		for (int i = 1; i < depth; i++) {
-			logger.fine("load() i=" + i);
-			logger.fine("load() exponent=" + exponent);
+			logger.trace("load() i=" + i);
+			logger.trace("load() exponent=" + exponent);
 			if (i % 2 == 0) {
 				exponent++;
 			}

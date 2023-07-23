@@ -24,7 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -43,7 +45,7 @@ import com.meritoki.library.cortex.model.network.square.Squared;
 @JsonSubTypes({ @Type(value = Hexagonal.class), @Type(value = Squared.class), })
 public class Network extends Cortex {
 
-	protected Logger logger = Logger.getLogger(Network.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Network.class.getName());
 	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
 
@@ -81,14 +83,14 @@ public class Network extends Cortex {
 
 	@JsonIgnore
 	public void addLevel(Level level) {
-		logger.info("addLevel(" + level + ")");
+		logger.debug("addLevel(" + level + ")");
 		this.levelList.add(level);
 	}
 
 	@JsonIgnore
 	public Level getLastLevel() {
 		Level level = this.levelList.get(this.levelList.size() - 1);
-		logger.info("getLastLevel() level=" + level);
+		logger.debug("getLastLevel() level=" + level);
 		return level;
 	}
 

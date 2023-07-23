@@ -5,3 +5,4 @@ target/
 reference/
 test/
 /bin/
+logs/

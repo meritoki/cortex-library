@@ -16,8 +16,11 @@
 package com.meritoki.library.cortex.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,6 +29,8 @@ public class Coincidence {
 
 	public static void main(String[] args) {
 		Coincidence coincidence = new Coincidence();
+		
+		System.out.println(Coincidence.log2(342));
 
 		coincidence.list.add(1);
 		coincidence.list.add(2);
@@ -43,13 +48,17 @@ public class Coincidence {
 	}
 
 	@JsonIgnore
-	protected Logger logger = Logger.getLogger(Coincidence.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Coincidence.class.getName());
 	@JsonProperty
 	public List<Integer> list = new ArrayList<>();
 	@JsonProperty
 	public double threshold = .99;
 	@JsonProperty
 	public double quotient = 0;
+	@JsonProperty
+	public Double DCG = null;
+	@JsonProperty
+	public Double iDCG = null;
 
 	public Coincidence() {
 	}
@@ -129,11 +138,13 @@ public class Coincidence {
 	@JsonIgnore
 	public boolean minimum(Coincidence c) {
 		boolean flag = false;
-		double a = calculateDCG(this.list);
-		double b = calculateDCG(c.list);
+		Double a = this.getDCG()/c.getIDCG();//calculateDCG(this.list);
+		Double b = c.getDCG()/this.getIDCG();
+//		logger.info("minimum(coincidence) a="+a);
+//		logger.info("minimum(coincidence) b="+b);
 		this.quotient = (a == b) ? 1 : (a > b) ? ((a > 0) ? b / a : 0) : ((b > 0) ? a / b : 0);
 		if (this.quotient > this.threshold) {
-//			System.out.println("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
+//			logger.info("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
 			flag = true;
 		}
 		return flag;
@@ -160,22 +171,51 @@ public class Coincidence {
 		return this.minimum(c) && this.maximum(max);
 	}
 
+	/**
+	 * 20230410 Defect Detected, log2(i + 2) Should Be log2(i + 1)
+	 * @param list
+	 * @return
+	 */
 	@JsonIgnore
-	public double calculateDCG(List<Integer> list) {
-		int integer;
+	public Double calculateDCG(List<Integer> list) {
+		int relevence;
 		double sum = 0;
 		double iteration;
 		for (int i = 0; i < list.size(); i++) {
-			integer = list.get(i);
-			iteration = (integer / (log2(i + 2)));
+			relevence = list.get(i);
+//			relevence = (relevence > 0)?1/relevence:0;
+//			if(relevence > 0) {
+//				logger.info("i="+i);
+//				logger.info("relevence="+relevence);
+//			}
+			double log = log2(i + 1);
+			iteration = (log > 0)?((double)relevence /log):0;
 			sum += iteration;
 		}
 		return sum;
 	}
+	
+	public Double getDCG() {
+		if(this.DCG == null) {
+			this.DCG = this.calculateDCG(this.list);
+		}
+		return this.DCG;
+	}
+	
+	public Double getIDCG() {
+		if(this.iDCG == null) {
+			List<Integer> list = new ArrayList<>(this.list);
+			Collections.sort(list, Collections.reverseOrder());
+			this.iDCG = this.calculateDCG(list);
+		}
+		return this.iDCG;
+	}
 
 	@JsonIgnore
 	public static double log2(int x) {
-		return Math.log(x) / Math.log(2);
+		double log = Math.log(x) / Math.log(2);
+//		logger.info("log2("+x+") log="+log);
+		return log; 
 	}
 
 	@JsonIgnore

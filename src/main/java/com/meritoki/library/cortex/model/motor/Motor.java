@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Matrix;
-import com.meritoki.library.cortex.model.Mind;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cortex.Cortex;
 
@@ -22,6 +24,7 @@ import com.meritoki.library.cortex.model.cortex.Cortex;
 //Does an accounting that the point it solicited is the input;
 public class Motor {
 
+	protected static Logger logger = LoggerFactory.getLogger(Motor.class.getName());
 	public Cortex cortex;
 	public Delta delta = null;
 	public LinkedList<Delta> deltaStack = new LinkedList<>();
@@ -74,7 +77,7 @@ public class Motor {
 	 * @param scale
 	 */
 	public void input(Point center, Point input, double scale) {
-		System.out.println("input(" + center + ", " + input + ", " + scale + ")");
+		logger.info("input(" + center + ", " + input + ", " + scale + ")");
 		int size = this.pointList.size();
 		if (size > 0) {
 			Point previous = this.pointList.get(size - 1);
@@ -99,18 +102,18 @@ public class Motor {
 		origin.round();
 		global.round();
 		relative.round();
-		System.out.println("beliefRadius=" + beliefRadius);
-		System.out.println("cortexRadius=" + cortexRadius);
-		System.out.println("origin=" + origin);
-		System.out.println("global=" + global);
-		System.out.println("relative=" + relative);
+		logger.info("beliefRadius=" + beliefRadius);
+		logger.info("cortexRadius=" + cortexRadius);
+		logger.info("origin=" + origin);
+		logger.info("global=" + global);
+		logger.info("relative=" + relative);
 		// Point list is updated with the points from the current belief
 		List<Point> pointList = this.cortex.getPointList(center, scale);// list has origin equal to input image center
 		this.matrix = new Matrix(pointList, 4 * scale);
 //		Mind mind = this.cortex.getMind(beliefRadius);//Mind returns list of Beliefs @ Value equal to Relative Point Radius
 //		if(mind != null) {
 //			for(Belief b: mind.beliefList) {
-//				System.out.println(b);
+//				logger.info(b);
 //			}
 //		}
 		Point move = null;
@@ -120,15 +123,15 @@ public class Motor {
 			// There is a problem here that I predict.
 			// Problem has to do with where vertical starts.
 			// We want to start at CENTER, because it converts to UP in the first iteration.
-			System.out.println("input(...) this.vertical=" + this.vertical);
+			logger.info("input(...) this.vertical=" + this.vertical);
 			switch (this.vertical) {
 			case UP: {
 				List<Point> line = matrix.getPerpendicularLine(origin, beliefRadius, this.vertical);
-				System.out.println("input(...) line="+line);
+				logger.info("input(...) line="+line);
 				if (line != null)
 					move = line.get(0);
 				this.vertical = Direction.DOWN;
-				System.out.println("input(...) move="+move);
+				logger.info("input(...) move="+move);
 				break;
 			}
 			case DOWN: {
@@ -174,11 +177,11 @@ public class Motor {
 
 				double distance = Point.getDistance(belief.origin, center);
 				if (beliefRadius >= distance) {
-					System.out.println("distance=" + distance);
+					logger.info("distance=" + distance);
 					move = center;
 					this.vertical = Direction.CENTER;
 				} else {
-					System.out.println("cannot reach center");
+					logger.info("cannot reach center");
 					// else find next perpendicular line
 					// For now, the easiest solution to for this algorithm is to fail to return a
 					// line and go to center.
@@ -186,7 +189,7 @@ public class Motor {
 					if (line != null) {
 						move = line.get(0);
 					} else {
-						System.out.println("move to center");
+						logger.info("move to center");
 						move = center;
 						this.vertical = Direction.CENTER;
 					}
@@ -199,7 +202,7 @@ public class Motor {
 
 		if (move != null && !move.equals(input)) {
 			Delta delta = new Delta(input, move);
-			System.out.println("delta=" + delta);
+			logger.info("delta=" + delta);
 			this.deltaStack.push(delta);
 		}
 	}
@@ -263,7 +266,7 @@ public class Motor {
 	}
 }
 
-//System.out.println("line="+line);
+//logger.info("line="+line);
 ////global has an index in line.
 ////line  
 //boolean contains = false;
@@ -272,7 +275,7 @@ public class Motor {
 ////If data Point equals global of belief from list, then remove from dataList.
 //for(Point data:dataList) {
 //	//Data list used to generate deltas. Deltas are added to stack.
-//	System.out.println("data="+data);
+//	logger.info("data="+data);
 //	if(line.contains(data)) {
 //		contains = true;
 //	}
@@ -294,7 +297,7 @@ public class Motor {
 // Technically this code should always return at least one value.
 //List<Point> list = belief.getRadiusPointList(beliefRadius,scale);//This works because belief origin and pointList have been processed
 //for(Point p: list) {
-//	System.out.println("*******"+p);//Point is relative to 0,0
+//	logger.info("*******"+p);//Point is relative to 0,0
 //}
 
 // There is an inequality here that is vital, I have to figure it out.
@@ -342,7 +345,7 @@ public class Motor {
 // When we reach the end of a line, we must choose what to do.
 //List<Point> currentLine = matrix.getCurrentLine(origin);
 //List<Point> dataList = matrix.getRadiusPointList(input, beliefRadius);
-//System.out.println("currentLine=" + currentLine);
+//logger.info("currentLine=" + currentLine);
 //if (currentLine.size() > 0) {
 //	Point start = currentLine.get(0);
 //	Point stop = currentLine.get(currentLine.size() - 1);

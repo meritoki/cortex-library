@@ -12,12 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.library.controller.node.NodeController;
 
 public class Belief {
 
+	protected static Logger logger = LoggerFactory.getLogger(Belief.class.getName());
 	@JsonProperty
 	public String uuid;
 	@JsonProperty
@@ -85,21 +89,21 @@ public class Belief {
 	 * @param previous
 	 */
 	public void setRelative(double scale, Point origin, Point previous) {
-//		System.out.println("setRelative("+scale+", "+origin+", "+previous+")");
+//		logger.info("setRelative("+scale+", "+origin+", "+previous+")");
 		this.relative = new Point(this.origin);
 //		this.relative.scale(1 / scale);
 		this.relative.x -= origin.x/scale;
 		this.relative.y -= origin.y/scale;
-//		System.out.println("normalize("+scale+", "+origin+", "+previous+") this.origin="+this.origin);		
+//		logger.info("normalize("+scale+", "+origin+", "+previous+") this.origin="+this.origin);		
 		if (!previous.center) {
-//			System.out.println("normalize(...) !previous.center");
+//			logger.info("normalize(...) !previous.center");
 			// Delta is a movement between two points.
 			// If "same" center, then delta is zero.
 			Point delta = origin.subtract(previous);
 			this.relative.x += delta.x/scale;
 			this.relative.y += delta.y/scale;
 		}
-		System.out.println("setRelative("+scale+", "+origin+", "+previous+") this.relative="+relative);
+		logger.info("setRelative("+scale+", "+origin+", "+previous+") this.relative="+relative);
 	}
 	
 	/**
@@ -118,11 +122,11 @@ public class Belief {
 	//This transformation makes the belief relative to origin.
 	//
 	public void setGlobal(Point origin, double scale) {
-//		System.out.println("setGlobal("+scale+", "+origin+")");
+//		logger.info("setGlobal("+scale+", "+origin+")");
 		this.global = new Point(this.origin);
 		this.global.x -= origin.x/scale;
 		this.global.y -= origin.y/scale;
-		System.out.println("setGlobal("+scale+", "+origin+") this.global="+this.global);
+		logger.info("setGlobal("+scale+", "+origin+") this.global="+this.global);
 	}
 
 	@JsonIgnore
@@ -170,12 +174,12 @@ public class Belief {
 	
 	@JsonIgnore
 	public List<Point> getRadiusPointList(double radius, double scale) {
-		System.out.println("getRadiusPointList("+radius+")");
+		logger.info("getRadiusPointList("+radius+")");
 		List<Point> pointList = new ArrayList<>();
 		for(Point point: this.pointList) {
 			double distance = Point.getDistance(new Point(0,0), point)*scale;
 			distance = this.round(distance);
-//			System.out.println("distance="+distance);
+//			logger.info("distance="+distance);
 			if(distance == radius) {
 				pointList.add(point);
 			}
@@ -192,7 +196,7 @@ public class Belief {
 	@JsonIgnore
 	public BufferedImage getBufferedImage() {
 		if (this.bufferedImage == null) {
-			System.out.println("getBufferedImage() filePath=" + filePath + " fileName=" + fileName);
+			logger.info("getBufferedImage() filePath=" + filePath + " fileName=" + fileName);
 			this.file = new File(filePath + NodeController.getSeperator() + fileName);
 			if (this.file.exists()) {
 				this.bufferedImage = NodeController.openBufferedImage(this.file);
@@ -210,15 +214,15 @@ public class Belief {
 	 */
 	@JsonIgnore
 	public void setConceptList(Map<String, String> map, List<Concept> conceptList) {
-//		System.out.println("setConceptList("+map+", "+conceptList+")");
+//		logger.info("setConceptList("+map+", "+conceptList+")");
 		conceptList = new ArrayList<>(conceptList);
 		Set<String> keySet = map.keySet();
 		for (String key : keySet) {
 			String value = map.get(key);
-//			System.out.println("setConceptList("+map+", "+conceptList+") key="+key);
-//			System.out.println("setConceptList("+map+", "+conceptList+") value="+value);			
+//			logger.info("setConceptList("+map+", "+conceptList+") key="+key);
+//			logger.info("setConceptList("+map+", "+conceptList+") value="+value);			
 			for (Concept c : conceptList) {
-//				System.out.println("setConceptList("+map+", "+conceptList+") c="+c);	
+//				logger.info("setConceptList("+map+", "+conceptList+") c="+c);	
 				if (key.equals(c.toString())) {
 					c.value = value;
 				}
@@ -243,7 +247,7 @@ public class Belief {
 		Map<String, Integer> conceptCountMap = new HashMap<>();
 		conceptCountMap = new HashMap<>();
 		if (conceptList != null) {
-//			System.out.println("getConceptList() conceptList=" + conceptList);
+//			logger.info("getConceptList() conceptList=" + conceptList);
 			for (Concept c : conceptList) {
 				Integer count = conceptCountMap.get(c.toString());
 				count = (count != null) ? count : 0;
@@ -267,12 +271,12 @@ public class Belief {
 		Collections.sort(cList, new ConceptComparator());
 		Collections.reverse(cList);
 		this.conceptList = cList;
-//		System.out.println("getConceptList() cList=" + cList);
+//		logger.info("getConceptList() cList=" + cList);
 	}
 
 //	@JsonIgnore
 //	public List<Concept> setConceptList(Map<String, String> map, List<Concept> conceptList) {
-//		System.out.println("setConceptList("+map+", "+conceptList+")");
+//		logger.info("setConceptList("+map+", "+conceptList+")");
 //		conceptList = new ArrayList<>(conceptList);
 //		Set<String> keySet = map.keySet();
 //		for (String key : keySet) {
@@ -295,7 +299,7 @@ public class Belief {
 //
 //		this.conceptCountMap = new HashMap<>();
 //		if (conceptList != null) {
-//			System.out.println("getConceptList() conceptList=" + conceptList);
+//			logger.info("getConceptList() conceptList=" + conceptList);
 //			for (Concept c : conceptList) {
 //				Integer count = this.conceptCountMap.get(c.toString());
 //				count = (count != null) ? count : 0;
@@ -317,7 +321,7 @@ public class Belief {
 //			cList.add(concept);
 //		}
 //		this.conceptList = cList;
-//		System.out.println("getConceptList() cList=" + cList);
+//		logger.info("getConceptList() cList=" + cList);
 //		return cList;
 //	}
 
@@ -337,9 +341,9 @@ public class Belief {
 	}
 }
 
-//System.out.println("normalize("+scale+", "+origin+", "+previous+") this.origin="+this.origin);		
+//logger.info("normalize("+scale+", "+origin+", "+previous+") this.origin="+this.origin);		
 //if (!previous.center) {
-////	System.out.println("normalize(...) !previous.center");
+////	logger.info("normalize(...) !previous.center");
 //	// Delta is a movement between two points.
 //	// If "same" center, then delta is zero.
 //	Point delta = origin.subtract(previous);

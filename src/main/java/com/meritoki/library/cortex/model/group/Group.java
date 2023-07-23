@@ -17,13 +17,14 @@ package com.meritoki.library.cortex.model.group;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,7 +42,7 @@ import com.meritoki.library.cortex.model.network.square.Squared;
 
 public class Group extends Cortex {
 
-	protected Logger logger = Logger.getLogger(Group.class.getName());
+	protected static Logger logger = LoggerFactory.getLogger(Group.class.getName());
 	@JsonProperty
 	private Network brightness = null;
 	@JsonProperty
@@ -59,12 +60,17 @@ public class Group extends Cortex {
 
 	public Group() {
 		this.uuid = UUID.randomUUID().toString();
+		this.setConfiguration(Configuration.HEXAGONAL);
 	}
 
 	/**
 	 * Checked 202001191442 Good
 	 */
 	public Group(Configuration configuration) {
+		this.setConfiguration(configuration);
+	}
+	
+	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
 		switch (this.configuration) {
 		case HEXAGONAL: {
