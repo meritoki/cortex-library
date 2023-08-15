@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.ColorType;
 import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
-import com.meritoki.library.cortex.model.network.shape.Shape;
+import com.meritoki.library.cortex.model.network.Shape;
 
 /**
  * In Network, squares are referenced by level and relative coordinates, i.e.
@@ -40,26 +40,26 @@ import com.meritoki.library.cortex.model.network.shape.Shape;
 public class Squared extends Network {
 
 	public static void main(String[] args) {
-		Squared n = new Squared(Color.BRIGHTNESS, 0, 0, 5, 1, 0);
+		Squared n = new Squared(ColorType.BRIGHTNESS, 0, 0, 5, 1, 0);
 		n.load();
 	}
 	@JsonIgnore
 	protected static Logger logger = LoggerFactory.getLogger(Squared.class.getName());
 
 	public Squared() {
-		super(Color.BRIGHTNESS, 0, 0);
+		super(ColorType.BRIGHTNESS, 0, 0);
 		this.length = 9;
 	}
 
 	public Squared(int dimension, int length, int padding) {
-		super(Color.BRIGHTNESS, 0, 0);
+		super(ColorType.BRIGHTNESS, 0, 0);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
 //		this.length = 9;//
 	}
 
-	public Squared(Color type, int x, int y, int dimension, int length, int padding) {
+	public Squared(ColorType type, int x, int y, int dimension, int length, int padding) {
 		super(type, x, y);
 		this.dimension = dimension;
 		this.length = length;

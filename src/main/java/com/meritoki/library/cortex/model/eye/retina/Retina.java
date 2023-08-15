@@ -1,4 +1,4 @@
-package com.meritoki.library.cortex.model.retina;
+package com.meritoki.library.cortex.model.eye.retina;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,9 +23,9 @@ import com.meritoki.library.controller.time.TimeController;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.cortex.Cortex;
 import com.meritoki.library.cortex.model.motor.Delta;
 import com.meritoki.library.cortex.model.motor.Motor;
+import com.meritoki.library.cortex.model.network.Cortex;
 
 /**
  * Retina is a class that combines all the functions to perform a scan of an
@@ -169,7 +169,7 @@ public class Retina {
 	}
 
 	/**
-	 * iterate
+	 * Function is invoked from scan(...). If motorFlag is disabled,  
 	 * 
 	 * @param graphics2D
 	 * @param bufferedImage

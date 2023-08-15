@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.cortex;
+package com.meritoki.library.cortex.model.network;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -41,10 +41,6 @@ import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Mind;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.group.Group;
-import com.meritoki.library.cortex.model.network.Color;
-import com.meritoki.library.cortex.model.network.Configuration;
-import com.meritoki.library.cortex.model.network.Network;
-import com.meritoki.library.cortex.model.network.shape.Shape;
 
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Network.class), @Type(value = Group.class), })
@@ -53,7 +49,7 @@ public class Cortex {
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
-	public Color type = Color.BRIGHTNESS;
+	public ColorType type = ColorType.BRIGHTNESS;
 	@JsonProperty
 	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
@@ -76,6 +72,8 @@ public class Cortex {
 	public int index = 0;
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
+	@JsonProperty
+	public ColorType[] typeList = { ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE };
 
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();
@@ -101,14 +99,14 @@ public class Cortex {
 		}
 		return pList;
 	}
-	
+
 	public List<Belief> getBeliefList(int seconds) {
 		List<Belief> beliefList = new ArrayList<>();
 		Date now = new Date();
-		for(Belief b: this.beliefList) {
+		for (Belief b : this.beliefList) {
 			long millisecond = Math.abs(b.date.getTime() - now.getTime());
-			long second = millisecond/1000;
-			if(seconds > second) {
+			long second = millisecond / 1000;
+			if (seconds > second) {
 				beliefList.add(b);
 			}
 		}
@@ -295,6 +293,10 @@ public class Cortex {
 
 	@JsonIgnore
 	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {
+	}
+
+	@JsonIgnore
+	public void process(Graphics2D graphics2D, BufferedImage image, ColorType color, Point origin, Concept concept) {
 	}
 
 //	@JsonIgnore

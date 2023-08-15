@@ -1,6 +1,6 @@
 package com.meritoki.library.cortex.model.network;
 
-public enum Color {
+public enum ColorType {
 	BRIGHTNESS,
 	RED,
 	GREEN,

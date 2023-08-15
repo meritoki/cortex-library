@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model.network.shape;
+package com.meritoki.library.cortex.model.network;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,11 +28,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.library.cortex.model.Coincidence;
 import com.meritoki.library.cortex.model.Concept;
-import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cell.Cone;
+import com.meritoki.library.cortex.model.cell.Rod;
 import com.meritoki.library.cortex.model.cell.Wavelength;
-import com.meritoki.library.cortex.model.network.Color;
 
 public class Shape extends Node<Object> {
 
@@ -61,6 +60,11 @@ public class Shape extends Node<Object> {
 	public double[] ypoints = null;
 	@JsonProperty
 	public Coincidence coincidence;
+	@JsonProperty
+	public Map<ColorType, Coincidence> coincidenceMap;
+	@JsonProperty
+	public Map<ColorType, Coincidence> previousCoincidenceMap;
+	
 //	@JsonIgnore
 //	public Coincidence brightnessCoincidence;
 //	@JsonIgnore
@@ -75,16 +79,20 @@ public class Shape extends Node<Object> {
 	public Coincidence prediction = null;
 	@JsonProperty
 	public Coincidence previousCoincidence = null;
-	@JsonIgnore
-	public Coincidence defaultCoincidence = null;
+//	@JsonIgnore
+//	public Coincidence defaultCoincidence = null;
 	@JsonIgnore
 	public Cone[] shortConeArray;
 	@JsonIgnore
 	public Cone[] mediumConeArray;
 	@JsonIgnore
 	public Cone[] longConeArray;
+	@JsonIgnore
+	public Rod[] rodArray;
 	@JsonProperty
 	protected List<Coincidence> coincidenceList = new LinkedList<>();
+	@JsonProperty
+	public Map<ColorType, List<Coincidence>> coincidenceListMap = new HashMap<>();
 	@JsonProperty
 	public Map<String, Integer> coincidenceCountMap = new HashMap<>();
 	@JsonProperty
@@ -97,12 +105,12 @@ public class Shape extends Node<Object> {
 	protected LinkedList<Integer> correctList = new LinkedList<>();
 	@JsonIgnore
 	public static final int MEMORY = 4096;
-	@JsonIgnore
-	public int red;
-	@JsonIgnore
-	public int green;
-	@JsonIgnore 
-	public int blue;
+//	@JsonIgnore
+//	public int red;
+//	@JsonIgnore
+//	public int green;
+//	@JsonIgnore 
+//	public int blue;
 
 	public Shape() {
 //		logger.info("Shape()");
@@ -235,10 +243,12 @@ public class Shape extends Node<Object> {
 		this.shortConeArray = new Cone[sides + 1];
 		this.mediumConeArray = new Cone[sides + 1];
 		this.longConeArray = new Cone[sides + 1];
+		this.rodArray = new Rod[sides + 1];
 		for (int i = 0; i < this.sides + 1; i++) {
 			shortConeArray[i] = new Cone(Wavelength.SHORT);
 			mediumConeArray[i] = new Cone(Wavelength.MEDIUM);
 			longConeArray[i] = new Cone(Wavelength.LONG);
+			rodArray[i] = new Rod();
 		}
 	}
 
@@ -331,6 +341,77 @@ public class Shape extends Node<Object> {
 		}
 	}
 
+	/**
+	 * Function has a lot of responsibility. It matches a input coincidence by
+	 * minimum and maximum similarity with a list of coincidences already input If a
+	 * similarity is found
+	 * 
+	 * @param coincidence
+	 * @param concept
+	 * @param threshold
+	 */
+	@JsonIgnore
+	public void addCoincidence(ColorType color, Coincidence coincidence, Concept concept, boolean flag) {
+		Coincidence c = null;
+		Integer count = 0;
+		double max = 0;
+		Coincidence inferredCoincidence = null;
+		if (coincidence != null && coincidence.list.size() > 0) {
+			List<Coincidence> coincidenceList = this.coincidenceListMap.get(color);
+			for (int i = 0; i < coincidenceList.size(); i++) {
+				c = coincidenceList.get(i);
+//				if(concept == null) {
+//					c.setThreshold(0.95);
+//				} else {
+//					c.setThreshold(0.99);
+//				}
+				if (c.similar(coincidence, max)) {
+					max = c.quotient;
+					inferredCoincidence = c;
+				}
+			}
+			this.previousCoincidenceMap.put(color,this.coincidenceMap.get(color));
+			if(flag) {
+//				List<Concept> conceptList = null;
+//				if (inferredCoincidence != null) {
+//					count = this.coincidenceCountMap.get(inferredCoincidence.toString());
+//					count = (count == null) ? 0 : count;
+//					this.coincidenceCountMap.put(inferredCoincidence.toString(), count + 1);
+////					conceptList = this.conceptListMap.get(inferredCoincidence.toString());
+////					this.conceptListMap.put(inferredCoincidence.toString(), conceptList);
+//				}
+//				if (conceptList == null) {
+//					conceptList = new ArrayList<>();
+//				}
+//				if (concept != null) {
+//					conceptList.add(concept);
+//				}
+				this.coincidenceMap.put(color, coincidence);
+//				this.conceptListMap.put(this.coincidence.toString(), conceptList);
+				
+				coincidenceList.add(coincidence);
+				this.coincidenceListMap.put(color,coincidenceList);
+			} else {
+//				this.coincidence = coincidence;
+				this.coincidenceMap.put(color, coincidence);
+			}
+		}
+//			if (this.previousPrediction != null) {
+//				if (this.previousPrediction.equals(this.coincidence)) {
+//					correctList.add(1);
+//				} else {
+//					correctList.add(0);
+//				}
+//			}
+//			this.previousPrediction = this.prediction;
+//			this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
+//			this.purgeCorrectList();
+//		}
+//		if (coincidenceList.size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
+//			this.purgeCoincidenceList();
+//		}
+	}
+	
 	/**
 	 * Function uses a map of coincidence frequency to determine if it should be
 	 * remove from the coincidenceList. A coincidence with a frequency greater than
@@ -460,14 +541,14 @@ public class Shape extends Node<Object> {
 	}
 
 	@JsonIgnore
-	public Coincidence getCoincidence(Color type) {
+	public Coincidence getCoincidence(ColorType type) {
 //		logger.info("getCoincidence("+type+")");
 		Coincidence coincidence = new Coincidence();
 		int value = 0;
 		for (int i = 0; i < this.sides + 1; i++) {
 			switch (type) {
 			case BRIGHTNESS: {
-				value = (shortConeArray[i].red + mediumConeArray[i].green + longConeArray[i].blue) / 3;
+				value = rodArray[i].brightness;//(shortConeArray[i].red + mediumConeArray[i].green + longConeArray[i].blue) / 3;
 				break;
 			}
 			case RED: {

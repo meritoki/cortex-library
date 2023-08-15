@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.network.ColorType;
 import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
-import com.meritoki.library.cortex.model.network.shape.Shape;
+import com.meritoki.library.cortex.model.network.Shape;
 
 /**
  * In Network, hexagons are referenced by level and relative coordinates, i.e.
@@ -40,7 +40,7 @@ import com.meritoki.library.cortex.model.network.shape.Shape;
 public class Hexagonal extends Network {
 
 	public static void main(String[] args) {
-		Hexagonal n = new Hexagonal(Color.BRIGHTNESS, 0, 0, 13, 1, 0);
+		Hexagonal n = new Hexagonal(ColorType.BRIGHTNESS, 0, 0, 13, 1, 0);
 		n.load();
 //		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
 //		
@@ -56,19 +56,19 @@ public class Hexagonal extends Network {
 
 
 	public Hexagonal() {
-		super(Color.BRIGHTNESS, 0, 0);
+		super(ColorType.BRIGHTNESS, 0, 0);
 		this.length = 7;
 	}
 
 	public Hexagonal(int size, int radius, int padding) {
-		super(Color.BRIGHTNESS, 0, 0);
+		super(ColorType.BRIGHTNESS, 0, 0);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
 		this.length = 7;
 	}
 
-	public Hexagonal(Color type, int x, int y, int size, int radius, int padding) {
+	public Hexagonal(ColorType type, int x, int y, int size, int radius, int padding) {
 		super(type, x, y);
 		this.size = size;
 		this.radius = radius;

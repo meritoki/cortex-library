@@ -24,5 +24,13 @@ public class Rod extends Cell {
 //	and the gray is the average for (r , g , b), like this:
 //
 //	int gray = (r + g + b) / 3;
+	
+	public void input(long color) {
+//		logger.info("input("+color+")");
+		long blue = color & 0xff;
+		long green = (color & 0xff00) >> 8;
+		long red = (color & 0xff0000) >> 16;		
+		this.input((int)red,(int)green,(int)blue);
+	}
 
 }

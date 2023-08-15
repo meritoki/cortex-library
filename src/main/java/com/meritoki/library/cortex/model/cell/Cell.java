@@ -27,6 +27,7 @@ public class Cell {
 	public Integer red = 0;
 	public Integer green = 0;
 	public Integer blue = 0;
+	public Integer brightness = 0;
 
 	public String rgbToString(Long red, Long green, Long blue) {
 		if (red == null) {
@@ -55,5 +56,6 @@ public class Cell {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
+		this.brightness = this.red+this.green+this.blue/3;
 	}
 }

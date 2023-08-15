@@ -18,6 +18,7 @@ package com.meritoki.library.cortex.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,8 @@ public class Coincidence {
 	@JsonIgnore
 	protected static Logger logger = LoggerFactory.getLogger(Coincidence.class.getName());
 	@JsonProperty
+	public String uuid;
+	@JsonProperty
 	public List<Integer> list = new ArrayList<>();
 	@JsonProperty
 	public double threshold = .99;
@@ -61,17 +64,16 @@ public class Coincidence {
 	public Double iDCG = null;
 
 	public Coincidence() {
+		this.uuid = UUID.randomUUID().toString();
 	}
 
 	public Coincidence(List<Integer> list) {
+		this.uuid = UUID.randomUUID().toString();
 		this.list = list;
-	}
-	
-	public void setThreshold(double threshold) {
-		this.threshold = threshold;
 	}
 
 	public Coincidence(String list) {
+		this.uuid = UUID.randomUUID().toString();
 		String commaList = list.replace("[", "").replace("]", "");
 		String[] integerArray = commaList.split(",");
 		for (String s : integerArray) {
@@ -80,9 +82,14 @@ public class Coincidence {
 	}
 
 	public Coincidence(int size) {
+		this.uuid = UUID.randomUUID().toString();
 		for (int i = 0; i < size; i++) {
 			this.addInteger(0);
 		}
+	}
+	
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 
 	@Override
