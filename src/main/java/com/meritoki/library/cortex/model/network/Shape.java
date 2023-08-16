@@ -61,10 +61,10 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	public Coincidence coincidence;
 	@JsonProperty
-	public Map<ColorType, Coincidence> coincidenceMap;
+	public Map<ColorType, Coincidence> coincidenceMap = new HashMap<>();
 	@JsonProperty
-	public Map<ColorType, Coincidence> previousCoincidenceMap;
-	
+	public Map<ColorType, Coincidence> previousCoincidenceMap = new HashMap<>();
+
 //	@JsonIgnore
 //	public Coincidence brightnessCoincidence;
 //	@JsonIgnore
@@ -210,7 +210,7 @@ public class Shape extends Node<Object> {
 	public void setCenter(int x, int y) {
 		setCenter(new Point(x, y));
 	}
-	
+
 	public List<Concept> getConceptList(Coincidence c) {
 		return this.conceptListMap.get(c.toString());
 	}
@@ -304,7 +304,7 @@ public class Shape extends Node<Object> {
 				}
 			}
 			this.previousCoincidence = this.coincidence;
-			if(flag) {
+			if (flag) {
 				List<Concept> conceptList = null;
 				if (inferredCoincidence != null) {
 					count = this.coincidenceCountMap.get(inferredCoincidence.toString());
@@ -358,6 +358,7 @@ public class Shape extends Node<Object> {
 		Coincidence inferredCoincidence = null;
 		if (coincidence != null && coincidence.list.size() > 0) {
 			List<Coincidence> coincidenceList = this.coincidenceListMap.get(color);
+			coincidenceList = (coincidenceList == null) ? new ArrayList<>() : coincidenceList;
 			for (int i = 0; i < coincidenceList.size(); i++) {
 				c = coincidenceList.get(i);
 //				if(concept == null) {
@@ -370,8 +371,8 @@ public class Shape extends Node<Object> {
 					inferredCoincidence = c;
 				}
 			}
-			this.previousCoincidenceMap.put(color,this.coincidenceMap.get(color));
-			if(flag) {
+			this.previousCoincidenceMap.put(color, this.coincidenceMap.get(color));
+			if (flag) {
 //				List<Concept> conceptList = null;
 //				if (inferredCoincidence != null) {
 //					count = this.coincidenceCountMap.get(inferredCoincidence.toString());
@@ -388,9 +389,9 @@ public class Shape extends Node<Object> {
 //				}
 				this.coincidenceMap.put(color, coincidence);
 //				this.conceptListMap.put(this.coincidence.toString(), conceptList);
-				
+
 				coincidenceList.add(coincidence);
-				this.coincidenceListMap.put(color,coincidenceList);
+				this.coincidenceListMap.put(color, coincidenceList);
 			} else {
 //				this.coincidence = coincidence;
 				this.coincidenceMap.put(color, coincidence);
@@ -411,7 +412,7 @@ public class Shape extends Node<Object> {
 //			this.purgeCoincidenceList();
 //		}
 	}
-	
+
 	/**
 	 * Function uses a map of coincidence frequency to determine if it should be
 	 * remove from the coincidenceList. A coincidence with a frequency greater than
@@ -548,7 +549,8 @@ public class Shape extends Node<Object> {
 		for (int i = 0; i < this.sides + 1; i++) {
 			switch (type) {
 			case BRIGHTNESS: {
-				value = rodArray[i].brightness;//(shortConeArray[i].red + mediumConeArray[i].green + longConeArray[i].blue) / 3;
+				value = rodArray[i].brightness;// (shortConeArray[i].red + mediumConeArray[i].green +
+												// longConeArray[i].blue) / 3;
 				break;
 			}
 			case RED: {

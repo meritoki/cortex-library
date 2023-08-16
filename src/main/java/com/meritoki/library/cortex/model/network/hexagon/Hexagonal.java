@@ -39,29 +39,29 @@ import com.meritoki.library.cortex.model.network.Shape;
  */
 public class Hexagonal extends Network {
 
-	public static void main(String[] args) {
-		Hexagonal n = new Hexagonal(ColorType.BRIGHTNESS, 0, 0, 13, 1, 0);
-		n.load();
-//		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
-//		
-//		for (Map.Entry<String, Square> entry : squareMap.entrySet()) {
-//			String key = entry.getKey();
-//			Square value = entry.getValue();
-//			System.out.println(key+" "+value.getCenter()+" "+value.getRadius());
-//		}
-	}
+//	public static void main(String[] args) {
+//		Hexagonal n = new Hexagonal(ColorType.BRIGHTNESS, 0, 0, 13, 1, 0);
+//		n.load();
+////		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
+////		
+////		for (Map.Entry<String, Square> entry : squareMap.entrySet()) {
+////			String key = entry.getKey();
+////			Square value = entry.getValue();
+////			System.out.println(key+" "+value.getCenter()+" "+value.getRadius());
+////		}
+//	}
 
 	@JsonIgnore
 	protected static Logger logger = LoggerFactory.getLogger(Hexagonal.class.getName());
 
 
 	public Hexagonal() {
-		super(ColorType.BRIGHTNESS, 0, 0);
+		super(ColorType.COMPOSITE, 0, 0);
 		this.length = 7;
 	}
 
 	public Hexagonal(int size, int radius, int padding) {
-		super(ColorType.BRIGHTNESS, 0, 0);
+		super(ColorType.COMPOSITE, 0, 0);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;

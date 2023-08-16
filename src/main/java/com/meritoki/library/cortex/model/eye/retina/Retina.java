@@ -95,6 +95,11 @@ public class Retina {
 	private int size;
 	public int step = 128;
 	public State state = State.NEW;
+	
+	public Retina(Cortex cortex) {
+		this.uuid = UUID.randomUUID().toString();
+		this.setCortex(cortex);
+	}
 
 	public Retina(BufferedImage bufferedImage, Cortex cortex) {
 		this.uuid = UUID.randomUUID().toString();
@@ -106,8 +111,8 @@ public class Retina {
 		logger.info("setDimension(" + dimension + ")");
 		this.dimension = dimension;
 		this.inputBufferedImage = this.getInputBufferedImage();
-		Point origin = this.getInputCenter();
-		this.setOrigin(origin);
+//		Point origin = this.getInputCenter();
+//		this.setOrigin(origin);
 	}
 
 	// Called multiple times
@@ -137,12 +142,12 @@ public class Retina {
 	}
 
 	public void setOrigin(Point origin) {
-//		logger.info("setOrigin(" + origin + ")");
-		this.previous = this.origin;
-		if (this.previous == null) {
-			this.previous = this.getInputCenter();
-			this.previous.center = true;
-		}
+		logger.info("setOrigin(" + origin + ")");
+//		this.previous = this.origin;
+//		if (this.previous == null) {
+//			this.previous = this.getInputCenter();
+//			this.previous.center = true;
+//		}
 		this.origin = origin;
 //		logger.info("setOrigin(" + origin + ") origin.center=" + this.origin.center);
 	}
@@ -183,7 +188,7 @@ public class Retina {
 		if (delta != null) {
 			logger.info("iterate(...) delta=" + delta);
 			this.setOrigin(delta.stop);
-			this.input(graphics2D, concept);
+			this.input(graphics2D, this.getOrigin(), concept);
 		} else {
 			logger.info("this.distance=" + this.distance);
 			if (this.distance == 0) {
@@ -193,7 +198,7 @@ public class Retina {
 				this.index = 0;
 				Point origin = this.getInputCenter();
 				this.setOrigin(origin);
-				this.input(graphics2D, concept);
+				this.input(graphics2D, this.getOrigin(), concept);
 				this.state = State.PENDING;
 			} else {
 				this.interval = this.size / this.step;
@@ -204,7 +209,7 @@ public class Retina {
 					this.index++;
 					Point origin = this.getInputCenter();
 					this.setOrigin(origin);
-					this.input(graphics2D, concept);
+					this.input(graphics2D, this.getOrigin(), concept);
 					this.state = State.PENDING;
 				} else {
 					this.state = State.COMPLETE;
@@ -222,13 +227,14 @@ public class Retina {
 	 * @param cortex
 	 * @param concept
 	 */
-	public void input(Graphics2D graphics2D, Concept concept) {
-//		logger.info("input(" + String.valueOf(graphics2D != null) + ", " + concept + ")");
-		this.setDistance(this.distance);
+	public void input(Graphics2D graphics2D, Point origin, Concept concept) {
+		logger.info("input(" + String.valueOf(graphics2D != null) + ", " + origin + ", " + concept + ")");
+//		this.setDistance(this.distance);
 		this.drawInputBufferedImage(graphics2D);
-		this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
-		this.cortex.update();
-		this.cortex.process(graphics2D, this.inputBufferedImage, concept);
+//		this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
+//		this.cortex.update();
+//		this.cortex.process(graphics2D, this.inputBufferedImage, concept);
+		this.cortex.process(graphics2D, this.inputBufferedImage,  origin, concept);
 		this.processBelief();
 		if(this.motorFlag)
 			this.motor.input(this.getInputCenter(), origin, this.scale);
@@ -518,8 +524,8 @@ public class Retina {
 	 * @return
 	 */
 	public double getMaxDistance() {
-		return (this.toMillimeter(this.object.getHeight()) * this.focalLength)
-				/ this.toMillimeter(this.getSensorWidth());
+		return (this.object != null)?(this.toMillimeter(this.object.getHeight()) * this.focalLength)
+				/ this.toMillimeter(this.getSensorWidth()):0;
 	}
 
 	public double getFieldWidth() {
@@ -714,6 +720,11 @@ public class Retina {
 		Point center = new Point(this.getWidth() / 2, this.getHeight() / 2);
 		center.center = true;
 		return center;
+	}
+	
+	public Point getOrigin() {
+		logger.info("getOrigin() this.origin="+this.origin);
+		return this.origin;
 	}
 
 	public Point getBufferedImageCenter(BufferedImage bufferedImage) {

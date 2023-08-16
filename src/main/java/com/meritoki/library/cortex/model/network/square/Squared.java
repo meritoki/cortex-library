@@ -39,20 +39,20 @@ import com.meritoki.library.cortex.model.network.Shape;
  */
 public class Squared extends Network {
 
-	public static void main(String[] args) {
-		Squared n = new Squared(ColorType.BRIGHTNESS, 0, 0, 5, 1, 0);
-		n.load();
-	}
+//	public static void main(String[] args) {
+//		Squared n = new Squared(ColorType.BRIGHTNESS, 0, 0, 5, 1, 0);
+//		n.load();
+//	}
 	@JsonIgnore
 	protected static Logger logger = LoggerFactory.getLogger(Squared.class.getName());
 
 	public Squared() {
-		super(ColorType.BRIGHTNESS, 0, 0);
+		super(ColorType.COMPOSITE, 0, 0);
 		this.length = 9;
 	}
 
 	public Squared(int dimension, int length, int padding) {
-		super(ColorType.BRIGHTNESS, 0, 0);
+		super(ColorType.COMPOSITE, 0, 0);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
@@ -106,8 +106,8 @@ public class Squared extends Network {
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.dimension=" + this.dimension);
 		logger.info("load() this.length=" + this.length);
-		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.dimension, this.length,
-				this.padding);
+		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.dimension,
+				this.length, this.padding);
 		int depth = (this.depth > 0) ? this.depth : this.getDepth(squareMap.size());
 		if (this.depth == 0) {
 			this.depth = depth;
@@ -123,7 +123,7 @@ public class Squared extends Network {
 			}
 			square.setData("0:" + square);
 			square.initCells();
-			level.addShape(null,square);
+			level.addShape(null, square);
 		}
 		this.addLevel(level);
 		LinkedList<Shape> squareStack = null;
@@ -140,11 +140,13 @@ public class Squared extends Network {
 			Shape shape;
 			while (!squareStack.isEmpty()) {
 				shape = squareStack.pop();
-				LinkedList<Shape> list = getGroupZeroSquareList(squareMap, shape.getX(), shape.getY(), exponent);
-				for (Shape s : list) {
-					if (!squareList.contains(s)) {
-						squareList.add(s);
-						squareStack.push(s);
+				if (shape != null) {
+					LinkedList<Shape> list = getGroupZeroSquareList(squareMap, shape.getX(), shape.getY(), exponent);
+					for (Shape s : list) {
+						if (!squareList.contains(s)) {
+							squareList.add(s);
+							squareStack.push(s);
+						}
 					}
 				}
 			}
@@ -160,12 +162,12 @@ public class Squared extends Network {
 					s.addChild(n);
 				}
 				s.setData(i + ":" + s);
-				level.addShape(null,s);
+				level.addShape(null, s);
 			}
 			this.addLevel(level);
 		}
-		 level = this.getRootLevel();
-		 Shape h = level.getShapeList().get(0);
+		level = this.getRootLevel();
+//		Shape h = level.getShapeList().get(0);
 //		 Node.printTree(h, " ");
 	}
 

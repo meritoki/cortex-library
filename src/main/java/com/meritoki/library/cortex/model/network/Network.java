@@ -314,8 +314,10 @@ public class Network extends Cortex {
 	
 	@JsonIgnore
 	@Override
-	public void process(Graphics2D graphics2D, BufferedImage bufferedImage, com.meritoki.library.cortex.model.network.ColorType color, Point origin, Concept concept) {
-		logger.info("process(" + String.valueOf(graphics2D!=null) + ", "+String.valueOf(bufferedImage != null)+", " + concept + ")");
+	public void process(Graphics2D graphics2D, BufferedImage bufferedImage, Point origin, Concept concept) {
+		logger.info("process(" + String.valueOf(graphics2D!=null) + ", "+String.valueOf(bufferedImage != null)+", "+origin+", " + concept + ")");
+		this.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
+		this.update();
 		Level level = this.getInputLevel();
 		if (level != null) {
 			for (Shape shape : level.getShapeList()) {
@@ -340,11 +342,13 @@ public class Network extends Cortex {
 						shape.rodArray[i].input(Color.black.getRGB());
 					}
 				}
-				for(com.meritoki.library.cortex.model.network.ColorType type: this.typeList) {
+				for(ColorType type: this.typeList) {
 					shape.addCoincidence(type, shape.getCoincidence(type), concept, false);
 				}
 			}
-			this.propagate(concept, true);
+			for(ColorType type: this.typeList) {
+				this.propagate(type, concept, true);
+			}
 //			this.feedback(concept);
 
 			//Here we make a coincidence
@@ -358,17 +362,22 @@ public class Network extends Cortex {
 				Belief belief = new Belief();
 				for (Shape shape : level.getShapeList()) {
 					Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
-					int brightness = shape.coincidence.list.get(0);
+//					int brightness = shape.coincidence.list.get(0);
+					int brightness = shape.coincidenceMap.get(ColorType.BRIGHTNESS).list.get(0);
+					int red = shape.coincidenceMap.get(ColorType.RED).list.get(0);
+					int green = shape.coincidenceMap.get(ColorType.GREEN).list.get(0);
+					int blue = shape.coincidenceMap.get(ColorType.BLUE).list.get(0);
+					
 					if(255 > brightness && brightness > 0 ) {
 						pointList.add(point);
 					}
-					Color c = new Color(brightness, brightness, brightness);
+					Color c = new Color(red, green, blue);
 					graphics2D.setColor(c);
 					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
 							(int) shape.npoints);
 					
 					for (int i = 0; i < shape.sides+1; i++) {
-						c = new Color(brightness, brightness, brightness);
+						c = new Color(red, green, blue);
 						double x = (shape.xpoints[i]-this.origin.x);
 						double y = (shape.ypoints[i]-this.origin.y);
 						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, c.getRGB());
@@ -380,23 +389,23 @@ public class Network extends Cortex {
 				//Beliefs are drawn where they are found in a plane.
 				//Point List consists of points that are centered around 
 				//belief origin. @ least one point in Point List is equal to origin.
-				belief.setConceptList(this.conceptMap, conceptList);
-				belief.coincidence = this.getRootLevel().getCoincidenceList().get(0);
-				belief.pointList = new ArrayList<>(pointList);
-				belief.bufferedImage = (beliefBufferedImage);
-				belief.origin = new Point(this.origin);
-				belief.date = new Date();
-//				this.addBelief(belief);
-				this.beliefList.add(belief);
-				//Normailization ruins this information, but we still
-				//want the result of normalization.
-				//We want beliefs represented relative to origin.
-				//The same implementation we have now, for the most part.
-				//
-				
-//				this.add(belief);
-//				System.out.println("this.setIndex(...) flag="+);
-				this.setIndex(this.beliefList.size()-1);
+//				belief.setConceptList(this.conceptMap, conceptList);
+//				belief.coincidence = this.getRootLevel().getCoincidenceList().get(0);
+//				belief.pointList = new ArrayList<>(pointList);
+//				belief.bufferedImage = (beliefBufferedImage);
+//				belief.origin = new Point(this.origin);
+//				belief.date = new Date();
+////				this.addBelief(belief);
+//				this.beliefList.add(belief);
+//				//Normailization ruins this information, but we still
+//				//want the result of normalization.
+//				//We want beliefs represented relative to origin.
+//				//The same implementation we have now, for the most part.
+//				//
+//				
+////				this.add(belief);
+////				System.out.println("this.setIndex(...) flag="+);
+//				this.setIndex(this.beliefList.size()-1);
 			}
 		}
 	}

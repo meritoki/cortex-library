@@ -4,5 +4,6 @@ public enum ColorType {
 	BRIGHTNESS,
 	RED,
 	GREEN,
-	BLUE
+	BLUE,
+	COMPOSITE
 }

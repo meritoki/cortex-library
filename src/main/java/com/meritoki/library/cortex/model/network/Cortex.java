@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -47,9 +48,9 @@ import com.meritoki.library.cortex.model.group.Group;
 public class Cortex {
 	protected static Logger logger = LoggerFactory.getLogger(Cortex.class.getName());
 	@JsonProperty
-	public String uuid = null;
+	public String uuid;
 	@JsonProperty
-	public ColorType type = ColorType.BRIGHTNESS;
+	public ColorType type = ColorType.COMPOSITE;
 	@JsonProperty
 	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
@@ -81,6 +82,7 @@ public class Cortex {
 	public Mind mind;
 
 	public Cortex() {
+		this.uuid = UUID.randomUUID().toString();
 //		this.pointList.add(this.root);
 	}
 
@@ -296,7 +298,7 @@ public class Cortex {
 	}
 
 	@JsonIgnore
-	public void process(Graphics2D graphics2D, BufferedImage image, ColorType color, Point origin, Concept concept) {
+	public void process(Graphics2D graphics2D, BufferedImage image, Point origin, Concept concept) {
 	}
 
 //	@JsonIgnore
