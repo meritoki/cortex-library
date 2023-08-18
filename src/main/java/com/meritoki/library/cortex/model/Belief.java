@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.library.controller.node.NodeController;
+import com.meritoki.library.cortex.model.unit.Coincidence;
+import com.meritoki.library.cortex.model.unit.Concept;
+import com.meritoki.library.cortex.model.unit.ConceptComparator;
+import com.meritoki.library.cortex.model.unit.Point;
 
 public class Belief {
 
@@ -95,7 +99,7 @@ public class Belief {
 		this.relative.x -= origin.x/scale;
 		this.relative.y -= origin.y/scale;
 //		logger.info("normalize("+scale+", "+origin+", "+previous+") this.origin="+this.origin);		
-		if (!previous.center) {
+		if (previous != null) { // && !previous.center) {
 //			logger.info("normalize(...) !previous.center");
 			// Delta is a movement between two points.
 			// If "same" center, then delta is zero.
@@ -224,7 +228,7 @@ public class Belief {
 			for (Concept c : conceptList) {
 //				logger.info("setConceptList("+map+", "+conceptList+") c="+c);	
 				if (key.equals(c.toString())) {
-					c.value = value;
+					c.uuid = value;
 				}
 			}
 
@@ -264,9 +268,9 @@ public class Belief {
 			value = entry.getKey();
 			dividend = entry.getValue();
 			quotient = (total > 0) ? (double) dividend / (double) total : 0;
-			concept = new Concept(value);
-			concept.rank = quotient;
-			cList.add(concept);
+//			concept = new Concept(value);
+//			concept.rank = quotient;
+//			cList.add(concept);
 		}
 		Collections.sort(cList, new ConceptComparator());
 		Collections.reverse(cList);

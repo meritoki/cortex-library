@@ -24,11 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.network.ColorType;
 import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
 import com.meritoki.library.cortex.model.network.Shape;
+import com.meritoki.library.cortex.model.unit.Point;
 
 /**
  * In Network, squares are referenced by level and relative coordinates, i.e.
@@ -47,24 +47,24 @@ public class Squared extends Network {
 	protected static Logger logger = LoggerFactory.getLogger(Squared.class.getName());
 
 	public Squared() {
-		super(ColorType.COMPOSITE, 0, 0);
+		super(new ColorType[]{ ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE }, 0, 0);
 		this.length = 9;
 	}
 
 	public Squared(int dimension, int length, int padding) {
-		super(ColorType.COMPOSITE, 0, 0);
+		super(new ColorType[]{ ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE }, 0, 0);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
-//		this.length = 9;//
+		this.length = 9;
 	}
 
-	public Squared(ColorType type, int x, int y, int dimension, int length, int padding) {
-		super(type, x, y);
+	public Squared(ColorType[] typeList, int x, int y, int dimension, int length, int padding) {
+		super(typeList, x, y);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
-//		this.length = 9;
+		this.length = 9;
 	}
 
 	/**
@@ -72,23 +72,20 @@ public class Squared extends Network {
 	 * will improve the performance of the algorithm.
 	 */
 	@JsonIgnore
+	@Override
 	public void update() {
-		Map<String, Square> squareMap = new HashMap<>();
 		int half = dimension / 2;
-		Square square = null;
+		Shape shape = null;
 		Level level = this.getInputLevel();
-		double xLeg = (length / 2) - (padding / 2);
-		double yLeg = xLeg;
-		double radius = Math.sqrt(Math.pow(xLeg, 2) + Math.pow(yLeg, 2));
 		for (int row = 0; row < dimension; row++) {
 			for (int column = 0; column < dimension; column++) {
 				int xPosition = column - half;
 				int yPosition = row - half;
 				double x = (this.origin.x + (xPosition * length));
 				double y = (this.origin.y + (yPosition * length));
-				square = (Square) level.shapeMap.get(xPosition + "," + yPosition);
-				if (square != null) {
-					square.setCenter(new Point(x, y));
+				shape = level.shapeMap.get(xPosition + "," + yPosition);
+				if (shape != null) {
+					shape.setCenter(new Point(x, y));
 				}
 			}
 		}
@@ -270,7 +267,11 @@ public class Squared extends Network {
 		return count;
 	}
 }
-
+//Map<String, Square> squareMap = new HashMap<>();
+//Square square = null;
+//double xLeg = (length / 2) - (padding / 2);
+//double yLeg = xLeg;
+//double radius = Math.sqrt(Math.pow(xLeg, 2) + Math.pow(yLeg, 2));
 //public void process(Graphics2D graphics2D, BufferedImage image, double scale, Concept concept, int sleep) {
 //logger.info("processing...");
 //Belief belief = null;

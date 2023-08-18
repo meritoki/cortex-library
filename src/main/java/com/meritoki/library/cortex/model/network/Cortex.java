@@ -24,8 +24,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,22 +37,20 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
-import com.meritoki.library.cortex.model.Binary;
-import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Mind;
-import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.group.Group;
+import com.meritoki.library.cortex.model.unit.Concept;
+import com.meritoki.library.cortex.model.unit.Point;
 
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = Network.class), @Type(value = Group.class), })
+@JsonSubTypes({ @Type(value = Network.class), })
 public class Cortex {
 	protected static Logger logger = LoggerFactory.getLogger(Cortex.class.getName());
 	@JsonProperty
 	public String uuid;
-	@JsonProperty
-	public ColorType type = ColorType.COMPOSITE;
-	@JsonProperty
-	public Configuration configuration = Configuration.HEXAGONAL;
+//	@JsonProperty
+//	public ColorType type = ColorType.COMPOSITE;
+//	@JsonProperty
+//	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
 	public int size = 27;
 	@JsonProperty
@@ -74,7 +72,7 @@ public class Cortex {
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
 	@JsonProperty
-	public ColorType[] typeList = { ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE };
+	public ColorType[] typeArray = { ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE };
 
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();
@@ -115,80 +113,80 @@ public class Cortex {
 		return beliefList;
 	}
 
-	@JsonIgnore
-	private Binary addRecursive(Binary current, Belief belief) {
-		double value = belief.getRelativeRadius();
-		if (current == null) {
-			return new Mind(belief);
-		}
-		if (value < current.value) {
-			current.left = addRecursive(current.left, belief);
-		} else if (value > current.value) {
-			current.right = addRecursive(current.right, belief);
-		} else {
-			// value already exists
-			return current;
-		}
-		return current;
-	}
+//	@JsonIgnore
+//	private Binary addRecursive(Binary current, Belief belief) {
+//		double value = belief.getRelativeRadius();
+//		if (current == null) {
+//			return new Mind(belief);
+//		}
+//		if (value < current.value) {
+//			current.left = addRecursive(current.left, belief);
+//		} else if (value > current.value) {
+//			current.right = addRecursive(current.right, belief);
+//		} else {
+//			// value already exists
+//			return current;
+//		}
+//		return current;
+//	}
 
-	@JsonIgnore
-	public void add(Belief belief) {
-		boolean flag = this.containsMind(this.mind, belief.getRelativeRadius());
-		if (flag) {
-			this.mind = (Mind) this.getMind(this.mind, belief.getRelativeRadius());
-			this.mind.beliefList.add(belief);
-		} else {
-			this.mind = (Mind) addRecursive(this.mind, belief);
-		}
-	}
-
-	@JsonIgnore
-	public boolean containsMind(double value) {
-		return this.containsMind(this.mind, value);
-	}
-
-	@JsonIgnore
-	public Mind getMind(double value) {
-		return (Mind) this.getMind(this.mind, value);
-	}
-
-	@JsonIgnore
-	private boolean containsMind(Binary current, double value) {
-		if (current == null) {
-			return false;
-		}
-		if (value == current.value) {
-			return true;
-		}
-		return value < current.value ? containsMind(current.left, value) : containsMind(current.right, value);
-	}
-
-	@JsonIgnore
-	private Binary getMind(Binary current, double value) {
-		if (current == null) {
-			return null;
-		}
-		if (value == current.value) {
-			return current;
-		}
-		return value < current.value ? getMind(current.left, value) : getMind(current.right, value);
-	}
-
-	@JsonIgnore
-	private int findSmallestValue(Binary root) {
-		return (int) (root.left == null ? root.value : findSmallestValue(root.left));
-	}
-
-	@JsonIgnore
-	public void traverseInOrder(Binary node) {
-		if (node != null) {
-			traverseInOrder(node.left);
-			logger.info(" " + node.value);
-			logger.info(" " + ((Mind) node).beliefList.size());
-			traverseInOrder(node.right);
-		}
-	}
+//	@JsonIgnore
+//	public void add(Belief belief) {
+//		boolean flag = this.containsMind(this.mind, belief.getRelativeRadius());
+//		if (flag) {
+//			this.mind = (Mind) this.getMind(this.mind, belief.getRelativeRadius());
+//			this.mind.beliefList.add(belief);
+//		} else {
+//			this.mind = (Mind) addRecursive(this.mind, belief);
+//		}
+//	}
+//
+//	@JsonIgnore
+//	public boolean containsMind(double value) {
+//		return this.containsMind(this.mind, value);
+//	}
+//
+//	@JsonIgnore
+//	public Mind getMind(double value) {
+//		return (Mind) this.getMind(this.mind, value);
+//	}
+//
+//	@JsonIgnore
+//	private boolean containsMind(Binary current, double value) {
+//		if (current == null) {
+//			return false;
+//		}
+//		if (value == current.value) {
+//			return true;
+//		}
+//		return value < current.value ? containsMind(current.left, value) : containsMind(current.right, value);
+//	}
+//
+//	@JsonIgnore
+//	private Binary getMind(Binary current, double value) {
+//		if (current == null) {
+//			return null;
+//		}
+//		if (value == current.value) {
+//			return current;
+//		}
+//		return value < current.value ? getMind(current.left, value) : getMind(current.right, value);
+//	}
+//
+//	@JsonIgnore
+//	private int findSmallestValue(Binary root) {
+//		return (int) (root.left == null ? root.value : findSmallestValue(root.left));
+//	}
+//
+//	@JsonIgnore
+//	public void traverseInOrder(Binary node) {
+//		if (node != null) {
+//			traverseInOrder(node.left);
+//			logger.info(" " + node.value);
+//			logger.info(" " + ((Mind) node).beliefList.size());
+//			traverseInOrder(node.right);
+//		}
+//	}
 
 	@JsonIgnore
 	public boolean setIndex(String uuid) {
@@ -245,33 +243,7 @@ public class Cortex {
 //		}
 	}
 
-//	public void addPoint(Point root, Point point) {
-////		logger.info("addPoint("+root+", "+point+")");
-//		if (point != null && root != null && !point.equals(root)) {
-////			point.round()
-//			List<Node> nodeList = root.getChildren();
-//			double min = Point.getDistance(root, point);
-//			Point minPoint = null;
-//			Iterator<Node> iterator = nodeList.iterator();
-//			while (iterator.hasNext()) {
-//				Node n = iterator.next();
-//				Point childPoint = (Point) n;
-//				double distance = Point.getDistance(childPoint, point);
-//				if (distance < min) {
-//					min = distance;
-//					minPoint = childPoint;
-//				}
-//			}
-//			if (minPoint != null) {
-//				// logger.info("addPoint("+root+", "+point+") minPoint="+minPoint);
-//				this.addPoint(minPoint, point);
-//			} else {
-//				root.addChild(point);
-////				Node.printTree(root, " ");
-//				this.pointList.add(point);
-//			}
-//		}
-//	}
+
 
 	@JsonIgnore
 	public void update() {
@@ -298,30 +270,10 @@ public class Cortex {
 	}
 
 	@JsonIgnore
-	public void process(Graphics2D graphics2D, BufferedImage image, Point origin, Concept concept) {
+	public void process(BufferedImage image, Point origin, Concept concept) {
 	}
 
-//	@JsonIgnore
-//	public int setPointMap(List<Point> pointList) {
-////		logger.info("setPointMap(" + pointList.size() + ")");
-//		int max = 0;
-//		for (Point p : pointList) {
-//			Belief belief = this.beliefMatrix[(int) p.x][(int) p.y];
-//			if (belief == null) {
-//				belief = new Belief();
-//			}
-//			if(p.belief != null) {
-//				int size = p.belief.conceptList.size();
-//				if(size > max) {
-//					max = size;
-//				}
-//				belief.conceptList.addAll(p.belief.conceptList);
-//			}
-////			logger.info("setPointMap("+pointList.size()+") count="+count);
-//			this.beliefMatrix[(int) p.x][(int) p.y] = belief;
-//		}
-//		return max;
-//	}
+
 	@JsonIgnore
 	public double getRadius() {
 		double max = 0;
@@ -362,7 +314,54 @@ public class Cortex {
 		return after;
 	}
 }
-
+//public void addPoint(Point root, Point point) {
+////logger.info("addPoint("+root+", "+point+")");
+//if (point != null && root != null && !point.equals(root)) {
+////point.round()
+//List<Node> nodeList = root.getChildren();
+//double min = Point.getDistance(root, point);
+//Point minPoint = null;
+//Iterator<Node> iterator = nodeList.iterator();
+//while (iterator.hasNext()) {
+//	Node n = iterator.next();
+//	Point childPoint = (Point) n;
+//	double distance = Point.getDistance(childPoint, point);
+//	if (distance < min) {
+//		min = distance;
+//		minPoint = childPoint;
+//	}
+//}
+//if (minPoint != null) {
+//	// logger.info("addPoint("+root+", "+point+") minPoint="+minPoint);
+//	this.addPoint(minPoint, point);
+//} else {
+//	root.addChild(point);
+////	Node.printTree(root, " ");
+//	this.pointList.add(point);
+//}
+//}
+//}
+//@JsonIgnore
+//public int setPointMap(List<Point> pointList) {
+////	logger.info("setPointMap(" + pointList.size() + ")");
+//	int max = 0;
+//	for (Point p : pointList) {
+//		Belief belief = this.beliefMatrix[(int) p.x][(int) p.y];
+//		if (belief == null) {
+//			belief = new Belief();
+//		}
+//		if(p.belief != null) {
+//			int size = p.belief.conceptList.size();
+//			if(size > max) {
+//				max = size;
+//			}
+//			belief.conceptList.addAll(p.belief.conceptList);
+//		}
+////		logger.info("setPointMap("+pointList.size()+") count="+count);
+//		this.beliefMatrix[(int) p.x][(int) p.y] = belief;
+//	}
+//	return max;
+//}
 //public void addBelief(Belief belief) {
 ////if (belief != null) {
 ////belief.origin.scale(1 / this.scale);

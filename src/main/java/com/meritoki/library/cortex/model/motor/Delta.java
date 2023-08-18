@@ -1,7 +1,7 @@
 package com.meritoki.library.cortex.model.motor;
 
-import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.eye.retina.State;
+import com.meritoki.library.cortex.model.unit.Point;
 
 public class Delta {
 	public Point start;

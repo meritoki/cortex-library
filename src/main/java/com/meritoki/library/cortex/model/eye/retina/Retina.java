@@ -21,11 +21,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.time.TimeController;
 import com.meritoki.library.cortex.model.Belief;
-import com.meritoki.library.cortex.model.Concept;
-import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.motor.Delta;
 import com.meritoki.library.cortex.model.motor.Motor;
+import com.meritoki.library.cortex.model.network.ColorType;
 import com.meritoki.library.cortex.model.network.Cortex;
+import com.meritoki.library.cortex.model.network.Level;
+import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.Shape;
+import com.meritoki.library.cortex.model.unit.Concept;
+import com.meritoki.library.cortex.model.unit.Point;
 
 /**
  * Retina is a class that combines all the functions to perform a scan of an
@@ -85,7 +89,6 @@ public class Retina {
 
 	public double scale = 1;
 	public double radius = 0;
-	public double cortexRadius;
 
 	public Point origin = new Point(0, 0);
 	public Point previous;
@@ -95,7 +98,7 @@ public class Retina {
 	private int size;
 	public int step = 128;
 	public State state = State.NEW;
-	
+
 	public Retina(Cortex cortex) {
 		this.uuid = UUID.randomUUID().toString();
 		this.setCortex(cortex);
@@ -119,9 +122,9 @@ public class Retina {
 	public void setCortex(Cortex cortex) {
 		if (cortex != null) {
 			this.cortex = cortex;
-			this.cortexRadius = this.cortex.getRadius();
+//			this.cortexRadius = this.cortex.getRadius();
 			this.maxDistance = this.getMaxDistance();
-			if(this.motorFlag)
+			if (this.motorFlag)
 				this.motor.setCortex(this.cortex);
 		}
 	}
@@ -143,13 +146,9 @@ public class Retina {
 
 	public void setOrigin(Point origin) {
 		logger.info("setOrigin(" + origin + ")");
-//		this.previous = this.origin;
-//		if (this.previous == null) {
-//			this.previous = this.getInputCenter();
-//			this.previous.center = true;
-//		}
+		this.previous = this.origin;
 		this.origin = origin;
-//		logger.info("setOrigin(" + origin + ") origin.center=" + this.origin.center);
+//		logger.info("setOrigin(" + origin + ")");
 	}
 
 	public void setDistance(double distance) {
@@ -174,7 +173,7 @@ public class Retina {
 	}
 
 	/**
-	 * Function is invoked from scan(...). If motorFlag is disabled,  
+	 * Function is invoked from scan(...). If motorFlag is disabled,
 	 * 
 	 * @param graphics2D
 	 * @param bufferedImage
@@ -184,7 +183,7 @@ public class Retina {
 	public void iterate(Graphics2D graphics2D, Concept concept) {
 //		logger.info("iterate(" + String.valueOf(graphics2D != null) + ", "
 //				+ String.valueOf(bufferedImage != null) + ", " + String.valueOf(cortex != null) + ")");
-		Delta delta = (this.motorFlag)?this.motor.getDelta():null;
+		Delta delta = (this.motorFlag) ? this.motor.getDelta() : null;
 		if (delta != null) {
 			logger.info("iterate(...) delta=" + delta);
 			this.setOrigin(delta.stop);
@@ -228,26 +227,16 @@ public class Retina {
 	 * @param concept
 	 */
 	public void input(Graphics2D graphics2D, Point origin, Concept concept) {
-		logger.info("input(" + String.valueOf(graphics2D != null) + ", " + origin + ", " + concept + ")");
-//		this.setDistance(this.distance);
+		logger.info("input(graphics2D=" + String.valueOf(graphics2D != null) + ", " + origin + ", " + concept + ")");
 		this.drawInputBufferedImage(graphics2D);
-//		this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
-//		this.cortex.update();
-//		this.cortex.process(graphics2D, this.inputBufferedImage, concept);
-		this.cortex.process(graphics2D, this.inputBufferedImage,  origin, concept);
-		this.processBelief();
-		if(this.motorFlag)
-			this.motor.input(this.getInputCenter(), origin, this.scale);
-		concept = (this.cortex.getBelief() != null && this.cortex.getBelief().conceptList.size() > 0) ? this.cortex.getBelief().conceptList.get(0) : null;
-		this.drawGlobalBeliefList(graphics2D, concept);
-//			this.drawRelativeBeliefList(graphics2D);
+		this.cortex.process(this.inputBufferedImage, origin, concept);
+		this.drawCortexInputLevel(graphics2D);
+//		this.drawCortexColor(graphics2D);
 		this.drawInputCenter(graphics2D);
-//			this.drawCortexPointList(graphics2D);
-		this.drawMotor(graphics2D);
 		this.drawCortex(graphics2D);
 		this.drawOrigin(graphics2D);
-
 	}
+
 
 	/**
 	 * Consider moving this implementation into Motor and calling Motor input(...)
@@ -270,97 +259,47 @@ public class Retina {
 		}
 	}
 
-	public void drawCortexPointList(Graphics2D graphics2D) {
+	public void drawCortexInputLevel(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-//			graphics2D.setColor(Color.WHITE);
-//			int size = this.cortex.pointList.size();
-//			int count = 0;
-//			double x = this.getInputCenterX();// this.origin.x;
-//			double y = this.getInputCenterY();// this.origin.y;
-//			for (Point point : this.cortex.pointList) {
-//				List<Node> nodeList = point.getChildren();
-//				point = new Point(point);
-//				point.x *= this.scale;
-//				point.y *= this.scale;
-//				point.x += x;
-//				point.y += y;
-//				for (Node n : nodeList) {
-//					Point child = (Point) n;
-//					child = new Point(child);
-//					child.x *= this.scale;
-//					child.y *= this.scale;
-//					child.x += x;
-//					child.y += y;
-//					graphics2D.setColor(this.getColor(0.8, count, size));
-//					graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
-//				}
-//				count++;
-//			}
+			Level level = ((Network) this.cortex).getInputLevel();
+			if (level != null) {
+				for (Shape shape : level.getShapeList()) {
+					Color c = Color.YELLOW;
+					graphics2D.setColor(c);
+					graphics2D.drawPolygon(shape.doubleToIntArray(shape.getXPoints()),
+							shape.doubleToIntArray(shape.getYPoints()), (int) shape.getNPoints());
+				}
+			}
+		}
+	}
+	
+	public void drawCortexColor(Graphics2D graphics2D) {
+		if (graphics2D != null) {
+			Level level = ((Network) this.cortex).getInputLevel();
+			if (level != null) {
+				for (Shape shape : level.getShapeList()) {
+					for (int i = 0; i < shape.pointList.size(); i++) {
+//						Color color = new Color(brightness, brightness, brightness);
+						int brightness = (shape.colorTypeCoincidenceMap.get(ColorType.BRIGHTNESS) != null)?shape.colorTypeCoincidenceMap.get(ColorType.BRIGHTNESS).list.get(i):0;
+						int red = (shape.colorTypeCoincidenceMap.get(ColorType.RED) != null)?shape.colorTypeCoincidenceMap.get(ColorType.RED).list.get(i):0;
+						int green = (shape.colorTypeCoincidenceMap.get(ColorType.GREEN) != null)?shape.colorTypeCoincidenceMap.get(ColorType.GREEN).list.get(i):0;
+						int blue = (shape.colorTypeCoincidenceMap.get(ColorType.BLUE) != null)?shape.colorTypeCoincidenceMap.get(ColorType.BLUE).list.get(i):0;
+						Point point = new Point(shape.pointList.get(i));
+						point.subtract(this.origin);
+						Color color = new Color(red,green,blue);
+						graphics2D.setColor(color);
+						graphics2D.drawLine((int)point.x,(int)point.y,(int)point.x,(int)point.y);
+//						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
+					}
+				}
+			}
 		}
 	}
 
-	public void drawMotor(Graphics2D graphics2D) {
-		if (graphics2D != null) {
-			if(this.motorFlag)
-				this.motor.paint(graphics2D);
-//			int size = this.cortex.pointList.size();
-//			int count = 0;
-//			double x = this.getInputCenterX();//this.origin.x;
-//			double y = this.getInputCenterY();//this.origin.y;
-//			for (Point point : this.cortex.pointList) {
-//				List<Node> nodeList = point.getChildren();
-//				point = new Point(point);
-//				point.x *= this.scale;
-//				point.y *= this.scale;
-//				point.x += x;
-//				point.y += y;
-//				for (Node n : nodeList) {
-//					Point child = (Point) n;
-//					child = new Point(child);
-//					child.x *= this.scale;
-//					child.y *= this.scale;
-//					child.x += x;
-//					child.y += y;
-//					graphics2D.setColor(this.getColor(0.8, count, size));
-//					graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
-//				}
-//				count++;
-//			}
-//
-//			graphics2D.setColor(Color.BLACK);
-//			List<Point> pList = new ArrayList<>();
-//			for (Point p : this.cortex.pointList) {
-//				p = new Point(p);
-//				p.x *= this.scale;
-//				p.y *= this.scale;
-//				p.x += this.getInputCenterX();
-//				p.y += this.getInputCenterY();
-////				ellipse = new Ellipse2D.Double(p.x, p.y, 2, 2);
-////				graphics2D.draw(ellipse);
-//				pList.add(p);
-//			}
-//
-//			Matrix matrix = new Matrix(pList, 4 * this.scale);
-//			List<ArrayList<Point>> rowList = matrix.getRowList();
-//			for (int i = 0; i < rowList.size(); i++) {
-//				List<Point> pointList = rowList.get(i);
-//				Point previous = null;
-//				Point current;
-//				for (int j = 0; j < pointList.size(); j++) {
-//					current = pointList.get(j);
-////					current.x *= this.scale;
-////					current.y *= this.scale;
-////					current.x += x;
-////					current.y += y;
-//					if (previous != null) {
-//						graphics2D.drawLine((int) (current.x), (int) (current.y), (int) (previous.x),
-//								(int) (previous.y));
-//					}
-//					previous = current;
-//				}
-//			}
-		}
-	}
+
+
+
+
 
 	public void drawGlobalBeliefList(Graphics2D graphics2D, Concept concept) {
 //		logger.info("drawGlobalBeliefList(...)");
@@ -427,7 +366,7 @@ public class Retina {
 	public void drawCortex(Graphics2D graphics2D) {
 		if (graphics2D != null) {
 			graphics2D.setColor(Color.BLUE);
-			double r = this.cortexRadius;
+			double r = this.cortex.getRadius();
 			double x = this.cortex.origin.x;
 			double y = this.cortex.origin.y;
 			double newX = x - r;
@@ -491,7 +430,7 @@ public class Retina {
 
 	public Point getInputCenter() {
 		Point point = new Point(this.getInputCenterX(), this.getInputCenterY());
-		point.center = true;
+//		point.center = true;
 		return point;
 	}
 
@@ -524,8 +463,10 @@ public class Retina {
 	 * @return
 	 */
 	public double getMaxDistance() {
-		return (this.object != null)?(this.toMillimeter(this.object.getHeight()) * this.focalLength)
-				/ this.toMillimeter(this.getSensorWidth()):0;
+		return (this.object != null)
+				? (this.toMillimeter(this.object.getHeight()) * this.focalLength)
+						/ this.toMillimeter(this.getSensorWidth())
+				: 0;
 	}
 
 	public double getFieldWidth() {
@@ -536,17 +477,14 @@ public class Retina {
 		return (this.getSensorHeight() * distance) / focalLength;
 	}
 
-//	public double getSensorRadius() {
-////		logger.info("getSensorRadius() this.sensorRadius="+this.sensorRadius);
-//		return this.cortexRadius;
-//	}
+
 
 	public double getSensorWidth() {
-		return this.cortexRadius * Math.sqrt(2);
+		return this.cortex.getRadius() * Math.sqrt(2);
 	}
 
 	public double getSensorHeight() {
-		return this.cortexRadius * Math.sqrt(2);
+		return this.cortex.getRadius() * Math.sqrt(2);
 	}
 
 	public double getObjectHeight(double distance) {
@@ -718,12 +656,12 @@ public class Retina {
 
 	public Point getCenter() {
 		Point center = new Point(this.getWidth() / 2, this.getHeight() / 2);
-		center.center = true;
+//		center.center = true;
 		return center;
 	}
-	
+
 	public Point getOrigin() {
-		logger.info("getOrigin() this.origin="+this.origin);
+//		logger.info("getOrigin() this.origin=" + this.origin);
 		return this.origin;
 	}
 
@@ -733,7 +671,125 @@ public class Retina {
 		return center;
 	}
 }
-
+//if (this.previous == null) {
+//this.previous = this.getInputCenter();
+//this.previous.center = true;
+//}
+//public void drawCortexPointList(Graphics2D graphics2D) {
+//if (graphics2D != null) {
+//	graphics2D.setColor(Color.WHITE);
+//	int size = this.cortex.pointList.size();
+//	int count = 0;
+//	double x = this.getInputCenterX();// this.origin.x;
+//	double y = this.getInputCenterY();// this.origin.y;
+//	for (Point point : this.cortex.pointList) {
+//		List<Node> nodeList = point.getChildren();
+//		point = new Point(point);
+//		point.x *= this.scale;
+//		point.y *= this.scale;
+//		point.x += x;
+//		point.y += y;
+//		for (Node n : nodeList) {
+//			Point child = (Point) n;
+//			child = new Point(child);
+//			child.x *= this.scale;
+//			child.y *= this.scale;
+//			child.x += x;
+//			child.y += y;
+//			graphics2D.setColor(this.getColor(0.8, count, size));
+//			graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
+//		}
+//		count++;
+//	}
+//public double getSensorRadius() {
+////logger.info("getSensorRadius() this.sensorRadius="+this.sensorRadius);
+//return this.cortexRadius;
+//}
+//public void drawMotor(Graphics2D graphics2D) {
+//if (graphics2D != null) {
+//	if (this.motorFlag)
+//		this.motor.paint(graphics2D);
+//	int size = this.cortex.pointList.size();
+//	int count = 0;
+//	double x = this.getInputCenterX();//this.origin.x;
+//	double y = this.getInputCenterY();//this.origin.y;
+//	for (Point point : this.cortex.pointList) {
+//		List<Node> nodeList = point.getChildren();
+//		point = new Point(point);
+//		point.x *= this.scale;
+//		point.y *= this.scale;
+//		point.x += x;
+//		point.y += y;
+//		for (Node n : nodeList) {
+//			Point child = (Point) n;
+//			child = new Point(child);
+//			child.x *= this.scale;
+//			child.y *= this.scale;
+//			child.x += x;
+//			child.y += y;
+//			graphics2D.setColor(this.getColor(0.8, count, size));
+//			graphics2D.drawLine((int) (point.x), (int) (point.y), (int) (child.x), (int) (child.y));
+//		}
+//		count++;
+//	}
+//
+//	graphics2D.setColor(Color.BLACK);
+//	List<Point> pList = new ArrayList<>();
+//	for (Point p : this.cortex.pointList) {
+//		p = new Point(p);
+//		p.x *= this.scale;
+//		p.y *= this.scale;
+//		p.x += this.getInputCenterX();
+//		p.y += this.getInputCenterY();
+////		ellipse = new Ellipse2D.Double(p.x, p.y, 2, 2);
+////		graphics2D.draw(ellipse);
+//		pList.add(p);
+//	}
+//
+//	Matrix matrix = new Matrix(pList, 4 * this.scale);
+//	List<ArrayList<Point>> rowList = matrix.getRowList();
+//	for (int i = 0; i < rowList.size(); i++) {
+//		List<Point> pointList = rowList.get(i);
+//		Point previous = null;
+//		Point current;
+//		for (int j = 0; j < pointList.size(); j++) {
+//			current = pointList.get(j);
+////			current.x *= this.scale;
+////			current.y *= this.scale;
+////			current.x += x;
+////			current.y += y;
+//			if (previous != null) {
+//				graphics2D.drawLine((int) (current.x), (int) (current.y), (int) (previous.x),
+//						(int) (previous.y));
+//			}
+//			previous = current;
+//		}
+//	}
+//}
+//}
+//public void input(Graphics2D graphics2D, Point origin, Concept concept) {
+//logger.info("input(graphics2D=" + String.valueOf(graphics2D != null) + ", " + origin + ", " + concept + ")");
+////this.setDistance(this.distance);
+//this.drawInputBufferedImage(graphics2D);
+////this.cortex.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
+////this.cortex.update();
+////this.cortex.process(graphics2D, this.inputBufferedImage, concept);
+//this.cortex.process(this.inputBufferedImage, origin, concept);
+//this.drawCortexInputLevel(graphics2D);
+//this.drawCortexColor(graphics2D);
+////this.processBelief();
+////if(this.motorFlag)
+////	this.motor.input(this.getInputCenter(), origin, this.scale);
+////concept = (this.cortex.getBelief() != null && this.cortex.getBelief().conceptList.size() > 0) ? this.cortex.getBelief().conceptList.get(0) : null;
+////this.drawGlobalBeliefList(graphics2D, concept);
+////	this.drawRelativeBeliefList(graphics2D);
+//this.drawInputCenter(graphics2D);
+////	this.drawCortexPointList(graphics2D);
+//this.drawMotor(graphics2D);
+//this.drawCortex(graphics2D);
+//this.drawOrigin(graphics2D);
+//
+//}
 //this.setDistance(16);
 //logger.info("scale="+scale);
 //logger.info(this.getObjectHeightMM());

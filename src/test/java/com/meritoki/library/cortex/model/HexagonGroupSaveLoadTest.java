@@ -1,15 +1,7 @@
 package com.meritoki.library.cortex.model;
 
-import java.io.File;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-
-import com.meritoki.library.controller.node.NodeController;
-import com.meritoki.library.cortex.model.group.Group;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

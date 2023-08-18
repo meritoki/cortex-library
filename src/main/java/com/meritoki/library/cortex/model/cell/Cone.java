@@ -15,35 +15,38 @@
  */
 package com.meritoki.library.cortex.model.cell;
 
+import com.meritoki.library.cortex.model.unit.Wavelength;
+
 public class Cone extends Cell {
 	
 	public Wavelength wavelength = Wavelength.SHORT;
 	
-	public Cone(Wavelength wavelength) {
-		this.wavelength = wavelength;
+	public Cone() {
+//		this.wavelength = wavelength;
 	}
 	
 	public void input(long color) {
 //		logger.info("input("+color+")");
 		long blue = color & 0xff;
 		long green = (color & 0xff00) >> 8;
-		long red = (color & 0xff0000) >> 16;		
-		switch(wavelength) {
-		case SHORT: {
-			this.input((int)red, 0, 0);
-			break;
-		}
-		case MEDIUM: {
-			this.input(0,(int)green,0);
-			break;
-		}
-		case LONG: {
-			this.input(0,0,(int)blue);
-			break;
-		}
-		default: {
-			
-		}
-		}
+		long red = (color & 0xff0000) >> 16;	
+		this.input((int)red,(int)green,(int)blue);
+//		switch(wavelength) {
+//		case SHORT: {
+//			this.input((int)red, 0, 0);
+//			break;
+//		}
+//		case MEDIUM: {
+//			this.input(0,(int)green,0);
+//			break;
+//		}
+//		case LONG: {
+//			this.input(0,0,(int)blue);
+//			break;
+//		}
+//		default: {
+//			
+//		}
+//		}
 	}
 }

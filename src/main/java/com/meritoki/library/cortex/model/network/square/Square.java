@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.network.Shape;
+import com.meritoki.library.cortex.model.unit.Point;
 
 public class Square extends Shape {
 	@JsonIgnore

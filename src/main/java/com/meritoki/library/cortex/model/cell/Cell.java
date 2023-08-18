@@ -15,32 +15,43 @@
  */
 package com.meritoki.library.cortex.model.cell;
 
+import java.io.IOException;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 public class Cell {
 	protected static Logger logger = LoggerFactory.getLogger(Cell.class.getName());
-	public int x;
-	public int y;
+//	public int x;
+//	public int y;
+	@JsonProperty
 	public Integer red = 0;
+	@JsonProperty
 	public Integer green = 0;
+	@JsonProperty
 	public Integer blue = 0;
+	@JsonProperty
 	public Integer brightness = 0;
 
-	public String rgbToString(Long red, Long green, Long blue) {
-		if (red == null) {
-			red = (long) 0;
-		}
-		if (green == null) {
-			green = (long) 0;
-		}
-		if (blue == null) {
-			blue = (long) 0;
-		}
-		return "(" + red + "," + green + "," + blue + ")";
-	}
+//	public String rgbToString(Long red, Long green, Long blue) {
+//		if (red == null) {
+//			red = (long) 0;
+//		}
+//		if (green == null) {
+//			green = (long) 0;
+//		}
+//		if (blue == null) {
+//			blue = (long) 0;
+//		}
+//		return "(" + red + "," + green + "," + blue + ")";
+//	}
 
 	public int getTotal(Map<String, Integer> map) {
 		int sum = 0;
@@ -57,5 +68,18 @@ public class Cell {
 		this.green = green;
 		this.blue = blue;
 		this.brightness = this.red+this.green+this.blue/3;
+	}
+	
+	@JsonIgnore
+	@Override
+	public String toString() {
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
 	}
 }

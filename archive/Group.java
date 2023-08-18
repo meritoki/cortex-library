@@ -28,8 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.library.cortex.model.Concept;
-import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.network.Configuration;
 import com.meritoki.library.cortex.model.network.Cortex;
 import com.meritoki.library.cortex.model.network.Level;
@@ -39,6 +37,8 @@ import com.meritoki.library.cortex.model.network.hexagon.Hexagon;
 import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 import com.meritoki.library.cortex.model.network.square.Square;
 import com.meritoki.library.cortex.model.network.square.Squared;
+import com.meritoki.library.cortex.model.unit.Concept;
+import com.meritoki.library.cortex.model.unit.Point;
 
 public class Group extends Cortex {
 
@@ -71,35 +71,35 @@ public class Group extends Cortex {
 	}
 	
 	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
-		switch (this.configuration) {
-		case HEXAGONAL: {
-			logger.info("HEXAGONAL");
-			this.brightness = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.BRIGHTNESS, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
-			this.red = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.RED, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
-			this.green = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.GREEN, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
-			this.blue = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.BLUE, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
-			this.shapeMap = Hexagonal.getShapeMap(0, new Point(this.origin.x, this.origin.y), size, radius, padding);
-			this.brightness.setShapeMap(this.shapeMap);
-			this.red.setShapeMap(this.shapeMap);
-			this.green.setShapeMap(this.shapeMap);
-			this.blue.setShapeMap(this.shapeMap);
-			break;
-		}
-		case SQUARED: {
-			logger.info("SQUARED");
-			this.brightness = new Squared(com.meritoki.library.cortex.model.network.ColorType.BRIGHTNESS, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
-			this.red = new Squared(com.meritoki.library.cortex.model.network.ColorType.RED, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
-			this.green = new Squared(com.meritoki.library.cortex.model.network.ColorType.GREEN, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
-			this.blue = new Squared(com.meritoki.library.cortex.model.network.ColorType.BLUE,(int)this.origin.x, (int)this.origin.y, dimension, length, padding);
-			this.shapeMap = Squared.getShapeMap(0, new Point(this.origin.x, this.origin.y), dimension, length, padding);
-			this.brightness.setShapeMap(this.shapeMap);
-			this.red.setShapeMap(this.shapeMap);
-			this.green.setShapeMap(this.shapeMap);
-			this.blue.setShapeMap(this.shapeMap);
-			break;
-		}
-		}
+//		this.configuration = configuration;
+//		switch (this.configuration) {
+//		case HEXAGONAL: {
+//			logger.info("HEXAGONAL");
+//			this.brightness = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.BRIGHTNESS, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+//			this.red = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.RED, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+//			this.green = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.GREEN, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+//			this.blue = new Hexagonal(com.meritoki.library.cortex.model.network.ColorType.BLUE, (int)this.origin.x, (int)this.origin.y, size, radius, padding);
+//			this.shapeMap = Hexagonal.getShapeMap(0, new Point(this.origin.x, this.origin.y), size, radius, padding);
+//			this.brightness.setShapeMap(this.shapeMap);
+//			this.red.setShapeMap(this.shapeMap);
+//			this.green.setShapeMap(this.shapeMap);
+//			this.blue.setShapeMap(this.shapeMap);
+//			break;
+//		}
+//		case SQUARED: {
+//			logger.info("SQUARED");
+//			this.brightness = new Squared(com.meritoki.library.cortex.model.network.ColorType.BRIGHTNESS, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+//			this.red = new Squared(com.meritoki.library.cortex.model.network.ColorType.RED, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+//			this.green = new Squared(com.meritoki.library.cortex.model.network.ColorType.GREEN, (int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+//			this.blue = new Squared(com.meritoki.library.cortex.model.network.ColorType.BLUE,(int)this.origin.x, (int)this.origin.y, dimension, length, padding);
+//			this.shapeMap = Squared.getShapeMap(0, new Point(this.origin.x, this.origin.y), dimension, length, padding);
+//			this.brightness.setShapeMap(this.shapeMap);
+//			this.red.setShapeMap(this.shapeMap);
+//			this.green.setShapeMap(this.shapeMap);
+//			this.blue.setShapeMap(this.shapeMap);
+//			break;
+//		}
+//		}
 	}
 
 //	@JsonIgnore
@@ -162,89 +162,89 @@ public class Group extends Cortex {
 
 	@JsonIgnore
 	public void update() {
-//		logger.info("update()");
-		switch (this.configuration) {
-		case HEXAGONAL: {
-			double radians = Math.toRadians(30);
-			double xOff = Math.cos(radians) * (this.radius + this.padding);
-			double yOff = Math.sin(radians) * (this.radius + this.padding);
-			int half = this.size / 2;
-			Shape shape = null;
-			for (int row = 0; row < this.size; row++) {
-				int cols = this.size - java.lang.Math.abs(row - half);
-				for (int col = 0; col < cols; col++) {
-					int xPosition = row < half ? col - row : col - half;
-					int yPosition = row - half;
-					int x = (int) (this.origin.x + xOff * (col * 2 + 1 - cols));
-					int y = (int) (this.origin.y + yOff * (row - half) * 3);
-					shape = this.shapeMap.get("0:"+xPosition + "," + yPosition);
-					if (shape != null) {
-						shape.setCenter(new Point(x, y));
-					}
-				}
-			}
-			break;
-		}
-		case SQUARED: {
-			int half = dimension / 2;
-			Square square = null;
-			double xLeg = (length / 2) - (padding / 2);
-			double yLeg = xLeg;
-//			double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
-			for (int row = 0; row < dimension; row++) {
-				for (int column = 0; column < dimension; column++) {
-					int xPosition = column - half;
-					int yPosition = row - half;
-//					System.out.println(xPosition+" "+yPosition);
-					double x = (this.origin.x + (xPosition * length));
-					double y = (this.origin.y + (yPosition * length));
-					square = (Square) this.shapeMap.get("0:"+xPosition + "," + yPosition);
-					if (square != null) {
-						square.setCenter(new Point(x, y));
-					}
-				}
-			}
-			break;
-		}
-		}
+////		logger.info("update()");
+//		switch (this.configuration) {
+//		case HEXAGONAL: {
+//			double radians = Math.toRadians(30);
+//			double xOff = Math.cos(radians) * (this.radius + this.padding);
+//			double yOff = Math.sin(radians) * (this.radius + this.padding);
+//			int half = this.size / 2;
+//			Shape shape = null;
+//			for (int row = 0; row < this.size; row++) {
+//				int cols = this.size - java.lang.Math.abs(row - half);
+//				for (int col = 0; col < cols; col++) {
+//					int xPosition = row < half ? col - row : col - half;
+//					int yPosition = row - half;
+//					int x = (int) (this.origin.x + xOff * (col * 2 + 1 - cols));
+//					int y = (int) (this.origin.y + yOff * (row - half) * 3);
+//					shape = this.shapeMap.get("0:"+xPosition + "," + yPosition);
+//					if (shape != null) {
+//						shape.setCenter(new Point(x, y));
+//					}
+//				}
+//			}
+//			break;
+//		}
+//		case SQUARED: {
+//			int half = dimension / 2;
+//			Square square = null;
+//			double xLeg = (length / 2) - (padding / 2);
+//			double yLeg = xLeg;
+////			double radius = Math.sqrt(Math.pow(xLeg, 2)+Math.pow(yLeg,2));
+//			for (int row = 0; row < dimension; row++) {
+//				for (int column = 0; column < dimension; column++) {
+//					int xPosition = column - half;
+//					int yPosition = row - half;
+////					System.out.println(xPosition+" "+yPosition);
+//					double x = (this.origin.x + (xPosition * length));
+//					double y = (this.origin.y + (yPosition * length));
+//					square = (Square) this.shapeMap.get("0:"+xPosition + "," + yPosition);
+//					if (square != null) {
+//						square.setCenter(new Point(x, y));
+//					}
+//				}
+//			}
+//			break;
+//		}
+//		}
 
 	}
 
 	@Override
 	public void process(Graphics2D graphics2D, BufferedImage image, Concept concept) {
-		List<Shape> shapeList = Network.getShapeList(this.shapeMap);
-		for (Shape shape : shapeList) {
-			shape.initCells();
-			for (int i = 0; i < shape.sides; i++) {
-				if (shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null
-						&& shape.longConeArray[i] != null && (int) shape.xpoints[i] > 0
-						&& (int) shape.xpoints[i] < (image.getWidth()) && (int) shape.ypoints[i] > 0
-						&& (int) shape.ypoints[i] < (image.getHeight())) {
-					shape.shortConeArray[i].input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
-					shape.mediumConeArray[i].input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
-					shape.longConeArray[i].input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
-				} else {
-					shape.shortConeArray[i].input(Color.black.getRGB());
-					shape.mediumConeArray[i].input(Color.black.getRGB());
-					shape.longConeArray[i].input(Color.black.getRGB());
-				}
-			}
-		}
+//		List<Shape> shapeList = Network.getShapeList(this.shapeMap);
+//		for (Shape shape : shapeList) {
+//			shape.initCells();
+//			for (int i = 0; i < shape.sides; i++) {
+//				if (shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null
+//						&& shape.longConeArray[i] != null && (int) shape.xpoints[i] > 0
+//						&& (int) shape.xpoints[i] < (image.getWidth()) && (int) shape.ypoints[i] > 0
+//						&& (int) shape.ypoints[i] < (image.getHeight())) {
+//					shape.shortConeArray[i].input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+//					shape.mediumConeArray[i].input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+//					shape.longConeArray[i].input(image.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+//				} else {
+//					shape.shortConeArray[i].input(Color.black.getRGB());
+//					shape.mediumConeArray[i].input(Color.black.getRGB());
+//					shape.longConeArray[i].input(Color.black.getRGB());
+//				}
+//			}
+//		}
 
-		this.red.propagate(concept,true);
+//		this.red.propagate(concept,true);
 //		System.out.println("process(...) this.root.coincidence="+this.root.coincidence);
 //		System.out.println("process(...) this.red.getRootLevel().getShapeList().get(0).coincidence.list.size()="+this.red.getRootLevel().getShapeList().get(0).coincidence);
 //		for (int i = 0; i < this.red.getInputLevel().getShapeList().size(); i++) {
 //			Shape red = this.red.getInputLevel().getShapeList().get(i);
 //			red.red = red.coincidence.list.get(0);
 //		}
-		this.green.propagate(concept,true);
+//		this.green.propagate(concept,true);
 //		System.out.println("process(...) this.green.getRootLevel().getShapeList().get(0).coincidence.list.size()="+this.green.getRootLevel().getShapeList().get(0).coincidence);
 //		for (int i = 0; i < this.green.getInputLevel().getShapeList().size(); i++) {
 //			Shape red = this.green.getInputLevel().getShapeList().get(i);
 //			red.green = red.coincidence.list.get(0);
 //		}
-		this.blue.propagate(concept,true);
+//		this.blue.propagate(concept,true);
 //		System.out.println("process(...) this.blue.getRootLevel().getShapeList().get(0).coincidence.list.size()="+this.blue.getRootLevel().getShapeList().get(0).coincidence);
 //		for (int i = 0; i < this.blue.getInputLevel().getShapeList().size(); i++) {
 //			Shape red = this.blue.getInputLevel().getShapeList().get(i);
@@ -261,8 +261,8 @@ public class Group extends Cortex {
 //		}
 		
 		
-		this.brightness.propagate(concept,true);
-		this.color.propagate(concept,false);
+//		this.brightness.propagate(concept,true);
+//		this.color.propagate(concept,false);
 //		System.out.println("process(...) this.root.coincidence="+this.color.getRootLevel().getShapeList().get(0).coincidence);
 //		System.out.println("process(...) this.root.coincidence.list.size()="+this.color.getRootLevel().getShapeList().get(0).coincidence.list.size());
 		this.level.feedback(concept,true);

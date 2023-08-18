@@ -11,9 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.cortex.model.Belief;
-import com.meritoki.library.cortex.model.Matrix;
-import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.network.Cortex;
+import com.meritoki.library.cortex.model.unit.Point;
 
 /**
  * Motor is a class used to move Retina.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.motor;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.meritoki.library.cortex.model.motor.Direction;
+import com.meritoki.library.cortex.model.unit.Point;
 
 public class Matrix {
 

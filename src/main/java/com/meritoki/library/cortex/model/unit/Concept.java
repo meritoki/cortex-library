@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.unit;
 
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,21 +25,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Concept {
 	
 	@JsonProperty
-	public String value;
+	public String uuid;
 	@JsonProperty
 	public double rank;
+	@JsonProperty
+	public Map<String,String> map = new TreeMap<>();
 	
 	public Concept() {
-		this.value = UUID.randomUUID().toString();
+		this.uuid = UUID.randomUUID().toString();
+		this.map = new TreeMap<>();
 	}
 	
+	/**
+	 * Copy Constructor
+	 * @param concept
+	 */
 	public Concept(Concept concept) {
-		this.value = concept.value;
+		this.uuid = concept.uuid;
 		this.rank = concept.rank;
+		this.map = concept.map;
+		
 	}
 	
 	public Concept(String value) {
-		this.value = value;
+		this.uuid = UUID.randomUUID().toString();
+		this.map = new TreeMap<>();
+		this.map.put("tag",value);
 	}
 	
 	@Override
@@ -46,13 +59,13 @@ public class Concept {
 		boolean flag = false;
 		if (o instanceof Concept) {
 			Concept concept = (Concept) o;
-			flag = (concept.value != null)?concept.value.equals(this.value):false;
+			flag = (concept.uuid != null)?concept.uuid.equals(this.uuid):false;
 		}
 		return flag;
 	}
 	
 	@JsonIgnore
 	public String toString() {
-		return this.value;
+		return this.uuid;
 	}
 }

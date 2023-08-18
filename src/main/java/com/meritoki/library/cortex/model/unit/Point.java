@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.unit;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Point  { //extends Node {
 
@@ -26,8 +29,8 @@ public class Point  { //extends Node {
 	public double x = 0;
 	@JsonProperty
 	public double y = 0;
-	@JsonIgnore
-	public boolean center;
+//	@JsonIgnore
+//	public boolean center;
 
 	public Point() {
 	}
@@ -36,7 +39,7 @@ public class Point  { //extends Node {
 //		super(p.x+","+p.y);
 		this.x = p.x;
 		this.y = p.y;
-		this.center = p.center;
+//		this.center = p.center;
 //		this.belief = p.belief;
 	}
 
@@ -93,7 +96,15 @@ public class Point  { //extends Node {
 	}
 
 	@JsonIgnore
+	@Override
 	public String toString() {
-		return "{" + this.x + "," + this.y + ","+center+"}";
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
 	}
 }

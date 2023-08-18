@@ -2,13 +2,16 @@ package com.meritoki.library.cortex.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class Mind extends Binary {
+//https://www.baeldung.com/java-range-search
+public class Mind {
 	
 	public List<Belief> beliefList = new ArrayList<>();
 
 	public Mind(Belief belief) {
-		super(belief.getRelativeRadius());
+		super();
+	}
+	
+	public void add(Belief belief) {
 		this.beliefList.add(belief);
 	}
 }
