@@ -47,10 +47,7 @@ public class Cortex {
 	protected static Logger logger = LoggerFactory.getLogger(Cortex.class.getName());
 	@JsonProperty
 	public String uuid;
-//	@JsonProperty
-//	public ColorType type = ColorType.COMPOSITE;
-//	@JsonProperty
-//	public Configuration configuration = Configuration.HEXAGONAL;
+
 	@JsonProperty
 	public int size = 27;
 	@JsonProperty
@@ -113,80 +110,7 @@ public class Cortex {
 		return beliefList;
 	}
 
-//	@JsonIgnore
-//	private Binary addRecursive(Binary current, Belief belief) {
-//		double value = belief.getRelativeRadius();
-//		if (current == null) {
-//			return new Mind(belief);
-//		}
-//		if (value < current.value) {
-//			current.left = addRecursive(current.left, belief);
-//		} else if (value > current.value) {
-//			current.right = addRecursive(current.right, belief);
-//		} else {
-//			// value already exists
-//			return current;
-//		}
-//		return current;
-//	}
 
-//	@JsonIgnore
-//	public void add(Belief belief) {
-//		boolean flag = this.containsMind(this.mind, belief.getRelativeRadius());
-//		if (flag) {
-//			this.mind = (Mind) this.getMind(this.mind, belief.getRelativeRadius());
-//			this.mind.beliefList.add(belief);
-//		} else {
-//			this.mind = (Mind) addRecursive(this.mind, belief);
-//		}
-//	}
-//
-//	@JsonIgnore
-//	public boolean containsMind(double value) {
-//		return this.containsMind(this.mind, value);
-//	}
-//
-//	@JsonIgnore
-//	public Mind getMind(double value) {
-//		return (Mind) this.getMind(this.mind, value);
-//	}
-//
-//	@JsonIgnore
-//	private boolean containsMind(Binary current, double value) {
-//		if (current == null) {
-//			return false;
-//		}
-//		if (value == current.value) {
-//			return true;
-//		}
-//		return value < current.value ? containsMind(current.left, value) : containsMind(current.right, value);
-//	}
-//
-//	@JsonIgnore
-//	private Binary getMind(Binary current, double value) {
-//		if (current == null) {
-//			return null;
-//		}
-//		if (value == current.value) {
-//			return current;
-//		}
-//		return value < current.value ? getMind(current.left, value) : getMind(current.right, value);
-//	}
-//
-//	@JsonIgnore
-//	private int findSmallestValue(Binary root) {
-//		return (int) (root.left == null ? root.value : findSmallestValue(root.left));
-//	}
-//
-//	@JsonIgnore
-//	public void traverseInOrder(Binary node) {
-//		if (node != null) {
-//			traverseInOrder(node.left);
-//			logger.info(" " + node.value);
-//			logger.info(" " + ((Mind) node).beliefList.size());
-//			traverseInOrder(node.right);
-//		}
-//	}
 
 	@JsonIgnore
 	public boolean setIndex(String uuid) {
@@ -314,6 +238,84 @@ public class Cortex {
 		return after;
 	}
 }
+//@JsonIgnore
+//private Binary addRecursive(Binary current, Belief belief) {
+//	double value = belief.getRelativeRadius();
+//	if (current == null) {
+//		return new Mind(belief);
+//	}
+//	if (value < current.value) {
+//		current.left = addRecursive(current.left, belief);
+//	} else if (value > current.value) {
+//		current.right = addRecursive(current.right, belief);
+//	} else {
+//		// value already exists
+//		return current;
+//	}
+//	return current;
+//}
+
+//@JsonIgnore
+//public void add(Belief belief) {
+//	boolean flag = this.containsMind(this.mind, belief.getRelativeRadius());
+//	if (flag) {
+//		this.mind = (Mind) this.getMind(this.mind, belief.getRelativeRadius());
+//		this.mind.beliefList.add(belief);
+//	} else {
+//		this.mind = (Mind) addRecursive(this.mind, belief);
+//	}
+//}
+//
+//@JsonIgnore
+//public boolean containsMind(double value) {
+//	return this.containsMind(this.mind, value);
+//}
+//
+//@JsonIgnore
+//public Mind getMind(double value) {
+//	return (Mind) this.getMind(this.mind, value);
+//}
+//
+//@JsonIgnore
+//private boolean containsMind(Binary current, double value) {
+//	if (current == null) {
+//		return false;
+//	}
+//	if (value == current.value) {
+//		return true;
+//	}
+//	return value < current.value ? containsMind(current.left, value) : containsMind(current.right, value);
+//}
+//
+//@JsonIgnore
+//private Binary getMind(Binary current, double value) {
+//	if (current == null) {
+//		return null;
+//	}
+//	if (value == current.value) {
+//		return current;
+//	}
+//	return value < current.value ? getMind(current.left, value) : getMind(current.right, value);
+//}
+//
+//@JsonIgnore
+//private int findSmallestValue(Binary root) {
+//	return (int) (root.left == null ? root.value : findSmallestValue(root.left));
+//}
+//
+//@JsonIgnore
+//public void traverseInOrder(Binary node) {
+//	if (node != null) {
+//		traverseInOrder(node.left);
+//		logger.info(" " + node.value);
+//		logger.info(" " + ((Mind) node).beliefList.size());
+//		traverseInOrder(node.right);
+//	}
+//}
+//@JsonProperty
+//public ColorType type = ColorType.COMPOSITE;
+//@JsonProperty
+//public Configuration configuration = Configuration.HEXAGONAL;
 //public void addPoint(Point root, Point point) {
 ////logger.info("addPoint("+root+", "+point+")");
 //if (point != null && root != null && !point.equals(root)) {

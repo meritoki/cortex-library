@@ -43,7 +43,6 @@ public class Network extends Cortex {
 	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
 
-
 	public Network() {
 		this.uuid = UUID.randomUUID().toString();
 	}
@@ -54,7 +53,7 @@ public class Network extends Cortex {
 		this.origin = new Point(x, y);
 		this.uuid = UUID.randomUUID().toString();
 	}
-	
+
 	public Network(int x, int y) {
 		logger.info("Network(" + x + ", " + y + ")");
 		this.origin = new Point(x, y);
@@ -87,8 +86,8 @@ public class Network extends Cortex {
 	@JsonIgnore
 	public void setConcept(Concept concept) {
 		for (Level level : this.levelList) {
-			for(ColorType type: this.typeArray) {
-				level.propagate(type,concept, true, false);
+			for (ColorType type : this.typeArray) {
+				level.propagate(type, concept, true);
 			}
 		}
 	}
@@ -137,53 +136,49 @@ public class Network extends Cortex {
 	}
 
 	@JsonIgnore
-		@Override
-		public void process(BufferedImage bufferedImage, Point origin, Concept concept) {
-			logger.info("process(bufferedImage="+String.valueOf(bufferedImage != null)+", "+origin+", " + concept + ")");
-			this.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
-			this.update();
-			Level level = this.getInputLevel();
-			if (level != null) {
-				for (Shape shape : level.getShapeList()) {
-					shape.initCells();
-					for (int i = 0; i < shape.pointList.size(); i++) {
-						if (bufferedImage != null 
-								&& shape.coneArray[i] != null 
-								&& shape.rodArray[i] != null
-								&& (int) shape.pointList.get(i).x > 0
-								&& (int) shape.pointList.get(i).x < (bufferedImage.getWidth()) 
-								&& (int) shape.pointList.get(i).y > 0
-								&& (int) shape.pointList.get(i).y < (bufferedImage.getHeight())) {
-	
-							shape.coneArray[i].input(bufferedImage.getRGB((int) (shape.pointList.get(i).x), (int) (shape.pointList.get(i).y)));
-							shape.rodArray[i]
-									.input(bufferedImage.getRGB((int) (shape.pointList.get(i).x), (int) (shape.pointList.get(i).y)));
-						} else {
-							shape.coneArray[i].input(Color.black.getRGB());
-							shape.rodArray[i].input(Color.black.getRGB());
-						}
-	
+	@Override
+	public void process(BufferedImage bufferedImage, Point origin, Concept concept) {
+		logger.info("process(bufferedImage=" + String.valueOf(bufferedImage != null) + ", " + origin + ", " + concept
+				+ ")");
+		this.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
+		this.update();
+		Level level = this.getInputLevel();
+		if (level != null) {
+			for (Shape shape : level.getShapeList()) {
+				shape.initCells();
+				for (int i = 0; i < shape.pointList.size(); i++) {
+					if (bufferedImage != null && shape.coneArray[i] != null && shape.rodArray[i] != null
+							&& (int) shape.pointList.get(i).x > 0
+							&& (int) shape.pointList.get(i).x < (bufferedImage.getWidth())
+							&& (int) shape.pointList.get(i).y > 0
+							&& (int) shape.pointList.get(i).y < (bufferedImage.getHeight())) {
+
+						shape.coneArray[i].input(bufferedImage.getRGB((int) (shape.pointList.get(i).x),
+								(int) (shape.pointList.get(i).y)));
+						shape.rodArray[i].input(bufferedImage.getRGB((int) (shape.pointList.get(i).x),
+								(int) (shape.pointList.get(i).y)));
+					} else {
+						shape.coneArray[i].input(Color.black.getRGB());
+						shape.rodArray[i].input(Color.black.getRGB());
 					}
-					for(ColorType type: this.typeArray) {
-						shape.addCoincidence(type, shape.getCoincidence(type), concept, false);
-					}
+
 				}
-				for(ColorType type: this.typeArray) {
-					this.propagate(type, concept, true);
-				}
-				for(ColorType type: this.typeArray) {
-					this.feedback(type, concept);
+				for (ColorType type : this.typeArray) {
+					shape.addCoincidence(type, shape.getCoincidence(type), concept, false);
 				}
 			}
+			for (ColorType type : this.typeArray) {
+				this.propagate(type, concept, true);
+			}
+			for (ColorType type : this.typeArray) {
+				this.feedback(type, concept);
+			}
 		}
+	}
 
-
-	
-	
-	
 	@JsonIgnore
 	public void propagate(ColorType type, Concept concept, boolean inputFlag) {
-		logger.info("propogate(" + type+", "+concept + ", "+inputFlag+ ")");
+		logger.info("propogate(" + type + ", " + concept + ", " + inputFlag + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {
@@ -192,24 +187,22 @@ public class Network extends Cortex {
 				level.input(type, concept);
 			} else {
 				if (i == size - 1) {
-					level.propagate(type,concept, true, true);
+					level.propagate(type, concept, true);
 				} else {
-					level.propagate(type,concept, true, false);
+					level.propagate(type, concept, true);
 				}
 			}
 		}
 	}
 
-
-	
 	@JsonIgnore
 	public void feedback(ColorType type, Concept concept) {
-		logger.info("feedback("+type+", "+concept+")");
+		logger.info("feedback(" + type + ", " + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = size - 1; 0 < i; i--) {
 			level = this.getLevelList().get(i);
-			level.feedback(type,concept, false);
+			level.feedback(type, concept, false);
 		}
 	}
 }

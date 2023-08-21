@@ -129,12 +129,6 @@ public class Shape extends Node<Object> {
 		this.y = y;
 		this.center = center;
 		this.radius = radius;
-
-//		this.points = new Point[sides + 1];
-//		this.npoints = sides;//+1;
-//		this.xpoints = new double[sides];
-//		this.ypoints = new double[sides];
-
 		this.updatePoints();
 		this.initCells();
 	}
@@ -243,32 +237,14 @@ public class Shape extends Node<Object> {
 		}
 	}
 
-//	@JsonIgnore
-//	public void updatePoints() {
-////		Point point = new Point(center.x, center.y);
-////		xpoints[0] = point.x;
-////		ypoints[0] = point.y;
-////		points[0] = point;
-//		for (int i = 0; i < this.sides; i++) {
-//			double angle = findAngle((double) i / this.sides);
-//			Point point = findPoint(angle);
-//			xpoints[i] = point.x;
-//			ypoints[i] = point.y;
-////			points[i] = point;
-//		}
-//	}
+
 
 	@JsonIgnore
 	public void initCells() {
-//		this.shortConeArray = new Cone[this.pointList.size()];
-//		this.mediumConeArray = new Cone[this.pointList.size()];
-//		this.longConeArray = new Cone[this.pointList.size()];
+
 		this.coneArray = new Cone[this.pointList.size()];
 		this.rodArray = new Rod[this.pointList.size()];
 		for (int i = 0; i < this.pointList.size(); i++) {
-//			shortConeArray[i] = new Cone(Wavelength.SHORT);
-//			mediumConeArray[i] = new Cone(Wavelength.MEDIUM);
-//			longConeArray[i] = new Cone(Wavelength.LONG);
 			coneArray[i] = new Cone();
 			rodArray[i] = new Rod();
 		}
@@ -330,72 +306,17 @@ public class Shape extends Node<Object> {
 		// logger.info("getCoincidence("+type+") coincidence="+coincidence);
 		return coincidence;
 	}
+	
+	public Coincidence getCoincidence(Map<ColorType,Coincidence> coincidenceMap) {
+		Coincidence coincidence = new Coincidence();
+		for (Map.Entry<ColorType, Coincidence> entry : coincidenceMap.entrySet()) {
+			Coincidence c = entry.getValue();
+			coincidence.list.addAll(c.list);
+		}
+		return coincidence;
+	}
 
-//	/**
-//	 * Function has a lot of responsibility. It matches a input coincidence by
-//	 * minimum and maximum similarity with a list of coincidences already input If a
-//	 * similarity is found
-//	 * 
-//	 * @param coincidence
-//	 * @param concept
-//	 * @param threshold
-//	 */
-//	@JsonIgnore
-//	public void addCoincidence(Coincidence coincidence, Concept concept, boolean flag) {
-//		Coincidence c = null;
-//		Integer count = 0;
-//		double max = 0;
-//		Coincidence inferredCoincidence = null;
-//		if (coincidence != null && coincidence.list.size() > 0) {
-//			for (int i = 0; i < this.coincidenceList.size(); i++) {
-//				c = this.coincidenceList.get(i);
-//				if (c.similar(coincidence, max)) {
-//					max = c.quotient;
-//					inferredCoincidence = c;
-//				}
-//			}
-//			this.previousCoincidence = this.coincidence;
-//			if (flag) {
-//				List<Concept> conceptList = null;
-//				if (inferredCoincidence != null) {
-//					count = this.coincidenceCountMap.get(inferredCoincidence.toString());
-//					count = (count == null) ? 0 : count;
-//					this.coincidenceCountMap.put(inferredCoincidence.toString(), count + 1);
-//					conceptList = this.coincidenceConceptListMap.get(inferredCoincidence.toString());
-//					this.coincidenceConceptListMap.put(inferredCoincidence.toString(), conceptList);
-//				}
-//				if (conceptList == null) {
-//					conceptList = new ArrayList<>();
-//				}
-//				if (concept != null) {
-//					conceptList.add(concept);
-//				}
-//				this.coincidence = coincidence;
-//				this.coincidenceConceptListMap.put(this.coincidence.toString(), conceptList);
-//				this.coincidenceList.add(this.coincidence);
-//			} else {
-//				this.coincidence = coincidence;
-//			}
-////			if (this.previousPrediction != null) {
-////				if (this.previousPrediction.equals(this.coincidence)) {
-////					correctList.add(1);
-////				} else {
-////					correctList.add(0);
-////				}
-////			}
-////			this.previousPrediction = this.prediction;
-////			this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
-////			this.purgeCorrectList();
-//		}
-//		if (this.coincidenceList.size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
-//			this.purgeCoincidenceList();
-//		}
-//	}
-//	if(concept == null) {
-//	c.setThreshold(0.95);
-//} else {
-//	c.setThreshold(0.99);
-//}
+
 
 	/**
 	 * Function has a lot of responsibility. It matches a input coincidence by
@@ -550,10 +471,10 @@ public class Shape extends Node<Object> {
 //		this.coincidenceFrequencyMap.put(a, aCount);
 		abCount += 1;
 		this.coincidenceUnionCountMap.put(ab, abCount);
-		double total = (double) this.getTotal(this.coincidenceCountMap);
+		double total = (double) this.getMapIntegerSum(this.coincidenceCountMap);
 		double aProbability = (total > 0) ? (double) aCount / total : 0;
 		double bProbability = (total > 0) ? (double) bCount / total : 0;
-		total = (double) this.getTotal(this.coincidenceUnionCountMap);
+		total = (double) this.getMapIntegerSum(this.coincidenceUnionCountMap);
 		double abProbability = (total > 0) ? (double) abCount / total : 0;
 		double aGivenB = (bProbability > 0) ? (double) abProbability / (double) bProbability : 0;
 		if (aGivenB > MEMORY) {
@@ -606,7 +527,7 @@ public class Shape extends Node<Object> {
 	}
 
 	@JsonIgnore
-	public int getTotal(Map<String, Integer> map) {
+	public int getMapIntegerSum(Map<String, Integer> map) {
 		int sum = 0;
 		if (map != null) {
 			for (Integer i : map.values()) {
@@ -621,6 +542,95 @@ public class Shape extends Node<Object> {
 		return this.getX() + "," + this.getY();// (String)this.getData();//
 	}
 }
+//this.points = new Point[sides + 1];
+//this.npoints = sides;//+1;
+//this.xpoints = new double[sides];
+//this.ypoints = new double[sides];
+///**
+//* Function has a lot of responsibility. It matches a input coincidence by
+//* minimum and maximum similarity with a list of coincidences already input If a
+//* similarity is found
+//* 
+//* @param coincidence
+//* @param concept
+//* @param threshold
+//*/
+//@JsonIgnore
+//public void addCoincidence(Coincidence coincidence, Concept concept, boolean flag) {
+//	Coincidence c = null;
+//	Integer count = 0;
+//	double max = 0;
+//	Coincidence inferredCoincidence = null;
+//	if (coincidence != null && coincidence.list.size() > 0) {
+//		for (int i = 0; i < this.coincidenceList.size(); i++) {
+//			c = this.coincidenceList.get(i);
+//			if (c.similar(coincidence, max)) {
+//				max = c.quotient;
+//				inferredCoincidence = c;
+//			}
+//		}
+//		this.previousCoincidence = this.coincidence;
+//		if (flag) {
+//			List<Concept> conceptList = null;
+//			if (inferredCoincidence != null) {
+//				count = this.coincidenceCountMap.get(inferredCoincidence.toString());
+//				count = (count == null) ? 0 : count;
+//				this.coincidenceCountMap.put(inferredCoincidence.toString(), count + 1);
+//				conceptList = this.coincidenceConceptListMap.get(inferredCoincidence.toString());
+//				this.coincidenceConceptListMap.put(inferredCoincidence.toString(), conceptList);
+//			}
+//			if (conceptList == null) {
+//				conceptList = new ArrayList<>();
+//			}
+//			if (concept != null) {
+//				conceptList.add(concept);
+//			}
+//			this.coincidence = coincidence;
+//			this.coincidenceConceptListMap.put(this.coincidence.toString(), conceptList);
+//			this.coincidenceList.add(this.coincidence);
+//		} else {
+//			this.coincidence = coincidence;
+//		}
+////		if (this.previousPrediction != null) {
+////			if (this.previousPrediction.equals(this.coincidence)) {
+////				correctList.add(1);
+////			} else {
+////				correctList.add(0);
+////			}
+////		}
+////		this.previousPrediction = this.prediction;
+////		this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
+////		this.purgeCorrectList();
+//	}
+//	if (this.coincidenceList.size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
+//		this.purgeCoincidenceList();
+//	}
+//}
+//if(concept == null) {
+//c.setThreshold(0.95);
+//} else {
+//c.setThreshold(0.99);
+//}
+//this.shortConeArray = new Cone[this.pointList.size()];
+//this.mediumConeArray = new Cone[this.pointList.size()];
+//this.longConeArray = new Cone[this.pointList.size()];
+//shortConeArray[i] = new Cone(Wavelength.SHORT);
+//mediumConeArray[i] = new Cone(Wavelength.MEDIUM);
+//longConeArray[i] = new Cone(Wavelength.LONG);
+//@JsonIgnore
+//public void updatePoints() {
+////	Point point = new Point(center.x, center.y);
+////	xpoints[0] = point.x;
+////	ypoints[0] = point.y;
+////	points[0] = point;
+//	for (int i = 0; i < this.sides; i++) {
+//		double angle = findAngle((double) i / this.sides);
+//		Point point = findPoint(angle);
+//		xpoints[i] = point.x;
+//		ypoints[i] = point.y;
+////		points[i] = point;
+//	}
+//}
 //@JsonIgnore
 //public Cone[] shortConeArray;
 //@JsonIgnore
