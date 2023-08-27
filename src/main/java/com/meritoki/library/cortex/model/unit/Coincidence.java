@@ -59,6 +59,8 @@ public class Coincidence {
 	@JsonProperty
 	public double quotient = 0;
 	@JsonProperty
+	public Double CG = null;
+	@JsonProperty
 	public Double DCG = null;
 	@JsonProperty
 	public Double iDCG = null;
@@ -145,6 +147,8 @@ public class Coincidence {
 	@JsonIgnore
 	public boolean minimum(Coincidence c) {
 		boolean flag = false;
+		if(c != null) {
+		this.getCG();
 		Double a = this.getDCG()/c.getIDCG();//calculateDCG(this.list);
 		Double b = c.getDCG()/this.getIDCG();
 //		logger.info("minimum(coincidence) a="+a);
@@ -153,6 +157,7 @@ public class Coincidence {
 		if (this.quotient > this.threshold) {
 //			logger.info("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
 			flag = true;
+		}
 		}
 		return flag;
 	}
@@ -177,6 +182,17 @@ public class Coincidence {
 	public boolean similar(Coincidence c, double max) {
 		return this.minimum(c) && this.maximum(max);
 	}
+	
+	@JsonIgnore
+	public Double calculateCG(List<Integer> list) {
+		int relevence;
+		double sum = 0;
+		for (int i = 0; i < list.size(); i++) {
+			relevence = list.get(i);
+			sum += relevence;
+		}
+		return sum;
+	}
 
 	/**
 	 * 20230410 Defect Detected, log2(i + 2) Should Be log2(i + 1)
@@ -190,16 +206,18 @@ public class Coincidence {
 		double iteration;
 		for (int i = 0; i < list.size(); i++) {
 			relevence = list.get(i);
-//			relevence = (relevence > 0)?1/relevence:0;
-//			if(relevence > 0) {
-//				logger.info("i="+i);
-//				logger.info("relevence="+relevence);
-//			}
 			double log = log2(i + 1);
 			iteration = (log > 0)?((double)relevence /log):0;
 			sum += iteration;
 		}
 		return sum;
+	}
+	
+	public Double getCG() {
+		if(this.CG == null) {
+			this.CG = this.calculateCG(this.list);
+		}
+		return this.CG;
 	}
 	
 	public Double getDCG() {

@@ -23,7 +23,7 @@ import com.meritoki.library.controller.time.TimeController;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.motor.Delta;
 import com.meritoki.library.cortex.model.motor.Motor;
-import com.meritoki.library.cortex.model.network.ColorType;
+import com.meritoki.library.cortex.model.network.Type;
 import com.meritoki.library.cortex.model.network.Cortex;
 import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
@@ -231,7 +231,7 @@ public class Retina {
 		this.drawInputBufferedImage(graphics2D);
 		this.cortex.process(this.inputBufferedImage, origin, concept);
 		this.drawCortexInputLevel(graphics2D);
-//		this.drawCortexColor(graphics2D);
+		this.drawCortexPredictionColor(graphics2D);
 		this.drawInputCenter(graphics2D);
 		this.drawCortex(graphics2D);
 		this.drawOrigin(graphics2D);
@@ -261,7 +261,7 @@ public class Retina {
 
 	public void drawCortexInputLevel(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-			Level level = ((Network) this.cortex).getInputLevel();
+			Level level = ((Network) this.cortex).getInput();
 			if (level != null) {
 				for (Shape shape : level.getShapeList()) {
 					Color c = Color.YELLOW;
@@ -275,20 +275,25 @@ public class Retina {
 	
 	public void drawCortexColor(Graphics2D graphics2D) {
 		if (graphics2D != null) {
-			Level level = ((Network) this.cortex).getInputLevel();
+			Level level = ((Network) this.cortex).getInput();
 			if (level != null) {
 				for (Shape shape : level.getShapeList()) {
 					for (int i = 0; i < shape.pointList.size(); i++) {
 //						Color color = new Color(brightness, brightness, brightness);
-						int brightness = (shape.colorTypeCoincidenceMap.get(ColorType.BRIGHTNESS) != null)?shape.colorTypeCoincidenceMap.get(ColorType.BRIGHTNESS).list.get(i):0;
-						int red = (shape.colorTypeCoincidenceMap.get(ColorType.RED) != null)?shape.colorTypeCoincidenceMap.get(ColorType.RED).list.get(i):0;
-						int green = (shape.colorTypeCoincidenceMap.get(ColorType.GREEN) != null)?shape.colorTypeCoincidenceMap.get(ColorType.GREEN).list.get(i):0;
-						int blue = (shape.colorTypeCoincidenceMap.get(ColorType.BLUE) != null)?shape.colorTypeCoincidenceMap.get(ColorType.BLUE).list.get(i):0;
+						int brightness = (shape.typeCoincidenceMap.get(Type.BRIGHTNESS) != null)?shape.typeCoincidenceMap.get(Type.BRIGHTNESS).list.get(i):0;
+						int red = (shape.typeCoincidenceMap.get(Type.RED) != null)?shape.typeCoincidenceMap.get(Type.RED).list.get(i):0;
+						int green = (shape.typeCoincidenceMap.get(Type.GREEN) != null)?shape.typeCoincidenceMap.get(Type.GREEN).list.get(i):0;
+						int blue = (shape.typeCoincidenceMap.get(Type.BLUE) != null)?shape.typeCoincidenceMap.get(Type.BLUE).list.get(i):0;
 						Point point = new Point(shape.pointList.get(i));
 						point.subtract(this.origin);
+						try {
 						Color color = new Color(red,green,blue);
 						graphics2D.setColor(color);
 						graphics2D.drawLine((int)point.x,(int)point.y,(int)point.x,(int)point.y);
+						} catch (Exception e) {
+							logger.error("drawCortexColor(...) ("+red+", "+green+", "+blue+")");
+							e.printStackTrace();
+						}
 //						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
 					}
 				}
@@ -297,7 +302,33 @@ public class Retina {
 	}
 
 
-
+	public void drawCortexPredictionColor(Graphics2D graphics2D) {
+		if (graphics2D != null) {
+			Level level = ((Network) this.cortex).getInput();
+			if (level != null) {
+				for (Shape shape : level.getShapeList()) {
+					for (int i = 0; i < shape.pointList.size(); i++) {
+//						Color color = new Color(brightness, brightness, brightness);
+						int brightness = (shape.typePredictionCoincidenceMap.get(Type.BRIGHTNESS) != null)?shape.typePredictionCoincidenceMap.get(Type.BRIGHTNESS).list.get(i):0;
+						int red = (shape.typePredictionCoincidenceMap.get(Type.RED) != null)?shape.typePredictionCoincidenceMap.get(Type.RED).list.get(i):0;
+						int green = (shape.typePredictionCoincidenceMap.get(Type.GREEN) != null)?shape.typePredictionCoincidenceMap.get(Type.GREEN).list.get(i):0;
+						int blue = (shape.typePredictionCoincidenceMap.get(Type.BLUE) != null)?shape.typePredictionCoincidenceMap.get(Type.BLUE).list.get(i):0;
+						Point point = new Point(shape.pointList.get(i));
+						point.subtract(this.origin);
+						try {
+						Color color = new Color(red,green,blue);
+						graphics2D.setColor(color);
+						graphics2D.drawLine((int)point.x,(int)point.y,(int)point.x,(int)point.y);
+						} catch (Exception e) {
+							logger.error("drawCortexPredictionColor(...) ("+red+", "+green+", "+blue+")");
+							e.printStackTrace();
+						}
+//						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
+					}
+				}
+			}
+		}
+	}
 
 
 

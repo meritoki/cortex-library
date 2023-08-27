@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.network.ColorType;
+import com.meritoki.library.cortex.model.network.Type;
 import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
 import com.meritoki.library.cortex.model.network.Shape;
@@ -39,41 +39,29 @@ import com.meritoki.library.cortex.model.unit.Point;
  */
 public class Hexagonal extends Network {
 
-//	public static void main(String[] args) {
-//		Hexagonal n = new Hexagonal(ColorType.BRIGHTNESS, 0, 0, 13, 1, 0);
-//		n.load();
-////		Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
-////		
-////		for (Map.Entry<String, Square> entry : squareMap.entrySet()) {
-////			String key = entry.getKey();
-////			Square value = entry.getValue();
-////			System.out.println(key+" "+value.getCenter()+" "+value.getRadius());
-////		}
-//	}
-
 	@JsonIgnore
 	protected static Logger logger = LoggerFactory.getLogger(Hexagonal.class.getName());
 
 
 	public Hexagonal() {
-		super(new ColorType[]{ ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE }, 0, 0);
-		this.length = 7;
+		super(new Type[]{ Type.BRIGHTNESS, Type.RED, Type.GREEN, Type.BLUE }, 0, 0);
+		this.count = 7;
 	}
 
 	public Hexagonal(int size, int radius, int padding) {
-		super(new ColorType[]{ ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE }, 0, 0);
+		super(new Type[]{ Type.BRIGHTNESS, Type.RED, Type.GREEN, Type.BLUE }, 0, 0);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
-		this.length = 7;
+		this.count = 7;
 	}
 
-	public Hexagonal(ColorType[] typeList, int x, int y, int size, int radius, int padding) {
+	public Hexagonal(Type[] typeList, int x, int y, int size, int radius, int padding) {
 		super(typeList, x, y);
 		this.size = size;
 		this.radius = radius;
 		this.padding = padding;
-		this.length = 7;
+		this.count = 7;
 	}
 
 	/**
@@ -89,7 +77,7 @@ public class Hexagonal extends Network {
 		int half = size / 2;
 		Level level = null;
 		Shape shape = null;
-		level = this.getInputLevel();
+		level = this.getInput();
 		for (int row = 0; row < size; row++) {
 			int cols = size - java.lang.Math.abs(row - half);
 			for (int col = 0; col < cols; col++) {
@@ -211,7 +199,7 @@ public class Hexagonal extends Network {
 			this.addLevel(level);
 		}
 		// if (logger.isDebugEnabled()) {
-		 level = this.getRootLevel();
+		 level = this.getRoot();
 		 Shape h = level.getShapeList().get(0);
 //		 Node.printTree(h, " ");
 		// }
@@ -350,7 +338,17 @@ public class Hexagonal extends Network {
 
 
 }
-
+//public static void main(String[] args) {
+//Hexagonal n = new Hexagonal(ColorType.BRIGHTNESS, 0, 0, 13, 1, 0);
+//n.load();
+////Map<String,Square> squareMap = Network.getSquareMap(-1, new Point(0,0), 3, 2, 0);
+////
+////for (Map.Entry<String, Square> entry : squareMap.entrySet()) {
+////	String key = entry.getKey();
+////	Square value = entry.getValue();
+////	System.out.println(key+" "+value.getCenter()+" "+value.getRadius());
+////}
+//}
 //public static Map<String, Square> getSquareMap(int level, Point origin, int dimension, int length, int padding) {
 //Map<String, Square> squareMap = new HashMap<>();
 //int half = dimension/2;

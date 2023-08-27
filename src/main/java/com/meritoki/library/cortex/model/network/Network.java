@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+//import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
@@ -36,7 +36,8 @@ import com.meritoki.library.cortex.model.unit.Concept;
 import com.meritoki.library.cortex.model.unit.Point;
 
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = Hexagonal.class), @Type(value = Squared.class), })
+@JsonSubTypes({ @com.fasterxml.jackson.annotation.JsonSubTypes.Type(value = Hexagonal.class),
+		@com.fasterxml.jackson.annotation.JsonSubTypes.Type(value = Squared.class), })
 public class Network extends Cortex {
 
 	protected static Logger logger = LoggerFactory.getLogger(Network.class.getName());
@@ -47,7 +48,7 @@ public class Network extends Cortex {
 		this.uuid = UUID.randomUUID().toString();
 	}
 
-	public Network(ColorType[] typeList, int x, int y) {
+	public Network(Type[] typeList, int x, int y) {
 		logger.info("Network(" + typeList + ", " + x + ", " + y + ")");
 		this.typeArray = typeList;
 		this.origin = new Point(x, y);
@@ -86,8 +87,8 @@ public class Network extends Cortex {
 	@JsonIgnore
 	public void setConcept(Concept concept) {
 		for (Level level : this.levelList) {
-			for (ColorType type : this.typeArray) {
-				level.propagate(type, concept, true);
+			for (Type type : this.typeArray) {
+				level.propagate(type, concept);
 			}
 		}
 	}
@@ -102,7 +103,7 @@ public class Network extends Cortex {
 	}
 
 	@JsonIgnore
-	public static LinkedList<Shape> getShapeList(Map<String, Shape> shapeMap) {
+	public LinkedList<Shape> getShapeList(Map<String, Shape> shapeMap) {
 		LinkedList<Shape> shapeList = new LinkedList<>();
 		for (Map.Entry<String, Shape> entry : shapeMap.entrySet()) {
 			shapeList.add(entry.getValue());
@@ -111,14 +112,14 @@ public class Network extends Cortex {
 	}
 
 	@JsonIgnore
-	public Level getRootLevel() {
+	public Level getRoot() {
 		int size = this.getLevelList().size();
 		Level level = (size > 0) ? this.getLevelList().get(size - 1) : null;
 		return level;
 	}
 
 	@JsonIgnore
-	public Level getInputLevel() {
+	public Level getInput() {
 		int size = this.getLevelList().size();
 		Level level = (size > 0) ? this.getLevelList().get(0) : null;
 		return level;
@@ -142,9 +143,9 @@ public class Network extends Cortex {
 				+ ")");
 		this.setOrigin((int) (origin.x), (int) (origin.y));// Origin is used;
 		this.update();
-		Level level = this.getInputLevel();
-		if (level != null) {
-			for (Shape shape : level.getShapeList()) {
+		Level input = this.getInput();
+		if (input != null) {
+			for (Shape shape : input.getShapeList()) {
 				shape.initCells();
 				for (int i = 0; i < shape.pointList.size(); i++) {
 					if (bufferedImage != null && shape.coneArray[i] != null && shape.rodArray[i] != null
@@ -161,42 +162,42 @@ public class Network extends Cortex {
 						shape.coneArray[i].input(Color.black.getRGB());
 						shape.rodArray[i].input(Color.black.getRGB());
 					}
-
 				}
-				for (ColorType type : this.typeArray) {
-					shape.addCoincidence(type, shape.getCoincidence(type), concept, false);
+				for (Type type : this.typeArray) {
+					shape.addCoincidence(type, shape.getCoincidence(type), concept);
 				}
 			}
-			for (ColorType type : this.typeArray) {
-				this.propagate(type, concept, true);
+			for (Type type : this.typeArray) {
+				this.propagate(type, concept);
 			}
-			for (ColorType type : this.typeArray) {
+			Level root = this.getRoot();
+			List<Shape> shapeList = root.getShapeList();
+			if (shapeList.size() > 0) {
+				Shape shape = shapeList.get(0);
+				for (Type type : this.typeArray) {
+					logger.info("process(...) type=" + shape.typeCoincidenceMap.get(type).list.size());
+				}
+			}
+			for (Type type : this.typeArray) {
 				this.feedback(type, concept);
 			}
 		}
 	}
 
 	@JsonIgnore
-	public void propagate(ColorType type, Concept concept, boolean inputFlag) {
-		logger.info("propogate(" + type + ", " + concept + ", " + inputFlag + ")");
-		Level level = null;
+	public void propagate(Type type, Concept concept) { // , boolean inputFlag) {
+		logger.info("propogate(" + type + ", " + concept + ")");// + inputFlag + ")");
+		Level level;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {
 			level = this.getLevelList().get(i);
-			if (inputFlag && i == 0) {
-				level.input(type, concept);
-			} else {
-				if (i == size - 1) {
-					level.propagate(type, concept, true);
-				} else {
-					level.propagate(type, concept, true);
-				}
-			}
+			level.propagate(type, concept);
+
 		}
 	}
 
 	@JsonIgnore
-	public void feedback(ColorType type, Concept concept) {
+	public void feedback(Type type, Concept concept) {
 		logger.info("feedback(" + type + ", " + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
@@ -206,6 +207,19 @@ public class Network extends Cortex {
 		}
 	}
 }
+//for (ColorType type : this.typeArray) {
+//shape.addCoincidence(type, shape.getCoincidence(type), concept, false);
+//}
+//if (inputFlag && i == 0) {
+//level.input(type, concept);
+//} else 
+//{
+//if (i == size - 1) {
+//level.propagate(type, concept, true);
+//} else {
+//level.propagate(type, concept, true);
+//}
+//}
 /**
  * Function initializes the network of nodes, or squares, that converges into a
  * single root node.

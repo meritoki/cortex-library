@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+//import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
@@ -42,7 +42,7 @@ import com.meritoki.library.cortex.model.unit.Concept;
 import com.meritoki.library.cortex.model.unit.Point;
 
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = Network.class), })
+@JsonSubTypes({ @com.fasterxml.jackson.annotation.JsonSubTypes.Type(value = Network.class), })
 public class Cortex {
 	protected static Logger logger = LoggerFactory.getLogger(Cortex.class.getName());
 	@JsonProperty
@@ -51,11 +51,13 @@ public class Cortex {
 	@JsonProperty
 	public int size = 27;
 	@JsonProperty
+	public int length = 1;
+	@JsonProperty
 	public int radius = 1;
 	@JsonProperty
 	public int dimension = 13;
 	@JsonProperty
-	public int length = 2;
+	public int count = 2;
 	@JsonProperty
 	public int padding = 0;
 	@JsonProperty
@@ -69,7 +71,7 @@ public class Cortex {
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
 	@JsonProperty
-	public ColorType[] typeArray = { ColorType.BRIGHTNESS, ColorType.RED, ColorType.GREEN, ColorType.BLUE };
+	public Type[] typeArray = { Type.BRIGHTNESS, Type.RED, Type.GREEN, Type.BLUE };
 
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();

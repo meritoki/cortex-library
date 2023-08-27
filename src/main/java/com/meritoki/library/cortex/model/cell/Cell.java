@@ -64,10 +64,10 @@ public class Cell {
 	}
 
 	public void input(Integer red, Integer green, Integer blue) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-		this.brightness = this.red+this.green+this.blue/3;
+		this.red = red%256;
+		this.green = green%256;
+		this.blue = blue%256;
+		this.brightness = (this.red+this.green+this.blue)/3;
 	}
 	
 	@JsonIgnore

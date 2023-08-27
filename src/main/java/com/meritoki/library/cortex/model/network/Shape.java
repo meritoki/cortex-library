@@ -31,7 +31,6 @@ import com.meritoki.library.cortex.model.cell.Rod;
 import com.meritoki.library.cortex.model.unit.Coincidence;
 import com.meritoki.library.cortex.model.unit.Concept;
 import com.meritoki.library.cortex.model.unit.Point;
-import com.meritoki.library.cortex.model.unit.Wavelength;
 
 public class Shape extends Node<Object> {
 
@@ -61,25 +60,27 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	public Coincidence coincidence;
 	@JsonProperty
-	public Map<ColorType, Coincidence> colorTypeCoincidenceMap = new HashMap<>();
+	public Coincidence previousCoincidence;
 	@JsonProperty
-	public Map<ColorType, Coincidence> colorTypePreviousCoincidenceMap = new HashMap<>();
+	public Coincidence predictionCoincidence;
 	@JsonProperty
-	public Coincidence previousPrediction = null;
+	public Map<Type, Coincidence> typeCoincidenceMap = new HashMap<>();
 	@JsonProperty
-	public Coincidence prediction = null;
+	public Map<Type, Coincidence> typePreviousCoincidenceMap = new HashMap<>();
 	@JsonProperty
-	public Coincidence previousCoincidence = null;
+	public Map<Type, Coincidence> typePredictionCoincidenceMap = new HashMap<>();
 	@JsonIgnore
 	public Cone[] coneArray;
 	@JsonIgnore
 	public Rod[] rodArray;
-//	@JsonProperty
-//	protected List<Coincidence> coincidenceList = new LinkedList<>();
 	@JsonProperty
-	public Map<ColorType, List<Coincidence>> colorTypeCoincidenceListMap = new HashMap<>();
+	protected List<Coincidence> coincidenceList = new LinkedList<>();
+	@JsonProperty
+	public Map<Type, List<Coincidence>> typeCoincidenceListMap = new HashMap<>();
 	@JsonProperty
 	public Map<String, Integer> coincidenceCountMap = new HashMap<>();
+	@JsonProperty
+	public Map<String, Integer> correctCountMap = new HashMap<>();
 	@JsonProperty
 	public Map<String, Integer> coincidenceUnionCountMap = new HashMap<>();
 	@JsonProperty
@@ -101,26 +102,26 @@ public class Shape extends Node<Object> {
 		switch (this.sides) {
 		case 4: {
 			this.coincidence = new Coincidence(9);
-			this.colorTypeCoincidenceMap.put(ColorType.BRIGHTNESS, new Coincidence(9));
-			this.colorTypeCoincidenceMap.put(ColorType.RED, new Coincidence(9));
-			this.colorTypeCoincidenceMap.put(ColorType.GREEN, new Coincidence(9));
-			this.colorTypeCoincidenceMap.put(ColorType.BLUE, new Coincidence(9));
-			this.colorTypeCoincidenceListMap.put(ColorType.BRIGHTNESS, new ArrayList<>());
-			this.colorTypeCoincidenceListMap.put(ColorType.RED, new ArrayList<>());
-			this.colorTypeCoincidenceListMap.put(ColorType.GREEN, new ArrayList<>());
-			this.colorTypeCoincidenceListMap.put(ColorType.BLUE, new ArrayList<>());
+			this.typeCoincidenceMap.put(Type.BRIGHTNESS, new Coincidence(9));
+			this.typeCoincidenceMap.put(Type.RED, new Coincidence(9));
+			this.typeCoincidenceMap.put(Type.GREEN, new Coincidence(9));
+			this.typeCoincidenceMap.put(Type.BLUE, new Coincidence(9));
+			this.typeCoincidenceListMap.put(Type.BRIGHTNESS, new ArrayList<>());
+			this.typeCoincidenceListMap.put(Type.RED, new ArrayList<>());
+			this.typeCoincidenceListMap.put(Type.GREEN, new ArrayList<>());
+			this.typeCoincidenceListMap.put(Type.BLUE, new ArrayList<>());
 			break;
 		}
 		case 6: {
 			this.coincidence = new Coincidence(7);
-			this.colorTypeCoincidenceMap.put(ColorType.BRIGHTNESS, new Coincidence(7));
-			this.colorTypeCoincidenceMap.put(ColorType.RED, new Coincidence(7));
-			this.colorTypeCoincidenceMap.put(ColorType.GREEN, new Coincidence(7));
-			this.colorTypeCoincidenceMap.put(ColorType.BLUE, new Coincidence(7));
-			this.colorTypeCoincidenceListMap.put(ColorType.BRIGHTNESS, new ArrayList<>());
-			this.colorTypeCoincidenceListMap.put(ColorType.RED, new ArrayList<>());
-			this.colorTypeCoincidenceListMap.put(ColorType.GREEN, new ArrayList<>());
-			this.colorTypeCoincidenceListMap.put(ColorType.BLUE, new ArrayList<>());
+			this.typeCoincidenceMap.put(Type.BRIGHTNESS, new Coincidence(7));
+			this.typeCoincidenceMap.put(Type.RED, new Coincidence(7));
+			this.typeCoincidenceMap.put(Type.GREEN, new Coincidence(7));
+			this.typeCoincidenceMap.put(Type.BLUE, new Coincidence(7));
+			this.typeCoincidenceListMap.put(Type.BRIGHTNESS, new ArrayList<>());
+			this.typeCoincidenceListMap.put(Type.RED, new ArrayList<>());
+			this.typeCoincidenceListMap.put(Type.GREEN, new ArrayList<>());
+			this.typeCoincidenceListMap.put(Type.BLUE, new ArrayList<>());
 			break;
 		}
 		}
@@ -237,8 +238,6 @@ public class Shape extends Node<Object> {
 		}
 	}
 
-
-
 	@JsonIgnore
 	public void initCells() {
 
@@ -274,7 +273,7 @@ public class Shape extends Node<Object> {
 	}
 
 	@JsonIgnore
-	public Coincidence getCoincidence(ColorType type) {
+	public Coincidence getCoincidence(Type type) {
 		// logger.info("getCoincidence("+type+")");
 		Coincidence coincidence = new Coincidence();
 		int value = 0;
@@ -306,40 +305,39 @@ public class Shape extends Node<Object> {
 		// logger.info("getCoincidence("+type+") coincidence="+coincidence);
 		return coincidence;
 	}
-	
-	public Coincidence getCoincidence(Map<ColorType,Coincidence> coincidenceMap) {
+
+	public Coincidence getCoincidence(Map<Type, Coincidence> coincidenceMap) {
 		Coincidence coincidence = new Coincidence();
-		for (Map.Entry<ColorType, Coincidence> entry : coincidenceMap.entrySet()) {
+		for (Map.Entry<Type, Coincidence> entry : coincidenceMap.entrySet()) {
 			Coincidence c = entry.getValue();
 			coincidence.list.addAll(c.list);
 		}
 		return coincidence;
 	}
 
-
-
 	/**
 	 * Function has a lot of responsibility. It matches a input coincidence by
 	 * minimum and maximum similarity with a list of coincidences already input If a
 	 * similarity is found
 	 * 
+	 * @param type
 	 * @param coincidence
 	 * @param concept
-	 * @param threshold
+	 * @param flag        - Used to differentiate b/t propagate and feedback
 	 */
 	@JsonIgnore
-	public void addCoincidence(ColorType type, Coincidence coincidence, Concept concept, boolean flag) {
+	public void addCoincidence(Type type, Coincidence coincidence, Concept concept) { // , boolean flag) {
+//		logger.info("addCoincidence("+type+", "+coincidence+", "+concept+")");
 		Coincidence c = null;
-		Integer count = 0;
 		double max = 0;
 		Coincidence inferredCoincidence = null;
 		if (coincidence != null && coincidence.list.size() > 0) {
-			List<Coincidence> coincidenceList = this.colorTypeCoincidenceListMap.get(type);
-			coincidenceList = (coincidenceList == null) ? new ArrayList<>() : coincidenceList;
+			List<Coincidence> coincidenceList = this.coincidenceList;// this.typeCoincidenceListMap.get(type);//this.coincidenceList;//
+//			coincidenceList = (coincidenceList == null) ? new ArrayList<>() : coincidenceList;
 			for (int i = 0; i < coincidenceList.size(); i++) {
 				c = coincidenceList.get(i);
 				if (concept == null) {
-					c.setThreshold(0.95);
+					c.setThreshold(0.99);
 				} else {
 					c.setThreshold(0.99);
 				}
@@ -348,110 +346,67 @@ public class Shape extends Node<Object> {
 					inferredCoincidence = c;
 				}
 			}
-			this.colorTypePreviousCoincidenceMap.put(type, this.colorTypeCoincidenceMap.get(type));
-			if (flag) {
-				List<Concept> conceptList = null;
-				if (inferredCoincidence != null) {
-					count = this.coincidenceCountMap.get(inferredCoincidence.toString());
-					count = (count == null) ? 0 : count;
-					this.coincidenceCountMap.put(inferredCoincidence.toString(), count + 1);
-					conceptList = this.coincidenceConceptListMap.get(inferredCoincidence.toString());
-					this.coincidenceConceptListMap.put(inferredCoincidence.toString(), conceptList);
-				}
-				if (conceptList == null) {
-					conceptList = new ArrayList<>();
-				}
-				if (concept != null) {
-					conceptList.add(concept);
-				}
-				this.colorTypeCoincidenceMap.put(type, coincidence);
-				coincidenceList.add(coincidence);
-				this.colorTypeCoincidenceListMap.put(type, coincidenceList);
-			} else {
+			// Test Prediction Correct Before Overridding
 
-				this.colorTypeCoincidenceMap.put(type, coincidence);
-			}
-		}
-		if (this.colorTypeCoincidenceListMap.get(type).size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
-			this.purgeCoincidenceList(type);
-		}
-	}
-//	this.conceptListMap.put(this.coincidence.toString(), conceptList);
-//	this.coincidence = coincidence;
-//	if (this.previousPrediction != null) {
-//	if (this.previousPrediction.equals(this.coincidence)) {
-//		correctList.add(1);
-//	} else {
-//		correctList.add(0);
-//	}
-//}
-//this.previousPrediction = this.prediction;
-//this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
-//this.purgeCorrectList();
-//}
-	/**
-	 * Function uses a map of coincidence frequency to determine if it should be
-	 * remove from the coincidenceList. A coincidence with a frequency greater than
-	 * a threshold value are kept.
-	 */
-	@JsonIgnore
-	public void purgeCoincidenceList(ColorType type) {
-		Coincidence c = null;
-		List<Coincidence> cList = new LinkedList<>();
-		for (int i = 0; i < this.colorTypeCoincidenceListMap.get(type).size(); i++) {
-			c = this.colorTypeCoincidenceListMap.get(type).get(i);
-			if (this.coincidenceCountMap.get(c.toString()) == null) {
-				cList.add(c);
-			}
-		}
-		for (Coincidence coincidence : cList) {
-			this.coincidenceConceptListMap.remove(coincidence);
-		}
-		this.colorTypeCoincidenceListMap.get(type).removeAll(cList);
-	}
+			if (inferredCoincidence != null) {
+				coincidence = inferredCoincidence;
+//				if (coincidence != null) {
 
-//	@JsonIgnore
-//	public void purgeCorrectList() {
-//		while (this.correctList.size() > 7) {
-//			this.correctList.pop();
-//		}
-//	}
-//	
-	@JsonIgnore
-	public void purgeCorrectList() {
-		while (this.correctList.size() > 7) {
-			this.correctList.pop();
-		}
-	}
-
-	@JsonIgnore
-	public double getCorrectPercentage() {
-		int oneCount = 0;
-		for (Integer i : this.correctList) {
-			oneCount += i;
-		}
-//		logger.info("getCorrectPercentage() oneCount="+oneCount);
-//		logger.info("getCorrectPercentage() this.correctList.size()="+this.correctList.size());
-		return (this.correctList.size() > 0) ? (double) oneCount / (double) this.correctList.size() : 0;
-	}
-
-//	@JsonIgnore
-//	public Coincidence getConditionalCoincidence(Coincidence b) {
-//		Coincidence coincidence = null;
-//		if (b != null) {
-//			Map<String, Double> aMap = this.coincidenceConditionalMap.get(b.toString());
-//			if (aMap != null) {
-//				double max = 0;
-//				for (Map.Entry<String, Double> entry : aMap.entrySet()) {
-//					if (entry.getValue() > max) {
-//						max = entry.getValue();
-//						coincidence = new Coincidence(entry.getKey());
-//					}
 //				}
-//			}
+				if (this.typePredictionCoincidenceMap.get(type) != null) {
+					coincidence.setThreshold(0.75);
+					if (coincidence.similar(this.typePredictionCoincidenceMap.get(type), 0.75)) {
+//						logger.info("addCoincidence(...) correct");
+						this.correctList.add(1);
+						Integer count = this.correctCountMap
+								.get(this.typePredictionCoincidenceMap.get(type).toString());
+						count = (count == null) ? 0 : count;
+						if (count > 0) {
+							count -= 1;
+						}
+						this.correctCountMap.put(this.typePredictionCoincidenceMap.get(type).toString(), count);
+					} else {
+						this.correctList.add(0);
+						Integer count = this.correctCountMap
+								.get(this.typePredictionCoincidenceMap.get(type).toString());
+						count = (count == null) ? 0 : count;
+						count += 1;
+						this.correctCountMap.put(this.typePredictionCoincidenceMap.get(type).toString(), count);
+					}
+				}
+				Integer count = this.coincidenceCountMap.get(coincidence.toString());
+				count = (count == null) ? 0 : count;
+				this.coincidenceCountMap.put(coincidence.toString(), count + 1);
+				this.addCoincidenceUnionCountMap(coincidence, this.typePreviousCoincidenceMap.get(type));
+
+			} else {
+				coincidenceList.add(coincidence);
+//				this.typeCoincidenceListMap.put(type,coincidenceList);
+			}
+			if (concept != null) {
+				List<Concept> conceptList = this.coincidenceConceptListMap.get(coincidence.toString());
+				conceptList.add(concept);
+				this.coincidenceConceptListMap.put(coincidence.toString(), conceptList);
+			}
+			this.typePredictionCoincidenceMap.put(type,
+					this.predictCoincidence(coincidence, this.typePreviousCoincidenceMap.get(type)));
+			this.typePreviousCoincidenceMap.put(type, this.typeCoincidenceMap.get(type));
+			this.typeCoincidenceMap.put(type, coincidence);
+
+		}
+//		if (this.colorTypeCoincidenceListMap.get(type).size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
+//			this.purgeCoincidenceList(type);
 //		}
-//		return coincidence;
-//	}
+	}
+
+	public void addCoincidenceUnionCountMap(Coincidence aCoincidence, Coincidence bCoincidence) {
+		String a = (aCoincidence != null) ? aCoincidence.toString() : "[]";
+		String b = (bCoincidence != null) ? bCoincidence.toString() : "[]";
+		String ab = a + "," + b;
+		Integer abCount = (this.coincidenceUnionCountMap.get(ab) == null) ? 0 : this.coincidenceUnionCountMap.get(ab);
+		abCount += 1;
+		this.coincidenceUnionCountMap.put(ab, abCount);
+	}
 
 	/**
 	 * Function builds a map of maps. Two
@@ -467,43 +422,141 @@ public class Shape extends Node<Object> {
 		Integer bCount = (coincidenceCountMap.get(b) == null) ? 0 : coincidenceCountMap.get(b);
 		Integer aCount = (coincidenceCountMap.get(a) == null) ? 0 : coincidenceCountMap.get(a);
 		Integer abCount = (this.coincidenceUnionCountMap.get(ab) == null) ? 0 : this.coincidenceUnionCountMap.get(ab);
+		logger.info("predictCoincidence(aCoincidence, bCoincidence) aCount=" + aCount);
+		logger.info("predictCoincidence(aCoincidence, bCoincidence) bCount=" + bCount);
+		logger.info("predictCoincidence(aCoincidence, bCoincidence) abCount=" + abCount);
 //		aCount += 1;
 //		this.coincidenceFrequencyMap.put(a, aCount);
-		abCount += 1;
-		this.coincidenceUnionCountMap.put(ab, abCount);
-		double total = (double) this.getMapIntegerSum(this.coincidenceCountMap);
-		double aProbability = (total > 0) ? (double) aCount / total : 0;
-		double bProbability = (total > 0) ? (double) bCount / total : 0;
-		total = (double) this.getMapIntegerSum(this.coincidenceUnionCountMap);
-		double abProbability = (total > 0) ? (double) abCount / total : 0;
-		double aGivenB = (bProbability > 0) ? (double) abProbability / (double) bProbability : 0;
-		if (aGivenB > MEMORY) {
-//			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A|B)=" + aGivenB);
-			Map<String, Double> aMap = (this.coincidenceConditionalMap.get(b) == null) ? new HashMap<String, Double>()
-					: this.coincidenceConditionalMap.get(b);
-			aMap.put(a, aGivenB);
-			this.coincidenceConditionalMap.put(b, aMap);
-		}
+//		abCount += 1;
+//		this.coincidenceUnionCountMap.put(ab, abCount);
+		double countSum = (double) this.getMapIntegerSum(this.coincidenceCountMap);
+		double unionCountSum = (double) this.getMapIntegerSum(this.coincidenceUnionCountMap);
+		logger.info("predictCoincidence(aCoincidence, bCoincidence) countSum=" + countSum);
+		logger.info("predictCoincidence(aCoincidence, bCoincidence) unionCountSum=" + unionCountSum);
+		double aProbability = (countSum > 0) ? (double) aCount / countSum : 0;
+		double bProbability = (countSum > 0) ? (double) bCount / countSum : 0;
+		double abUnionProbability = (unionCountSum > 0) ? (double) (abCount) / unionCountSum : 0;
+		Coincidence prediction;
+		if (bCoincidence != null) {
 
-		return this.getConditionalCoincidence(aCoincidence);
+//			double abIntersectCoefficient = (aCoincidence.getCG() > bCoincidence.getCG())
+//					? (bCoincidence.getCG() / aCoincidence.getCG())
+//					: (aCoincidence.getCG() / bCoincidence.getCG());// (sum > 0) ? (double) abCount / sum : 0;
+//			logger.info("predictCoincidence(aCoincidence, bCoincidence) C(A AND B)=" + abIntersectCoefficient);
+			double abIntersectProbability = abUnionProbability;//aProbability + bProbability - abUnionProbability;// (((double)(aCount+bCount))*abIntersectCoefficient)/countSum;
+			// double abIntersectProbability = (aCoincidence.getCG() > bCoincidence.getCG())
+//					? (((double) bCount)*2) / sum
+//					: (((double) aCount)*2) / sum;
+//			double abIntersectProbability = (aCoincidence.getCG() > bCoincidence.getCG())
+//					? ((double) aCount + ((double) bCount * abIntersectCoefficient)) / sum
+//					: ((double) bCount + ((double) aCount * abIntersectCoefficient)) / sum;
+//		double aGivenB = (bProbability > 0) ? (double) abIntersectProbability / (double) bProbability : 0;
+			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A)=" + aProbability);
+			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B)=" + bProbability);
+			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A AND B)=" + abIntersectProbability);
+			double bGivenA = (aProbability > 0) ? (double) abIntersectProbability / (double) aProbability : 0;
+			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B|A)=" + bGivenA);
+			if (bGivenA > 0.50) {
+//				logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B|A)=" + bGivenA);
+				Map<String, Double> bMap = (this.coincidenceConditionalMap.get(b) == null)
+						? new HashMap<String, Double>()
+						: this.coincidenceConditionalMap.get(b);
+				bMap.put(b, bGivenA);
+				this.coincidenceConditionalMap.put(a, bMap);
+			}
+			prediction = this.getConditionalCoincidence(aCoincidence);
+//		logger.info("predictCoincidence("+aCoincidence+", "+bCoincidence+") prediction="+prediction);
+		} else {
+			prediction = aCoincidence;
+		}
+		return prediction;
 	}
 
 	@JsonIgnore
-	public Coincidence getConditionalCoincidence(Coincidence b) {
+	public Coincidence getConditionalCoincidence(Coincidence a) {
 		Coincidence coincidence = null;
-		if (b != null) {
-			Map<String, Double> aMap = this.coincidenceConditionalMap.get(b.toString());
+		if (a != null) {
+			Map<String, Double> aMap = this.coincidenceConditionalMap.get(a.toString());
 			if (aMap != null) {
 				double max = 0;
 				for (Map.Entry<String, Double> entry : aMap.entrySet()) {
-					if (entry.getValue() > max) {
-						max = entry.getValue();
+					Coincidence b = new Coincidence(entry.getKey());
+					int correct = (this.correctCountMap.get(b.toString()) != null)
+							? this.correctCountMap.get(b.toString())
+							: 0;
+//					logger.info("getConditionalCoincidence(...) correct="+correct);
+					double p = entry.getValue();
+					p /= Math.pow(2, correct);
+					if (p > max) {
+						max = p;
 						coincidence = new Coincidence(entry.getKey());
 					}
 				}
 			}
 		}
 		return coincidence;
+	}
+
+	// this.conceptListMap.put(this.coincidence.toString(), conceptList);
+	// this.coincidence = coincidence;
+	// if (this.previousPrediction != null) {
+	// if (this.previousPrediction.equals(this.coincidence)) {
+	// correctList.add(1);
+	// } else {
+	// correctList.add(0);
+	// }
+	// }
+	// this.previousPrediction = this.prediction;
+	// this.prediction = this.predictCoincidence(this.coincidence,
+	// this.previousCoincidence);
+	// this.purgeCorrectList();
+	// }
+	// /**
+	// * Function uses a map of coincidence frequency to determine if it should be
+	// * remove from the coincidenceList. A coincidence with a frequency greater
+	// than
+	// * a threshold value are kept.
+	// */
+	// @JsonIgnore
+	// public void purgeCoincidenceList(Type type) {
+	// Coincidence c = null;
+	// List<Coincidence> cList = new LinkedList<>();
+	// for (int i = 0; i < this.typeCoincidenceListMap.get(type).size(); i++) {
+	// c = this.typeCoincidenceListMap.get(type).get(i);
+	// if (this.coincidenceCountMap.get(c.toString()) == null) {
+	// cList.add(c);
+	// }
+	// }
+	// for (Coincidence coincidence : cList) {
+	// this.coincidenceConceptListMap.remove(coincidence);
+	// }
+	// this.typeCoincidenceListMap.get(type).removeAll(cList);
+	// }
+
+	// @JsonIgnore
+	// public void purgeCorrectList() {
+	// while (this.correctList.size() > 7) {
+	// this.correctList.pop();
+	// }
+	// }
+	//
+	@JsonIgnore
+	public void purgeCorrectList() {
+		while (this.correctList.size() > 7) {
+			this.correctList.pop();
+		}
+	}
+
+	@JsonIgnore
+	public double getCorrectPercentage() {
+		int oneCount = 0;
+		for (Integer i : this.correctList) {
+			oneCount += i;
+		}
+		// logger.info("getCorrectPercentage() oneCount="+oneCount);
+		// logger.info("getCorrectPercentage()
+		// this.correctList.size()="+this.correctList.size());
+		return (this.correctList.size() > 0) ? (double) oneCount / (double) this.correctList.size() : 0;
 	}
 
 	@JsonIgnore
@@ -542,6 +595,82 @@ public class Shape extends Node<Object> {
 		return this.getX() + "," + this.getY();// (String)this.getData();//
 	}
 }
+//this.conceptListMap.put(this.coincidence.toString(), conceptList);
+//this.coincidence = coincidence;
+//if (this.previousPrediction != null) {
+//if (this.previousPrediction.equals(this.coincidence)) {
+//	correctList.add(1);
+//} else {
+//	correctList.add(0);
+//}
+//}
+//this.previousPrediction = this.prediction;
+//this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
+//this.purgeCorrectList();
+//}
+///**
+// * Function uses a map of coincidence frequency to determine if it should be
+// * remove from the coincidenceList. A coincidence with a frequency greater than
+// * a threshold value are kept.
+// */
+//@JsonIgnore
+//public void purgeCoincidenceList(Type type) {
+//	Coincidence c = null;
+//	List<Coincidence> cList = new LinkedList<>();
+//	for (int i = 0; i < this.typeCoincidenceListMap.get(type).size(); i++) {
+//		c = this.typeCoincidenceListMap.get(type).get(i);
+//		if (this.coincidenceCountMap.get(c.toString()) == null) {
+//			cList.add(c);
+//		}
+//	}
+//	for (Coincidence coincidence : cList) {
+//		this.coincidenceConceptListMap.remove(coincidence);
+//	}
+//	this.typeCoincidenceListMap.get(type).removeAll(cList);
+//}
+
+//@JsonIgnore
+//public Coincidence getConditionalCoincidence(Coincidence b) {
+//	Coincidence coincidence = null;
+//	if (b != null) {
+//		Map<String, Double> aMap = this.coincidenceConditionalMap.get(b.toString());
+//		if (aMap != null) {
+//			double max = 0;
+//			for (Map.Entry<String, Double> entry : aMap.entrySet()) {
+//				if (entry.getValue() > max) {
+//					max = entry.getValue();
+//					coincidence = new Coincidence(entry.getKey());
+//				}
+//			}
+//		}
+//	}
+//	return coincidence;
+//}
+
+//conceptList = this.coincidenceConceptListMap.get(inferredCoincidence.toString());
+//this.coincidenceConceptListMap.put(inferredCoincidence.toString(), conceptList);
+//if (flag) {
+//	List<Concept> conceptList = null;
+//	if (inferredCoincidence != null) {
+//		count = this.coincidenceCountMap.get(inferredCoincidence.toString());
+//		count = (count == null) ? 0 : count;
+//		this.coincidenceCountMap.put(inferredCoincidence.toString(), count + 1);
+////		conceptList = this.coincidenceConceptListMap.get(inferredCoincidence.toString());
+////		this.coincidenceConceptListMap.put(inferredCoincidence.toString(), conceptList);
+//	}
+//	if (conceptList == null) {
+//		conceptList = new ArrayList<>();
+//	}
+//	if (concept != null) {
+//		conceptList.add(concept);
+//	}
+//	this.colorTypeCoincidenceMap.put(type, coincidence);
+//	coincidenceList.add(coincidence);
+//	this.colorTypeCoincidenceListMap.put(type, coincidenceList);
+//} else {
+//
+//	this.colorTypeCoincidenceMap.put(type, coincidence);
+//}
 //this.points = new Point[sides + 1];
 //this.npoints = sides;//+1;
 //this.xpoints = new double[sides];

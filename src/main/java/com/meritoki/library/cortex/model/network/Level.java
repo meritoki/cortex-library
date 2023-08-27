@@ -82,49 +82,64 @@ public class Level {
 		return shapeList;
 	}
 
+//	@JsonIgnore
+//	public void input(ColorType type, Concept concept) {
+////		logger.info("propagate("+type+","+concept+")");
+//		Shape shape = null;
+//		Coincidence coincidence = null;
+//		List<Node<Object>> nodeList = null;
+//		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+//			shape = entry.getValue();
+////			shape.coincidence = shape.getCoincidence(type);
+//			shape.colorTypeCoincidenceMap.put(type, shape.getCoincidence(type));
+//		}
+//	}
+
 	@JsonIgnore
-	public void input(ColorType type, Concept concept) {
-//		logger.info("propagate("+type+","+concept+")");
+	public void propagate(Type type, Concept concept) { // , boolean flag) {// , boolean nodeFlag) {
+		logger.debug("propagate(" + type + ", " + concept + ")");// + flag + ")");// , " + nodeFlag + ")");
 		Shape shape = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
 		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
-			shape = entry.getValue();
-//			shape.coincidence = shape.getCoincidence(type);
-			shape.colorTypeCoincidenceMap.put(type, shape.getCoincidence(type));
-		}
-	}
-
-
-
-	@JsonIgnore
-	public void propagate(ColorType type, Concept concept, boolean flag) {//, boolean nodeFlag) {
-		logger.debug("propagate(" + type + ", " + concept + ", " + flag + ")");//, " + nodeFlag + ")");
-		Shape shape = null;
-		Coincidence coincidence = null;
-		List<Node<Object>> nodeList = null;
-		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
-			coincidence = new Coincidence();
+			coincidence = new Coincidence();// Initialize Coincidence
 			shape = entry.getValue();
 			nodeList = shape.getChildren();
-			for (int i = 0; i < nodeList.size(); i++) {
-				Node n = nodeList.get(i);
-				Shape s = (Shape) n;
-				coincidence.list.addAll(s.colorTypeCoincidenceMap.get(type).list);
-			}
-			if(nodeList.size() < shape.length) {
-				int count = 0;
-				int difference = shape.length = nodeList.size();
-				while(count < difference) {
-					coincidence.list.addAll(new Coincidence(shape.length).list);
-					count++;
+
+			if (nodeList.size() > 0) {// If Zero, Then Input Level & Procedure Not Necessary
+//				logger.info("propogate(" + type + ", " + concept + ") nodeList.size()=" + nodeList.size());
+				for (int i = 0; i < nodeList.size(); i++) {
+					Node<?> n = nodeList.get(i);
+					Shape s = (Shape) n;
+					// Build Coincidence From Child Node Coincidences
+					Coincidence c = s.typeCoincidenceMap.get(type);
+					if (c == null) {
+						c = s.getCoincidence(type);
+					}
+//					coincidence.list.addAll(s.typeCoincidenceMap.get(type).list);
+					coincidence.list.addAll(c.list);
 				}
+				if (nodeList.size() < shape.length) {
+					int count = 0;
+					int difference = shape.length - nodeList.size();
+					while (count < difference) {
+						coincidence.list.addAll(new Coincidence(shape.length).list);
+						count++;
+					}
+				}
+				shape.addCoincidence(type, coincidence, concept);
 			}
-			//Coincidence is composed of Many Coincidences from Node List of Shape
-			//For a Hexagon 7 Coincidences are Composed
-			//For a Square 9 Coincidences are Composed
-			//Composition is related to ColorType
-			shape.addCoincidence(type, coincidence, concept, flag);
+//			} else {
+//				logger.info("propagate(" + type + ", " + concept + ", " + flag + ") input");
+//				// Input Level
+//				coincidence = shape.getCoincidence(type);
+////				shape.typeCoincidenceMap.put(type, coincidence);
+//			}
+			// Coincidence is composed of Many Coincidences from Node List of Shape
+			// For a Hexagon 7 Coincidences are Composed
+			// For a Square 9 Coincidences are Composed
+			// Composition is related to ColorType
+			// , flag);
 		}
 	}
 
@@ -156,7 +171,8 @@ public class Level {
 //	}
 
 	@JsonIgnore
-	public void feedback(ColorType type, Concept concept, boolean nodeFlag) {
+	public void feedback(Type type, Concept concept, boolean nodeFlag) {
+		logger.debug("feedback(" + type + ", " + concept + ", " + nodeFlag + ")");
 		Shape s = null;
 //		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
@@ -171,9 +187,9 @@ public class Level {
 					length = (nodeFlag) ? nodeList.size() : shape.length;
 					if (length > 0) {
 //						logger.info("feedback(...) length=" + length);
-						List<Integer> list = s.colorTypeCoincidenceMap.get(type).getSublist(length, i);
+						List<Integer> list = s.typeCoincidenceMap.get(type).getSublist(length, i);
 						if (list != null) {
-							shape.addCoincidence(type, new Coincidence(list), concept, false);
+							shape.addCoincidence(type, new Coincidence(list), concept);// , false);
 
 						}
 					}
@@ -255,8 +271,8 @@ public class Level {
 		this.conceptCountMap = new HashMap<>();
 		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
 			shape = entry.getValue();
-			if (shape.prediction != null) {
-				cList = shape.coincidenceConceptListMap.get(shape.prediction.toString());
+			if (shape.predictionCoincidence != null) {
+				cList = shape.coincidenceConceptListMap.get(shape.predictionCoincidence.toString());
 			} else {
 				cList = null;
 			}
