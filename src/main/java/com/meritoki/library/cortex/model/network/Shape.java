@@ -332,8 +332,8 @@ public class Shape extends Node<Object> {
 		double max = 0;
 		Coincidence inferredCoincidence = null;
 		if (coincidence != null && coincidence.list.size() > 0) {
-			List<Coincidence> coincidenceList = this.coincidenceList;// this.typeCoincidenceListMap.get(type);//this.coincidenceList;//
-//			coincidenceList = (coincidenceList == null) ? new ArrayList<>() : coincidenceList;
+			List<Coincidence> coincidenceList = this.typeCoincidenceListMap.get(type);//this.coincidenceList;// this.typeCoincidenceListMap.get(type);//this.coincidenceList;//
+			coincidenceList = (coincidenceList == null) ? new ArrayList<>() : coincidenceList;
 			for (int i = 0; i < coincidenceList.size(); i++) {
 				c = coincidenceList.get(i);
 				if (concept == null) {
@@ -381,7 +381,7 @@ public class Shape extends Node<Object> {
 
 			} else {
 				coincidenceList.add(coincidence);
-//				this.typeCoincidenceListMap.put(type,coincidenceList);
+				this.typeCoincidenceListMap.put(type,coincidenceList);
 			}
 			if (concept != null) {
 				List<Concept> conceptList = this.coincidenceConceptListMap.get(coincidence.toString());
@@ -422,17 +422,17 @@ public class Shape extends Node<Object> {
 		Integer bCount = (coincidenceCountMap.get(b) == null) ? 0 : coincidenceCountMap.get(b);
 		Integer aCount = (coincidenceCountMap.get(a) == null) ? 0 : coincidenceCountMap.get(a);
 		Integer abCount = (this.coincidenceUnionCountMap.get(ab) == null) ? 0 : this.coincidenceUnionCountMap.get(ab);
-		logger.info("predictCoincidence(aCoincidence, bCoincidence) aCount=" + aCount);
-		logger.info("predictCoincidence(aCoincidence, bCoincidence) bCount=" + bCount);
-		logger.info("predictCoincidence(aCoincidence, bCoincidence) abCount=" + abCount);
+//		logger.info("predictCoincidence(aCoincidence, bCoincidence) aCount=" + aCount);
+//		logger.info("predictCoincidence(aCoincidence, bCoincidence) bCount=" + bCount);
+//		logger.info("predictCoincidence(aCoincidence, bCoincidence) abCount=" + abCount);
 //		aCount += 1;
 //		this.coincidenceFrequencyMap.put(a, aCount);
 //		abCount += 1;
 //		this.coincidenceUnionCountMap.put(ab, abCount);
 		double countSum = (double) this.getMapIntegerSum(this.coincidenceCountMap);
 		double unionCountSum = (double) this.getMapIntegerSum(this.coincidenceUnionCountMap);
-		logger.info("predictCoincidence(aCoincidence, bCoincidence) countSum=" + countSum);
-		logger.info("predictCoincidence(aCoincidence, bCoincidence) unionCountSum=" + unionCountSum);
+//		logger.info("predictCoincidence(aCoincidence, bCoincidence) countSum=" + countSum);
+//		logger.info("predictCoincidence(aCoincidence, bCoincidence) unionCountSum=" + unionCountSum);
 		double aProbability = (countSum > 0) ? (double) aCount / countSum : 0;
 		double bProbability = (countSum > 0) ? (double) bCount / countSum : 0;
 		double abUnionProbability = (unionCountSum > 0) ? (double) (abCount) / unionCountSum : 0;
@@ -451,13 +451,13 @@ public class Shape extends Node<Object> {
 //					? ((double) aCount + ((double) bCount * abIntersectCoefficient)) / sum
 //					: ((double) bCount + ((double) aCount * abIntersectCoefficient)) / sum;
 //		double aGivenB = (bProbability > 0) ? (double) abIntersectProbability / (double) bProbability : 0;
-			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A)=" + aProbability);
-			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B)=" + bProbability);
-			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A AND B)=" + abIntersectProbability);
+//			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A)=" + aProbability);
+//			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B)=" + bProbability);
+//			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A AND B)=" + abIntersectProbability);
 			double bGivenA = (aProbability > 0) ? (double) abIntersectProbability / (double) aProbability : 0;
-			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B|A)=" + bGivenA);
-			if (bGivenA > 0.50) {
-//				logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B|A)=" + bGivenA);
+//			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B|A)=" + bGivenA);
+			if (bGivenA > 0.75) {
+				logger.info("predictCoincidence(aCoincidence, bCoincidence) P(B|A)=" + bGivenA);
 				Map<String, Double> bMap = (this.coincidenceConditionalMap.get(b) == null)
 						? new HashMap<String, Double>()
 						: this.coincidenceConditionalMap.get(b);
