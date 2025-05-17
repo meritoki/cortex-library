@@ -22,11 +22,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.cell.Wavelength;
 import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagon;
+import com.meritoki.library.cortex.model.network.shape.Node;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 
 /**
@@ -39,31 +40,36 @@ import com.meritoki.library.cortex.model.network.shape.Shape;
 public class Squared extends Network {
 
 	public static void main(String[] args) {
-		Squared n = new Squared(Color.BRIGHTNESS, 0, 0, 5, 1, 0);
+		Squared n = new Squared(new Wavelength[] {Wavelength.ROD_GRAY});
 		n.load();
 	}
 	@JsonIgnore
 	protected Logger logger = Logger.getLogger(Squared.class.getName());
 
 	public Squared() {
-		super(Color.BRIGHTNESS, 0, 0);
-		this.length = 9;
+		super(new Wavelength[] {Wavelength.ROD_GRAY}, 0, 0);
+	}
+	
+	public Squared(Wavelength[] wavelength) {
+		super(wavelength, 0, 0);
+	}
+	
+	public Squared(Wavelength[] wavelength,int x, int y) {
+		super(wavelength, x, y);
 	}
 
 	public Squared(int dimension, int length, int padding) {
-		super(Color.BRIGHTNESS, 0, 0);
+		super(new Wavelength[] {Wavelength.ROD_GRAY}, 0, 0);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
-//		this.length = 9;//
 	}
 
-	public Squared(Color type, int x, int y, int dimension, int length, int padding) {
-		super(type, x, y);
+	public Squared(Wavelength[] wavelength, int x, int y, int dimension, int length, int padding) {
+		super(wavelength, x, y);
 		this.dimension = dimension;
 		this.length = length;
 		this.padding = padding;
-//		this.length = 9;
 	}
 
 	/**
@@ -105,121 +111,123 @@ public class Squared extends Network {
 		logger.info("load() this.shapeMap=" + this.shapeMap);
 		logger.info("load() this.dimension=" + this.dimension);
 		logger.info("load() this.length=" + this.length);
-		Map<String, Shape> squareMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.dimension, this.length,
+		Map<String, Shape> shapeMap = getShapeMap(-1, new Point(this.origin.x, this.origin.y), this.dimension, this.length,
 				this.padding);
-		int depth = (this.depth > 0) ? this.depth : this.getDepth(squareMap.size());
+		int depth = (this.depth > 0) ? this.depth : this.getDepth(shapeMap.size());
 		if (this.depth == 0) {
 			this.depth = depth;
 		}
 		Level level = new Level();
-		List<Shape> squareList = this.getShapeList(squareMap);
-		Shape square = null;
-		for (Shape n : squareList) {
-			square = this.shapeMap.get("0:" + n);
-			if (square == null) {
-				square = new Square(n);
-				this.shapeMap.put("0:" + square, square);
+		List<Shape> shapeList = Network.getShapeList(shapeMap);
+		Shape shape = null;
+		for (Shape n : shapeList) {
+			shape = this.shapeMap.get("0:" + n);
+			if (shape == null) {
+				shape = new Square(n);
+				this.shapeMap.put("0:" + shape, shape);
 			}
-			square.setData("0:" + square);
-			square.initCells();
-			level.addShape(null,square);
+			else {
+				shape = new Square(shape);
+				this.shapeMap.put("0:" + shape, shape);
+			}
+//			shape.setData("0:" + shape);
+			shape.initCells();
+			level.addShape(null,shape);
 		}
 		this.addLevel(level);
-		LinkedList<Shape> squareStack = null;
+		LinkedList<Shape> shapeStack = null;
 		int exponent = 0;
 		for (int i = 1; i < depth; i++) {
-			logger.fine("load() i=" + i);
+			logger.info("load() i=" + i);
 			exponent = i;
-			logger.fine("load() exponent=" + exponent);
-			squareMap = this.getLastLevel().getShapeMap();
+			shapeMap = this.getLastLevel().getShapeMap();
 			level = new Level();
-			squareList = new LinkedList<>();
-			squareStack = new LinkedList<>();
-			squareStack.push(squareMap.get(this.origin.x + "," + this.origin.y));
-			Shape shape;
-			while (!squareStack.isEmpty()) {
-				shape = squareStack.pop();
-				LinkedList<Shape> list = getGroupZeroSquareList(squareMap, shape.getX(), shape.getY(), exponent);
-				for (Shape s : list) {
-					if (!squareList.contains(s)) {
-						squareList.add(s);
-						squareStack.push(s);
+			shapeList = new LinkedList<>();
+			shapeStack = new LinkedList<>();
+			shapeStack.push(shapeMap.get("0,0"));
+			while (!shapeStack.isEmpty()) {
+				shape = shapeStack.pop();
+				if(shape != null) {
+					LinkedList<Shape> list = getGroupZeroSquareList(shapeMap, shape.getX(), shape.getY(), exponent);
+					for (Shape s : list) {
+						if (!shapeList.contains(s)) {
+							shapeList.add(s);
+							shapeStack.push(s);
+						}
 					}
 				}
 			}
-			for (Shape m : squareList) {
+			for (Shape m : shapeList) {
 				Shape s = this.shapeMap.get(i + ":" + m);
 				if (s == null) {
 					s = new Square(m);
-					s.length = 9;
 					this.shapeMap.put(i + ":" + s, s);
 				}
-				List<Shape> list = this.getGroupZeroSquareList(squareMap, s.getX(), s.getY(), exponent - 1);
+				List<Shape> list = this.getGroupZeroSquareList(shapeMap, s.getX(), s.getY(), exponent - 1);
 				for (Shape n : list) {
 					s.addChild(n);
 				}
-				s.setData(i + ":" + s);
+//				s.setData(i + ":" + s);
 				level.addShape(null,s);
 			}
 			this.addLevel(level);
 		}
 		 level = this.getRootLevel();
-		 Shape h = level.getShapeList().get(0);
-//		 Node.printTree(h, " ");
+		 Shape h = (level.getShapeList().size()>0)?level.getShapeList().get(0):null;
+		 Shape.printTree(h, " ");
 	}
 
 	@JsonIgnore
-	public LinkedList<Shape> getGroupZeroSquareList(Map<String, Shape> squareMap, int x, int y, int exponent) {
+	public LinkedList<Shape> getGroupZeroSquareList(Map<String, Shape> shapeMap, int x, int y, int exponent) {
 		// System.out.println("getGroupZeroSquareList("+squareMap.size()+", "+x+",
 		// "+y+", "+exponent+")");
 		LinkedList<Shape> squareList = new LinkedList<>();
-		Shape h = null;
-		int multiplier = (int) Math.pow(2, exponent);
-		// System.out.println("multiplier="+multiplier);
+		Shape s = null;
+		int multiplier = (int) Math.pow(2, exponent);//1,2,4,8,16
 		// (0,0)
-		h = squareMap.get((x) + "," + (y));
-		if (h != null) {
-			squareList.push(h);
+		s = shapeMap.get((x) + "," + (y));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (0,+3)
-		h = squareMap.get((x) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
+		// (0,+2)
+		s = shapeMap.get((x) + "," + (y + (1 * multiplier)));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (+3,+3)
-		h = squareMap.get((x + (1 * multiplier)) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
+		// (+2,+2)
+		s = shapeMap.get((x + (1 * multiplier)) + "," + (y + (1 * multiplier)));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (+3,0)
-		h = squareMap.get((x + (1 * multiplier)) + "," + (y));
-		if (h != null) {
-			squareList.push(h);
+		// (+2,0)
+		s = shapeMap.get((x + (1 * multiplier)) + "," + (y));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (+3,-3)
-		h = squareMap.get((x + (1 * multiplier)) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
+		// (+2,-2)
+		s = shapeMap.get((x + (1 * multiplier)) + "," + (y - (1 * multiplier)));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (0,-3)
-		h = squareMap.get((x) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
+		// (0,-2)
+		s = shapeMap.get((x) + "," + (y - (1 * multiplier)));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (-3,-3)
-		h = squareMap.get((x - (1 * multiplier)) + "," + (y - (1 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
+		// (-2,-2)
+		s = shapeMap.get((x - (1 * multiplier)) + "," + (y - (1 * multiplier)));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (-3,0)
-		h = squareMap.get((x - (1 * multiplier)) + "," + (y));
-		if (h != null) {
-			squareList.push(h);
+		// (-2,0)
+		s = shapeMap.get((x - (1 * multiplier)) + "," + (y));
+		if (s != null) {
+			squareList.push(s);
 		}
-		// (-3,+3)
-		h = squareMap.get((x - (1 * multiplier)) + "," + (y + (1 * multiplier)));
-		if (h != null) {
-			squareList.push(h);
+		// (-2,+2)
+		s = shapeMap.get((x - (1 * multiplier)) + "," + (y + (1 * multiplier)));
+		if (s != null) {
+			squareList.push(s);
 		}
 		// System.out.println("getGroupZeroSquareList(squareMap,"+x+", "+y+",
 		// "+exponent+") squareList="+squareList);
@@ -241,7 +249,6 @@ public class Squared extends Network {
 				double x = (origin.x + (xPosition * length));
 				double y = (origin.y + (yPosition * length));
 				square = new Square(xPosition, yPosition, new Point(x, y), radius);
-				square.length = 9;
 				if (level > -1)
 					shapeMap.put(level + ":" + xPosition + "," + yPosition, square);
 				else
@@ -296,7 +303,7 @@ public class Squared extends Network {
 //				h.longConeArray[i].input(Color.black.getRGB());
 //			}
 //		}
-//		h.addCoincidence(h.getCoincidence(this.type), concept, false);
+//		h.addCoincidence(h.getCoincidence(this.Wavelength), concept, false);
 //	}
 //	this.propagate(concept);
 //}

@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.meritoki.library.cortex.model;
+package com.meritoki.library.cortex.model.network.shape;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.codehaus.plexus.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,7 +49,7 @@ public class Coincidence {
 	@JsonProperty
 	public List<Integer> list = new ArrayList<>();
 	@JsonProperty
-	public double threshold = .99;
+	public double threshold = 1/1.618;
 	@JsonProperty
 	public double quotient = 0;
 
@@ -126,19 +128,52 @@ public class Coincidence {
 		return this.list;
 	}
 
+//	@JsonIgnore
+//	public boolean minimum(Coincidence c) {
+//		boolean flag = false;
+//		double a = calculateDCG(this.list);
+//		double b = calculateDCG(c.list);
+//		this.quotient = (a == b) ? 1 : (a > b) ? ((a > 0) ? b / a : 0) : ((b > 0) ? a / b : 0);
+//		if (this.quotient > this.threshold) {
+////			System.out.println("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
+//			flag = true;
+//		}
+//		return flag;
+//	}
+	
+//	@JsonIgnore
+//	public boolean similar(Coincidence c, double max) {
+//		boolean flag = this.minimum(c);// && this.maximum(max);
+//		logger.info("similar("+c.list.size()+","+max+") flag="+flag);
+//		return flag;
+//	}
+	
 	@JsonIgnore
-	public boolean minimum(Coincidence c) {
+	public boolean similar(Coincidence c) {
 		boolean flag = false;
-		double a = calculateDCG(this.list);
-		double b = calculateDCG(c.list);
-		this.quotient = (a == b) ? 1 : (a > b) ? ((a > 0) ? b / a : 0) : ((b > 0) ? a / b : 0);
+//		logger.info("similar("+c.list.size()+") flag="+flag);
+		this.quotient = calculateQuotient(this.list,c.list);
 		if (this.quotient > this.threshold) {
-//			System.out.println("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
+//			logger.info("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
 			flag = true;
 		}
 		return flag;
 	}
 
+	public boolean minimum(Coincidence c) {
+		boolean flag = false;
+		double a = calculateDCG(this.list);
+		double b = calculateDCG(c.list);
+//		this.threshold = (a == b) ? 1 : (a > b) ? ((a > 0) ? b / a : 0) : ((b > 0) ? a / b : 0);
+//		this.threshold = 1-this.threshold;
+		this.quotient = calculateQuotient(this.list,c.list);
+		if (this.quotient > (this.threshold)) {
+			logger.info("this.quotient("+this.quotient+") > this.threshold("+this.threshold+")");
+			flag = true;
+		}
+		return flag;
+	}
+	
 	/**
 	 * Function returns a boolean indicating the calculated quotient is greater than
 	 * max
@@ -155,9 +190,45 @@ public class Coincidence {
 		return flag;
 	}
 
-	@JsonIgnore
-	public boolean similar(Coincidence c, double max) {
-		return this.minimum(c) && this.maximum(max);
+	public double calculateQuotient(List<Integer> aList, List<Integer> bList) {
+		double quotient = 0;
+		if(aList.size() == bList.size()) {
+			double sum = 0;
+			double count = 0;
+			for(int i=0;i<aList.size();i++) {
+				Integer a = aList.get(i);
+				Integer b = bList.get(i);
+				String aBinary = this.getBinary(a);
+				String bBinary = this.getBinary(b);
+//				logger.info("calculateQuotient("+aList.size()+","+bList.size()+") aBinary="+aBinary);
+//				logger.info("calculateQuotient("+aList.size()+","+bList.size()+") bBinary="+bBinary);
+				for(int j = 0;j < 8; j++) {
+					char aBit = aBinary.charAt(j);
+					char bBit = bBinary.charAt(j);
+//					logger.info("calculateQuotient("+aList.size()+","+bList.size()+") aBit="+aBit+" bBit="+bBit);
+					if(aBit == bBit) {
+						sum+=1;
+					}
+					count+=1;
+				}	
+			}
+			quotient = sum/count;
+//			logger.info("calculateQuotient("+aList.size()+","+bList.size()+") quotient="+quotient);
+		}
+		return quotient;
+	}
+	
+	public String getBinary(Integer quotient) {
+		StringBuilder binaryNumber = new StringBuilder();
+	    while (quotient > 0) {
+	        int remainder = quotient % 2;
+	        binaryNumber.append(remainder);
+	        quotient /= 2;
+	    }
+	    binaryNumber = binaryNumber.reverse();
+	    String binaryString = binaryNumber.toString();
+	    binaryString = StringUtils.leftPad(binaryString, 8,"0");
+	    return binaryString; 
 	}
 
 	@JsonIgnore

@@ -34,11 +34,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Point;
+import com.meritoki.library.cortex.model.cell.Wavelength;
 import com.meritoki.library.cortex.model.cortex.Cortex;
 import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 import com.meritoki.library.cortex.model.network.square.Squared;
 
+/**
+ * A Network Retains a List of Levels, Each Containing a Map of Shapes
+ */
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = Hexagonal.class), @Type(value = Squared.class), })
 public class Network extends Cortex {
@@ -47,27 +51,24 @@ public class Network extends Cortex {
 	@JsonIgnore
 	protected LinkedList<Level> levelList = new LinkedList<>();
 
-
 	public Network() {
 		this.uuid = UUID.randomUUID().toString();
 	}
 
-	public Network(com.meritoki.library.cortex.model.network.Color color, int x, int y) {
-		logger.info("Network(" + color + ", " + x + ", " + y + ")");
-		this.type = color;
+	/**
+	 * X & Y Are the initial origin of the Network
+	 * 
+	 * @param wavelength
+	 * @param x
+	 * @param y
+	 */
+	public Network(Wavelength[] wavelength, int x, int y) {
+		logger.info("Network(" + wavelength + ", " + x + ", " + y + ")");
+		this.wavelength = wavelength;
 		this.origin = new Point(x, y);
 		this.uuid = UUID.randomUUID().toString();
+		
 	}
-
-//	@JsonIgnore
-//	public int getX() {
-//		return this.x;
-//	}
-//
-//	@JsonIgnore
-//	public int getY() {
-//		return this.y;
-//	}
 
 	@JsonIgnore
 	public Map<String, Shape> getShapeMap() {
@@ -87,7 +88,8 @@ public class Network extends Cortex {
 
 	@JsonIgnore
 	public Level getLastLevel() {
-		Level level = this.levelList.get(this.levelList.size() - 1);
+		int size = this.getLevelList().size();
+		Level level = (size > 0) ? this.getLevelList().get(size - 1) : null;
 		logger.info("getLastLevel() level=" + level);
 		return level;
 	}
@@ -95,7 +97,7 @@ public class Network extends Cortex {
 	@JsonIgnore
 	public void setConcept(Concept concept) {
 		for (Level level : this.levelList) {
-			level.propagate(concept, true, false);
+			level.propagate(concept, false);
 		}
 	}
 
@@ -142,133 +144,160 @@ public class Network extends Cortex {
 		logger.info("update()");
 	}
 
-	/**
-	 * Function initializes the network of nodes, or squares, that converges into a
-	 * single root node.
-	 */
-	@JsonIgnore
-	public void input(Concept concept) {
-		logger.info("input()");
-		Level level = this.getInputLevel();
-		List<Shape> shapeList = level.getShapeList();
-		for (Shape shape : shapeList) {
-			shape.addCoincidence(shape.getCoincidence(this.type), concept, true);
-		}
-	}
+//	/**
+//	 * Function initializes the network of nodes, or squares, that converges into a
+//	 * single root node.
+//	 */
+//	@JsonIgnore
+//	public void input(Concept concept) {
+//		logger.info("input(" + concept + ")");
+//		Level level = this.getInputLevel();
+//		List<Shape> shapeList = level.getShapeList();
+//		for (Shape shape : shapeList) {
+//			for(Wavelength w: this.wavelength) {
+//				shape.addCoincidence(shape.getCoincidence(w), concept);
+//			}
+//		}
+//	}
 
 	@JsonIgnore
-	public void propagate(Concept concept, boolean flag) {
+	public void propagate(Concept concept) {
 //		logger.info("propogate(" + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {
 			level = this.getLevelList().get(i);
-			if (flag && i == 0) {
-				level.input(this.type, concept);
+			if (i == 0) {
+				level.input(this.wavelength, concept);
 			} else {
-//				if(i == 0) {
-//					level.propagate(concept, true, true);
-//				} else 
 				if (i == size - 1) {
-					level.propagate(concept, true, true);
+					level.propagate(concept, true);
 				} else {
-					level.propagate(concept, true, false);
+					level.propagate(concept, false);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Invokes Level Feedback from Root to Children
+	 * 
+	 * @param concept
+	 */
 	@JsonIgnore
 	public void feedback(Concept concept) {
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = size - 1; 0 < i; i--) {
 			level = this.getLevelList().get(i);
-			level.feedback(concept, false);
+			level.feedback(concept);
 		}
 	}
 
+	/**
+	 * Network has a position, specified by Origin Network has Levels, including
+	 * Root and Input
+	 */
 	@Override
 	@JsonIgnore
 	public void process(Graphics2D graphics2D, BufferedImage bufferedImage, Concept concept) {
-		logger.info("process(" + String.valueOf(graphics2D!=null) + ", "+String.valueOf(bufferedImage != null)+", " + concept + ")");
+		logger.info("process(" + String.valueOf(graphics2D != null) + ", " + String.valueOf(bufferedImage != null)
+				+ ", " + concept + ")");
 		Level level = this.getInputLevel();
 		if (level != null) {
+			/**
+			 * For All Input Shapes, Set Short, Medium, & Long
+			 */
+			for(Wavelength w: this.wavelength) {
+				
+			}
+			/**
+			 * Initialize and Set the Shape Cell Values: Red, Green, Blue
+			 */
 			for (Shape shape : level.getShapeList()) {
 				shape.initCells();
-				for (int i = 0; i < shape.sides + 1; i++) {
-					if (bufferedImage != null && shape.shortConeArray[i] != null && shape.mediumConeArray[i] != null
-							&& shape.longConeArray[i] != null && (int) shape.xpoints[i] > 0
-							&& (int) shape.xpoints[i] < (bufferedImage.getWidth()) && (int) shape.ypoints[i] > 0
-							&& (int) shape.ypoints[i] < (bufferedImage.getHeight())) {
-						shape.shortConeArray[i]
-								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
-						shape.mediumConeArray[i]
-								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
-						shape.longConeArray[i]
-								.input(bufferedImage.getRGB((int) (shape.xpoints[i]), (int) (shape.ypoints[i])));
+				for (int i = 0; i < shape.n; i++) {
+					if (bufferedImage != null && shape.cellArray[i] != null && (int) shape.xDimension[i] > 0
+							&& (int) shape.xDimension[i] < (bufferedImage.getWidth()) && (int) shape.yDimension[i] > 0
+							&& (int) shape.yDimension[i] < (bufferedImage.getHeight())) {
+						shape.cellArray[i]
+								.input(bufferedImage.getRGB((int) (shape.xDimension[i]), (int) (shape.yDimension[i])));
 					} else {
-						shape.shortConeArray[i].input(Color.black.getRGB());
-						shape.mediumConeArray[i].input(Color.black.getRGB());
-						shape.longConeArray[i].input(Color.black.getRGB());
+						shape.cellArray[i].input(Color.black.getRGB());
 					}
 				}
-				shape.addCoincidence(shape.getCoincidence(this.type), concept, false);
 			}
-			this.propagate(concept, true);
-//			this.feedback(concept);
 			
-			//Here we make a coincidence
-			//Can draw on image
-			if (graphics2D != null) {
-//				System.out.println("graphics2D != null");
-				int dimension = (int)(this.getRadius()*2);
-				BufferedImage beliefBufferedImage = new BufferedImage(dimension, dimension, BufferedImage.TYPE_INT_RGB);
-				List<Point> pointList = new ArrayList<>();
-				List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
-				Belief belief = new Belief();
-				for (Shape shape : level.getShapeList()) {
-					Point point = new Point(shape.xpoints[0],shape.ypoints[0]);
-					int brightness = shape.coincidence.list.get(0);
-					if(255 > brightness && brightness > 0 ) {
-						pointList.add(point);
-					}
-					Color color = new Color(brightness, brightness, brightness);
-					graphics2D.setColor(color);
-					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xpoints), shape.doubleToIntArray(shape.ypoints),
-							(int) shape.npoints);
-					
-					for (int i = 0; i < shape.sides+1; i++) {
-						color = new Color(brightness, brightness, brightness);
-						double x = (shape.xpoints[i]-this.origin.x);
-						double y = (shape.ypoints[i]-this.origin.y);
-						beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
-					}
-				}
-				//When belief is initialized, it has the global coordinates of where Cortex was
-				//on a plane.
-				//We actually want this information
-				//Beliefs are drawn where they are found in a plane.
-				//Point List consists of points that are centered around 
-				//belief origin. @ least one point in Point List is equal to origin.
-				belief.setConceptList(this.conceptMap, conceptList);
-				belief.coincidence = this.getRootLevel().getCoincidenceList().get(0);
-				belief.pointList = new ArrayList<>(pointList);
-				belief.bufferedImage = (beliefBufferedImage);
-				belief.origin = new Point(this.origin);
-				belief.date = new Date();
-//				this.addBelief(belief);
-				this.beliefList.add(belief);
-				//Normailization ruins this information, but we still
-				//want the result of normalization.
-				//We want beliefs represented relative to origin.
-				//The same implementation we have now, for the most part.
-				//
-				
-//				this.add(belief);
-//				System.out.println("this.setIndex(...) flag="+);
-				this.setIndex(this.beliefList.size()-1);
+//			shape.addCoincidence(shape.getCoincidence(this.wavelength), concept);
+			
+			
+			this.propagate(concept);
+			this.feedback(concept);
+			
+			int dimension = (int) (this.getRadius() * 2);
+			BufferedImage beliefBufferedImage = new BufferedImage(dimension, dimension, BufferedImage.TYPE_INT_RGB);
+			for (Shape shape : level.getShapeList()) {
+				shape.setCoincidence(shape.coincidence, this.wavelength);
+				this.bufferedImageSetRGB(beliefBufferedImage, dimension, shape);
 			}
+
+			Belief belief = new Belief();
+			List<Point> pointList = new ArrayList<>();
+			List<Concept> conceptList = this.getRootLevel().getCoincidenceConceptList();
+			for (Shape shape : level.getShapeList()) {
+				Point point = new Point(shape.xDimension[0], shape.yDimension[0]);
+				int brightness = shape.coincidence.list.get(0);
+				if (255 > brightness && brightness > 0) {
+					pointList.add(point);
+				}
+//					Color color = new Color(brightness, brightness, brightness);
+//					graphics2D.setColor(color);
+//					graphics2D.drawPolygon(shape.doubleToIntArray(shape.xDimension),
+//							shape.doubleToIntArray(shape.yDimension), (int) shape.n);
+			}
+			// When belief is initialized, it has the global coordinates of where Cortex was
+			// on a plane.
+			// We actually want this information
+			// Beliefs are drawn where they are found in a plane.
+			// Point List consists of points that are centered around
+			// belief origin. @ least one point in Point List is equal to origin.
+			belief.setConceptList(this.conceptMap, conceptList);
+			belief.coincidence = this.getRootLevel().getCoincidenceList().get(0);
+			belief.pointList = new ArrayList<>(pointList);
+			belief.bufferedImage = (beliefBufferedImage);
+			belief.origin = new Point(this.origin);
+			belief.date = new Date();
+			this.beliefList.add(belief);
+			this.setIndex(this.beliefList.size() - 1);
+		}
+	}
+
+	/**
+	 * Used to make image of input data to be retained for the purpose of subsequent
+	 * potential input. It retains the state of the cells as sensors. If Red, Only
+	 * Red If Blue, Only Blue If Green, Only Green If Color, Only Color If Gray,
+	 * Only Gray
+	 * 
+	 * @param bufferedImage
+	 * @param dimension
+	 * @param shape
+	 */
+	public void bufferedImageSetRGB(BufferedImage bufferedImage, int dimension, Shape shape) {
+		for (int i = 0; i < shape.n; i++) {
+			// Must always use CONE SHORT, MEDIUM, LONG BECAUSE ROD_GRAY OUTPUTS TO RED,
+			// GREEN, BLUE
+			double x = shape.xDimension[i] - this.origin.x;
+			double y = shape.yDimension[i] - this.origin.y;
+//			if (bufferedImage != null && shape.cellArray[i] != null
+//					&& (int) shape.xDimension[i] > 0
+//					&& (int) shape.xDimension[i] < (bufferedImage.getWidth()) && (int) shape.yDimension[i] > 0
+//					&& (int) shape.yDimension[i] < (bufferedImage.getHeight())) {
+			Color color = new Color(shape.cellArray[i].getWavelength(Wavelength.CONE_SHORT),
+					shape.cellArray[i].getWavelength(Wavelength.CONE_MEDIUM),
+					shape.cellArray[i].getWavelength(Wavelength.CONE_LONG));
+
+			bufferedImage.setRGB((int) x + dimension / 2, (int) y + dimension / 2, color.getRGB());
+//			}
 		}
 	}
 
@@ -292,3 +321,24 @@ public class Network extends Cortex {
 //		return pointList;
 //	}
 }
+//color = new Color(shape.cellArray[i].getWavelength(Wavelength.ROD_GRAY)
+//graphics2D.setColor(color);
+//graphics2D.drawPolygon(shape.doubleToIntArray(shape.xDimension), shape.doubleToIntArray(shape.yDimension),
+//		(int) shape.n);
+
+//for (int i = 0; i < shape.n; i++) {
+//	//Must always use CONE SHORT, MEDIUM, LONG BECAUSE ROD_GRAY OUTPUTS TO RED, GREEN, BLUE
+//	Color color = new Color(shape.cellArray[i].getWavelength(Wavelength.CONE_SHORT), shape.cellArray[i].getWavelength(Wavelength.CONE_MEDIUM), shape.cellArray[i].getWavelength(Wavelength.CONE_LONG));
+//	double x = (shape.xDimension[i]-this.origin.x);
+//	double y = (shape.yDimension[i]-this.origin.y);
+//	beliefBufferedImage.setRGB((int)x+dimension/2,(int)y+dimension/2, color.getRGB());
+//}
+//@JsonIgnore
+//public int getX() {
+//	return this.x;
+//}
+//
+//@JsonIgnore
+//public int getY() {
+//	return this.y;
+//}
