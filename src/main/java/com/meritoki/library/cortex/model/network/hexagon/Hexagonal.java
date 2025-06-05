@@ -202,7 +202,8 @@ public class Hexagonal extends Network {
 		// if (logger.isDebugEnabled()) {
 		 level = this.getRootLevel();
 		 Shape h = level.getShapeList().get(0);
-//		 Shape.printTree(h, " ");
+		 System.out.println("load() level.getShapeList().size()="+level.getShapeList().size());
+		 Shape.printTree(h, " ");
 		// }
 	}
 

@@ -57,7 +57,7 @@ public class Cortex {
 	@JsonProperty
 	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
-	public int size = 18;
+	public int size = 27;
 	@JsonProperty
 	public int radius = 1;
 	@JsonProperty
@@ -328,7 +328,7 @@ public class Cortex {
 			String key = e.getKey();
 			if (key.startsWith("0:")) {
 				Shape shape = e.getValue();
-				shape.initCells();
+//				shape.initCells();
 //				shape.updatePoints();
 				double[] xPoints = shape.xDimension;
 				double[] yPoints = shape.yDimension;

@@ -91,10 +91,20 @@ public class Level extends Shape {
 			shape.coincidence = shape.getCoincidence(type);
 		}
 	}
+	
+	@JsonIgnore
+	public void output(Wavelength type) {
+		logger.info("output(" + type + ") this.shapeMap.size()"+this.shapeMap.size());
+		Shape shape = null;
+		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			shape = entry.getValue();
+			shape.setCellArray(shape.getCoincidence(), type);
+		}
+	}
 
 	@JsonIgnore
-	public void propagate(Concept concept, boolean nodeFlag) {
-		logger.info("propagate(" + concept + ", " + nodeFlag + ")");
+	public void propagate(Concept concept) {
+		logger.info("propagate(" + concept + ")");
 		Shape s = null;
 		Coincidence coincidence = null;
 		List<Node<Object>> nodeList = null;
@@ -102,37 +112,35 @@ public class Level extends Shape {
 			coincidence = new Coincidence();
 			s = entry.getValue();
 			nodeList = s.getChildren();
-
-			if (nodeFlag) {
-				/*
-				 * Construct Coincidence From Coincidence of Children
-				 */
-				for (int i = 0; i < nodeList.size(); i++) {
-					Node<?> n = nodeList.get(i);
-					if (n instanceof Shape) {
-						Shape shape = (Shape) n;
-						coincidence.list.addAll(shape.coincidence.list);
-					}
-				}
-				s.addCoincidence(coincidence, concept);
-
-			} else {
-				int size = s.size;
-				if (size > 0) {
-//					System.out.println("propogate(...) size=" + size);
-					for (int i = 0; i < s.size; i++) {
-						if (i < nodeList.size()) {
-							Node n = nodeList.get(i);
-							Shape shape = (Shape) n;
-							size = shape.coincidence.list.size();
-							coincidence.list.addAll(shape.coincidence.list);
-						} else {
-							coincidence.list.addAll(new Coincidence(size).list);
-						}
-					}
-					s.addCoincidence(coincidence, concept);
+			List<Integer> coincidenceIndexList = new ArrayList<>();
+			for (int i = 0; i < nodeList.size(); i++) {
+				coincidenceIndexList.add(coincidence.list.size());
+				Node<?> n = nodeList.get(i);
+				if (n instanceof Shape) {
+					Shape shape = (Shape) n;
+					coincidence.list.addAll(shape.coincidence.list);
 				}
 			}
+			s.addCoincidence(coincidence, concept);
+			s.coincidenceIndexList = coincidenceIndexList;
+
+//			} else {
+//				int size = s.size;
+//				if (size > 0) {
+////					System.out.println("propogate(...) size=" + size);
+//					for (int i = 0; i < s.size; i++) {
+//						if (i < nodeList.size()) {
+//							Node n = nodeList.get(i);
+//							Shape shape = (Shape) n;
+//							size = shape.coincidence.list.size();
+//							coincidence.list.addAll(shape.coincidence.list);
+//						} else {
+//							coincidence.list.addAll(new Coincidence(size).list);
+//						}
+//					}
+//					s.addCoincidence(coincidence, concept);
+//				}
+//			}
 		}
 	}
 
@@ -143,23 +151,28 @@ public class Level extends Shape {
 	 */
 	@JsonIgnore
 	public void feedback(Concept concept) {
-		logger.info("feedback(" + concept + ")");
+		logger.info("feedback(" + concept + ") this.shapeMap.size()="+this.shapeMap.size());
 		Shape s = null;
 		List<Node<Object>> nodeList = null;
 		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
+			//Get Shape
 			s = entry.getValue();
+			//N Nodes
 			nodeList = s.getChildren();
-			int size = 0;
+			int size = nodeList.size()+1;
 			// Node List Children of Current Node
 			for (int i = 0; i < nodeList.size(); i++) {
 				Node<?> n = nodeList.get(i);
 				// Check if Node is Shape
 				if (n instanceof Shape) {
 					Shape shape = (Shape) n;
-					size = shape.n;
+//					size = shape.n;
 					if (size > 0) {
-						List<Integer> list = s.coincidence.getSublist(size, i);
+						Integer a = s.coincidenceIndexList.get(i);
+						Integer b = ((i+1)<nodeList.size())?s.coincidenceIndexList.get(i+1):a;
+						List<Integer> list = s.coincidence.list.subList(a, b);
 						if (list != null) {
+//							logger.info("feedback(" + concept + ") list.size()="+list.size());
 							shape.addCoincidence(new Coincidence(list), concept);
 						}
 					}

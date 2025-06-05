@@ -34,14 +34,14 @@ public class Coincidence {
 		coincidence.list.add(3);
 		coincidence.list.add(4);
 
-		coincidence.getSublist(1, 3);
+//		coincidence.getSublist(1, 3);
 
 		coincidence.list.add(5);
 		coincidence.list.add(6);
 		coincidence.list.add(7);
 		coincidence.list.add(8);
 
-		coincidence.getSublist(2, 3);
+//		coincidence.getSublist(2, 3);
 	}
 
 	@JsonIgnore
@@ -89,34 +89,34 @@ public class Coincidence {
 		return flag;
 	}
 
-	public List<Integer> getSublist(int size, int index) {
-		List<Integer> list = this.list;
-		int interval = this.list.size() / size;
-//		System.out.println("interval="+interval);
-		int count = 0;
-		if (interval > 0) {
-			for (int i = 0; i < this.list.size(); i++) {
-				int quotient = (interval > 0) ? i / interval : 0;
-				if (quotient == index) {
-//					System.out.println("quotient=" + quotient);
-//					System.out.println("index=" + index);
-					if (interval > 0 && i % interval == 0) {
-						list = new ArrayList<>();
-						list.add(this.list.get(i));
-					} else {
-						list.add(this.list.get(i));
-					}
-					count++;
-				} else {
-					if(count > index) {
-						break;
-					}
-				}
-			}
-		}
-//		logger.info("getSublist(" + size + ", " + index + ") list=" + list);
-		return list;
-	}
+//	public List<Integer> getSublist(int size, int index) {
+//		List<Integer> list = this.list;
+//		int interval = this.list.size() / size;
+////		System.out.println("interval="+interval);
+//		int count = 0;
+//		if (list.size() != size && interval > 0) {
+//			for (int i = 0; i < this.list.size(); i++) {
+//				int quotient = (interval > 0) ? i / interval : 0;
+//				if (quotient == index) {
+////					System.out.println("quotient=" + quotient);
+////					System.out.println("index=" + index);
+//					if (interval > 0 && i % interval == 0) {
+//						list = new ArrayList<>();
+//						list.add(this.list.get(i));
+//					} else {
+//						list.add(this.list.get(i));
+//					}
+//					count++;
+//				} else {
+//					if(count > index) {
+//						break;
+//					}
+//				}
+//			}
+//		}
+//		logger.info("getSublist(" + size + ", " + index + ") list.size()=" + list.size());
+//		return list;
+//	}
 
 	@JsonIgnore
 	public void addInteger(Integer object) {

@@ -97,7 +97,7 @@ public class Network extends Cortex {
 	@JsonIgnore
 	public void setConcept(Concept concept) {
 		for (Level level : this.levelList) {
-			level.propagate(concept, false);
+			level.propagate(concept);
 		}
 	}
 
@@ -161,20 +161,16 @@ public class Network extends Cortex {
 //	}
 
 	@JsonIgnore
-	public void propagate(Concept concept) {
+	public void propagate(Wavelength wavelength, Concept concept) {
 //		logger.info("propogate(" + concept + ")");
 		Level level = null;
 		int size = this.getLevelList().size();
 		for (int i = 0; i < size; i++) {
 			level = this.getLevelList().get(i);
 			if (i == 0) {
-				level.input(this.wavelength, concept);
+				level.input(wavelength, concept);
 			} else {
-				if (i == size - 1) {
-					level.propagate(concept, true);
-				} else {
-					level.propagate(concept, false);
-				}
+				level.propagate(concept);
 			}
 		}
 	}
@@ -185,14 +181,49 @@ public class Network extends Cortex {
 	 * @param concept
 	 */
 	@JsonIgnore
-	public void feedback(Concept concept) {
+	public void feedback(Wavelength wavelength, Concept concept) {
 		Level level = null;
 		int size = this.getLevelList().size();
-		for (int i = size - 1; 0 < i; i--) {
+		for (int i = size - 1; 0 <= i; i--) {
 			level = this.getLevelList().get(i);
-			level.feedback(concept);
+			if (i > 0) {
+				level.feedback(concept);
+			} else {
+				level.output(wavelength);
+			}
 		}
 	}
+
+	/**
+		 * Function Checked 20250604, will work if Shape Cell Array Has Values.
+		 * Used to make image of input data to be retained for the purpose of subsequent
+		 * potential input. It retains the state of the cells as sensors. If Red, Only
+		 * Red If Blue, Only Blue If Green, Only Green If Color, Only Color If Gray,
+		 * Only Gray
+		 * 
+		 * @param bufferedImage
+		 * @param dimension
+		 * @param shape
+		 */
+		public void bufferedImageSetRGB(BufferedImage bufferedImage, int dimension, Shape shape) {
+	//		logger.info("bufferedImageSetRGB("+(bufferedImage!=null)+","+dimension+", "+shape+")");
+			for (int i = 0; i < shape.n; i++) {
+				// Must always use CONE SHORT, MEDIUM, LONG BECAUSE ROD_GRAY OUTPUTS TO RED,
+				// GREEN, BLUE
+				double x = shape.xDimension[i] - this.origin.x;
+				double y = shape.yDimension[i] - this.origin.y;
+	//			if (bufferedImage != null && shape.cellArray[i] != null
+	//					&& (int) shape.xDimension[i] > 0
+	//					&& (int) shape.xDimension[i] < (bufferedImage.getWidth()) && (int) shape.yDimension[i] > 0
+	//					&& (int) shape.yDimension[i] < (bufferedImage.getHeight())) {
+				Color color = new Color(shape.cellArray[i].getWavelength(Wavelength.CONE_SHORT),
+						shape.cellArray[i].getWavelength(Wavelength.CONE_MEDIUM),
+						shape.cellArray[i].getWavelength(Wavelength.CONE_LONG));
+	//			logger.info("bufferedImageSetRGB("+(bufferedImage!=null)+","+dimension+", "+shape+") color="+color);
+				bufferedImage.setRGB((int) x + dimension / 2, (int) y + dimension / 2, color.getRGB());
+	//			}
+			}
+		}
 
 	/**
 	 * Network has a position, specified by Origin Network has Levels, including
@@ -205,12 +236,6 @@ public class Network extends Cortex {
 				+ ", " + concept + ")");
 		Level level = this.getInputLevel();
 		if (level != null) {
-			/**
-			 * For All Input Shapes, Set Short, Medium, & Long
-			 */
-			for(Wavelength w: this.wavelength) {
-				
-			}
 			/**
 			 * Initialize and Set the Shape Cell Values: Red, Green, Blue
 			 */
@@ -227,17 +252,23 @@ public class Network extends Cortex {
 					}
 				}
 			}
-			
+			/**
+			 * For All Input Shapes, Set Short, Medium, & Long
+			 */
+			for(Wavelength w: this.wavelength) {
+				for (Shape shape : level.getShapeList()) {
+					shape.addCoincidence(shape.getCoincidence(w), concept);
+				}
+				this.propagate(w,concept);
+				this.feedback(w,concept);
+				for (Shape shape : level.getShapeList()) {
+					shape.setCellArray(shape.coincidence, w);
+				}
+			}
 //			shape.addCoincidence(shape.getCoincidence(this.wavelength), concept);
-			
-			
-			this.propagate(concept);
-			this.feedback(concept);
-			
 			int dimension = (int) (this.getRadius() * 2);
 			BufferedImage beliefBufferedImage = new BufferedImage(dimension, dimension, BufferedImage.TYPE_INT_RGB);
 			for (Shape shape : level.getShapeList()) {
-				shape.setCoincidence(shape.coincidence, this.wavelength);
 				this.bufferedImageSetRGB(beliefBufferedImage, dimension, shape);
 			}
 
@@ -269,35 +300,6 @@ public class Network extends Cortex {
 			belief.date = new Date();
 			this.beliefList.add(belief);
 			this.setIndex(this.beliefList.size() - 1);
-		}
-	}
-
-	/**
-	 * Used to make image of input data to be retained for the purpose of subsequent
-	 * potential input. It retains the state of the cells as sensors. If Red, Only
-	 * Red If Blue, Only Blue If Green, Only Green If Color, Only Color If Gray,
-	 * Only Gray
-	 * 
-	 * @param bufferedImage
-	 * @param dimension
-	 * @param shape
-	 */
-	public void bufferedImageSetRGB(BufferedImage bufferedImage, int dimension, Shape shape) {
-		for (int i = 0; i < shape.n; i++) {
-			// Must always use CONE SHORT, MEDIUM, LONG BECAUSE ROD_GRAY OUTPUTS TO RED,
-			// GREEN, BLUE
-			double x = shape.xDimension[i] - this.origin.x;
-			double y = shape.yDimension[i] - this.origin.y;
-//			if (bufferedImage != null && shape.cellArray[i] != null
-//					&& (int) shape.xDimension[i] > 0
-//					&& (int) shape.xDimension[i] < (bufferedImage.getWidth()) && (int) shape.yDimension[i] > 0
-//					&& (int) shape.yDimension[i] < (bufferedImage.getHeight())) {
-			Color color = new Color(shape.cellArray[i].getWavelength(Wavelength.CONE_SHORT),
-					shape.cellArray[i].getWavelength(Wavelength.CONE_MEDIUM),
-					shape.cellArray[i].getWavelength(Wavelength.CONE_LONG));
-
-			bufferedImage.setRGB((int) x + dimension / 2, (int) y + dimension / 2, color.getRGB());
-//			}
 		}
 	}
 
