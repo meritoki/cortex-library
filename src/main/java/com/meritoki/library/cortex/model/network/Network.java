@@ -246,9 +246,9 @@ public class Network extends Cortex {
 							&& (int) shape.xDimension[i] < (bufferedImage.getWidth()) && (int) shape.yDimension[i] > 0
 							&& (int) shape.yDimension[i] < (bufferedImage.getHeight())) {
 						shape.cellArray[i]
-								.input(bufferedImage.getRGB((int) (shape.xDimension[i]), (int) (shape.yDimension[i])));
+								.input(bufferedImage.getRGB((int) (shape.xDimension[i]), (int) (shape.yDimension[i])),this.wavelength);
 					} else {
-						shape.cellArray[i].input(Color.black.getRGB());
+						shape.cellArray[i].input(Color.black.getRGB(),this.wavelength);
 					}
 				}
 			}

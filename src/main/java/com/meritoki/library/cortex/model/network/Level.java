@@ -91,10 +91,10 @@ public class Level extends Shape {
 			shape.coincidence = shape.getCoincidence(type);
 		}
 	}
-	
+
 	@JsonIgnore
 	public void output(Wavelength type) {
-		logger.info("output(" + type + ") this.shapeMap.size()"+this.shapeMap.size());
+		logger.info("output(" + type + ") this.shapeMap.size()" + this.shapeMap.size());
 		Shape shape = null;
 		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
 			shape = entry.getValue();
@@ -151,15 +151,15 @@ public class Level extends Shape {
 	 */
 	@JsonIgnore
 	public void feedback(Concept concept) {
-		logger.info("feedback(" + concept + ") this.shapeMap.size()="+this.shapeMap.size());
+		logger.info("feedback(" + concept + ") this.shapeMap.size()=" + this.shapeMap.size());
 		Shape s = null;
 		List<Node<Object>> nodeList = null;
 		for (Map.Entry<String, Shape> entry : this.shapeMap.entrySet()) {
-			//Get Shape
+			// Get Shape
 			s = entry.getValue();
-			//N Nodes
+			// N Nodes
 			nodeList = s.getChildren();
-			int size = nodeList.size()+1;
+			int size = nodeList.size() + 1;
 			// Node List Children of Current Node
 			for (int i = 0; i < nodeList.size(); i++) {
 				Node<?> n = nodeList.get(i);
@@ -169,7 +169,7 @@ public class Level extends Shape {
 //					size = shape.n;
 					if (size > 0) {
 						Integer a = s.coincidenceIndexList.get(i);
-						Integer b = ((i+1)<nodeList.size())?s.coincidenceIndexList.get(i+1):a;
+						Integer b = ((i + 1) < nodeList.size()) ? s.coincidenceIndexList.get(i + 1) : a;
 						List<Integer> list = s.coincidence.list.subList(a, b);
 						if (list != null) {
 //							logger.info("feedback(" + concept + ") list.size()="+list.size());
