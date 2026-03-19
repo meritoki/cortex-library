@@ -38,6 +38,15 @@ public class Cell {
 		}
 	}
 	
+	public boolean containsWavelength(Wavelength w, Wavelength[] wArray) {
+		for(Wavelength wavelength: wArray) {
+			if(wavelength == w) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void input(Integer red, Integer green, Integer blue) {
 		this.red = red;
 		this.green = green;
