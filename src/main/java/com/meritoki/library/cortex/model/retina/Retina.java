@@ -13,6 +13,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.memory.MemoryController;
@@ -23,6 +24,7 @@ import com.meritoki.library.cortex.model.Point;
 import com.meritoki.library.cortex.model.cortex.Cortex;
 import com.meritoki.library.cortex.model.motor.Delta;
 import com.meritoki.library.cortex.model.motor.Motor;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 
 /**
  * Retina is a class that combines all the functions to perform a scan of an
@@ -63,6 +65,9 @@ public class Retina {
 	// decrease the minDistance.
 	// This is where we connect the point and add it to the list.
 
+	@JsonIgnore
+	protected Logger logger = Logger.getLogger(Retina.class.getName());
+	
 	public final int DIMENSION = 100;
 	public String uuid;
 	public Dimension dimension;
@@ -143,13 +148,15 @@ public class Retina {
 	}
 
 	public void setDistance(double distance) {
-		System.out.println("setDistance(" + distance + ")");
 		// this.previousDistance = this.distance;
-		this.distance = distance;// millimeter
-		if (this.distance > 0) {
-			this.scale = (this.getObjectHeight() / this.object.getHeight());
-			// System.out.println("this.scale=" + this.scale);
-			this.inputBufferedImage = this.getInputBufferedImage();
+		if(this.distance != distance) {
+			logger.info("setDistance(" + distance + ")");
+			this.distance = distance;// millimeter
+			if (this.distance > 0) {
+				this.scale = (this.getObjectHeight() / this.object.getHeight());
+				// System.out.println("this.scale=" + this.scale);
+				this.inputBufferedImage = this.getInputBufferedImage();
+			}
 		}
 	}
 
@@ -225,7 +232,7 @@ public class Retina {
 		this.cortex.update();
 		this.cortex.process(graphics2D, this.inputBufferedImage, concept);
 		this.processBelief();
-		this.motor.input(this.getInputCenter(), origin, this.scale);
+//		this.motor.input(this.getInputCenter(), origin, this.scale);
 		concept = (this.cortex.getBelief().conceptList.size() > 0) ? this.cortex.getBelief().conceptList.get(0) : null;
 		this.drawGlobalBeliefList(graphics2D, concept);
 //			this.drawRelativeBeliefList(graphics2D);

@@ -24,14 +24,10 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.library.cortex.model.Coincidence;
 import com.meritoki.library.cortex.model.Concept;
-import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.cell.Cone;
+import com.meritoki.library.cortex.model.cell.Cell;
 import com.meritoki.library.cortex.model.cell.Wavelength;
-import com.meritoki.library.cortex.model.network.Color;
-import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
 
 public class Shape extends Node<Object> {
 
@@ -41,7 +37,7 @@ public class Shape extends Node<Object> {
 	@JsonProperty
 	private int y = 0;
 	@JsonProperty
-	public int length;
+	public int size;// The size of default instantiated Coincidence
 	@JsonIgnore
 	public int sides;
 	@JsonIgnore
@@ -50,40 +46,30 @@ public class Shape extends Node<Object> {
 	public Point center = new Point(0, 0);
 	@JsonProperty
 	public double radius;
+//	@JsonProperty
+//	private Point[] points;
 	@JsonProperty
-	private Point[] points;
+	public int n;// represents the number of sensors
 	@JsonProperty
-	public double npoints;
+	public double[] xDimension = null;
 	@JsonProperty
-	public double[] xpoints = null;
-	@JsonProperty
-	public double[] ypoints = null;
+	public double[] yDimension = null;
 	@JsonProperty
 	public Coincidence coincidence;
-//	@JsonIgnore
-//	public Coincidence brightnessCoincidence;
-//	@JsonIgnore
-//	public Coincidence redCoincidence;
-//	@JsonIgnore
-//	public Coincidence greenCoincidence;
-//	@JsonIgnore
-//	public Coincidence blueCoincidence;
-	@JsonProperty
-	public Coincidence previousPrediction = null;
-	@JsonProperty
-	public Coincidence prediction = null;
 	@JsonProperty
 	public Coincidence previousCoincidence = null;
+	@JsonProperty
+	public Coincidence predictionCoincidence = null;
+	@JsonProperty
+	public Coincidence previousPredictionCoincidence = null;
 	@JsonIgnore
 	public Coincidence defaultCoincidence = null;
 	@JsonIgnore
-	public Cone[] shortConeArray;
-	@JsonIgnore
-	public Cone[] mediumConeArray;
-	@JsonIgnore
-	public Cone[] longConeArray;
+	public Cell[] cellArray;
 	@JsonProperty
 	protected List<Coincidence> coincidenceList = new LinkedList<>();
+	@JsonProperty
+	public List<Integer> coincidenceIndexList = new ArrayList<>();
 	@JsonProperty
 	public Map<String, Integer> coincidenceCountMap = new HashMap<>();
 	@JsonProperty
@@ -97,48 +83,26 @@ public class Shape extends Node<Object> {
 	@JsonIgnore
 	public static final int MEMORY = 4096;
 	@JsonIgnore
-	public int red;
-	@JsonIgnore
-	public int green;
-	@JsonIgnore 
-	public int blue;
+	public static final Double THRESHOLD = 1 / 1.618;
 
 	public Shape() {
 //		logger.info("Shape()");
 	}
 
-	public Shape(int sides, int rotation, int x, int y, Point center, double radius) {
+	public Shape(int sides, int size, int rotation, int x, int y, Point center, double radius) {
 		super(x + "," + y);
 //		logger.info("Shape("+sides+", "+rotation+", "+x+", "+y+", "+center+", "+radius+")");
 		this.sides = sides;
-		switch (this.sides) {
-		case 4: {
-			this.coincidence = new Coincidence(9);
-//			this.brightnessCoincidence = new Coincidence(9);
-//			this.redCoincidence = new Coincidence(9);
-//			this.greenCoincidence = new Coincidence(9);
-//			this.blueCoincidence = new Coincidence(9);
-			break;
-		}
-		case 6: {
-			this.coincidence = new Coincidence(7);
-//			this.brightnessCoincidence = new Coincidence(7);
-//			this.redCoincidence = new Coincidence(7);
-//			this.greenCoincidence = new Coincidence(7);
-//			this.blueCoincidence = new Coincidence(7);
-			break;
-		}
-		}
+		this.size = size;
 		this.rotation = rotation;
 		this.x = x;
 		this.y = y;
 		this.center = center;
 		this.radius = radius;
-		this.points = new Point[sides + 1];
-		this.npoints = sides;
-		this.xpoints = new double[sides + 1];
-		this.ypoints = new double[sides + 1];
-
+		this.n = sides + 1;
+		this.xDimension = new double[this.n];
+		this.yDimension = new double[this.n];
+		this.coincidence = new Coincidence(this.n);
 		this.updatePoints();
 		this.initCells();
 	}
@@ -201,7 +165,7 @@ public class Shape extends Node<Object> {
 	public void setCenter(int x, int y) {
 		setCenter(new Point(x, y));
 	}
-	
+
 	public List<Concept> getConceptList(Coincidence c) {
 		return this.conceptListMap.get(c.toString());
 	}
@@ -210,34 +174,153 @@ public class Shape extends Node<Object> {
 		return this.coincidence;
 	}
 
+	@JsonIgnore
+	public Coincidence getCoincidence(Wavelength wavelength) {
+		Coincidence coincidence = new Coincidence();
+		int value = 0;
+		for (int i = 0; i < this.n; i++) {
+			switch (wavelength) {
+			case ROD_GRAY: {
+				value = cellArray[i].getWavelength(Wavelength.ROD_GRAY);
+				break;
+			}
+			case CONE_SHORT: {
+				value = cellArray[i].getWavelength(Wavelength.CONE_SHORT);
+				break;
+			}
+			case CONE_MEDIUM: {
+				value = cellArray[i].getWavelength(Wavelength.CONE_MEDIUM);
+				break;
+			}
+			case CONE_LONG: {
+				value = cellArray[i].getWavelength(Wavelength.CONE_LONG);
+				break;
+			}
+			default: {
+				value = 0;
+				break;
+			}
+			}
+			coincidence.addInteger(value);
+		}
+//		logger.info("getCoincidence(" + wavelength + ") coincidence=" + coincidence);
+		return coincidence;
+	}
+
 	public void setCoincidence(Coincidence coincidence) {
+//		logger.info("setCoincidence("+coincidence.list.size()+")");
 		this.coincidence = coincidence;
+	}
+
+	/**
+	 * Function has a lot of responsibility. Check if Parameter Coincidence is
+	 * Similar to Any Coincidence in List Increment Counter for
+	 * 
+	 * @param coincidence
+	 * @param concept
+	 * @param threshold
+	 */
+	@JsonIgnore
+	public void addCoincidence(Coincidence coincidence, Concept concept) {// , boolean flag) {
+		Coincidence c = null;
+		if (coincidence != null && coincidence.list.size() > 0) {
+			this.previousCoincidence = this.coincidence;
+			this.previousPredictionCoincidence = this.predictionCoincidence;
+			for (int i = 0; i < this.coincidenceList.size(); i++) {
+				c = this.coincidenceList.get(i);
+				if (c.similar(coincidence)) {
+					this.coincidenceCountIncrement(c);
+					this.coincidenceCountIncrement(coincidence);
+					this.predictionCoincidence = this.predictCoincidence(coincidence, this.previousCoincidence);
+					if (this.predictionCoincidence.similar(coincidence)) {
+						this.coincidenceCountIncrement(this.predictionCoincidence);
+						this.addCoincidenceConcept(c, concept);
+						this.addCoincidenceConcept(this.predictionCoincidence, concept);
+					}
+				}
+			}
+			this.setCoincidence(coincidence);
+			this.coincidenceList.add(coincidence);
+		}
+		if (this.coincidenceList.size() > MEMORY) {
+			this.purgeCoincidenceList();
+		}
+	}
+
+	public void addCoincidenceConcept(Coincidence c, Concept concept) {
+		if (concept != null) {
+			List<Concept> conceptList = this.conceptListMap.get(c.toString());
+			if (conceptList == null) {
+				conceptList = new ArrayList<>();
+			}
+			conceptList.add(concept);
+			this.conceptListMap.put(c.toString(), conceptList);
+		}
+	}
+
+	/**
+	 * 
+	 * @param c
+	 * @param w
+	 * @return
+	 */
+	@JsonIgnore
+	public void setCellArray(Coincidence c, Wavelength w) {
+//		logger.info("setCellArray(" + c + ", " + w + ")");
+		int size = this.n;//(this.n > c.list.size()) ? c.list.size() : this.n;
+		for (int i = 0; i < size; i++) {
+			switch (w) {
+			case ROD_GRAY: {
+				// Must be set because c value is already an average, no way to assume red,
+				// green, or blue
+				cellArray[i].red = c.list.get(i);
+				cellArray[i].green = c.list.get(i);
+				cellArray[i].blue = c.list.get(i);
+				break;
+			}
+			case CONE_SHORT: {
+				cellArray[i].red = c.list.get(i);
+				break;
+			}
+			case CONE_MEDIUM: {
+				cellArray[i].green = c.list.get(i);
+				break;
+			}
+			case CONE_LONG: {
+				cellArray[i].blue = c.list.get(i);
+				break;
+			}
+			default: {
+				cellArray[i].red = 0;
+				cellArray[i].green = 0;
+				cellArray[i].blue = 0;
+				break;
+			}
+			}
+		}
+		// logger.info("getCoincidence("+Wavelength+") coincidence="+coincidence);
 	}
 
 	@JsonIgnore
 	public void updatePoints() {
 		Point point = new Point(center.x, center.y);
-		xpoints[0] = point.x;
-		ypoints[0] = point.y;
-		points[0] = point;
-		for (int i = 1; i < this.sides + 1; i++) {
+		xDimension[0] = point.x;
+		yDimension[0] = point.y;
+//		points[0] = point;
+		for (int i = 1; i < this.n; i++) {
 			double angle = findAngle((double) i / this.sides);
 			point = findPoint(angle);
-			xpoints[i] = point.x;
-			ypoints[i] = point.y;
-			points[i] = point;
+			xDimension[i] = point.x;
+			yDimension[i] = point.y;
+//			points[i] = point;
 		}
 	}
 
 	@JsonIgnore
 	public void initCells() {
-		this.shortConeArray = new Cone[sides + 1];
-		this.mediumConeArray = new Cone[sides + 1];
-		this.longConeArray = new Cone[sides + 1];
-		for (int i = 0; i < this.sides + 1; i++) {
-			shortConeArray[i] = new Cone(Wavelength.SHORT);
-			mediumConeArray[i] = new Cone(Wavelength.MEDIUM);
-			longConeArray[i] = new Cone(Wavelength.LONG);
+		this.cellArray = new Cell[this.n];
+		for (int i = 0; i < this.n; i++) {
+			this.cellArray[i] = new Cell();
 		}
 	}
 
@@ -264,70 +347,12 @@ public class Shape extends Node<Object> {
 		return (double) tmp / factor;
 	}
 
-	/**
-	 * Function has a lot of responsibility. It matches a input coincidence by
-	 * minimum and maximum similarity with a list of coincidences already input If a
-	 * similarity is found
-	 * 
-	 * @param coincidence
-	 * @param concept
-	 * @param threshold
-	 */
-	@JsonIgnore
-	public void addCoincidence(Coincidence coincidence, Concept concept, boolean flag) {
-		Coincidence c = null;
+	public void coincidenceCountIncrement(Coincidence c) {
 		Integer count = 0;
-		double max = 0;
-		Coincidence inferredCoincidence = null;
-		if (coincidence != null && coincidence.list.size() > 0) {
-			for (int i = 0; i < this.coincidenceList.size(); i++) {
-				c = this.coincidenceList.get(i);
-				if(concept == null) {
-					c.setThreshold(0.95);
-				} else {
-					c.setThreshold(0.99);
-				}
-				if (c.similar(coincidence, max)) {
-					max = c.quotient;
-					inferredCoincidence = c;
-				}
-			}
-			this.previousCoincidence = this.coincidence;
-			if(flag) {
-				List<Concept> conceptList = null;
-				if (inferredCoincidence != null) {
-					count = this.coincidenceCountMap.get(inferredCoincidence.toString());
-					count = (count == null) ? 0 : count;
-					this.coincidenceCountMap.put(inferredCoincidence.toString(), count + 1);
-					conceptList = this.conceptListMap.get(inferredCoincidence.toString());
-					this.conceptListMap.put(inferredCoincidence.toString(), conceptList);
-				}
-				if (conceptList == null) {
-					conceptList = new ArrayList<>();
-				}
-				if (concept != null) {
-					conceptList.add(concept);
-				}
-				this.coincidence = coincidence;
-				this.conceptListMap.put(this.coincidence.toString(), conceptList);
-				this.coincidenceList.add(this.coincidence);
-			} else {
-				this.coincidence = coincidence;
-			}
-//			if (this.previousPrediction != null) {
-//				if (this.previousPrediction.equals(this.coincidence)) {
-//					correctList.add(1);
-//				} else {
-//					correctList.add(0);
-//				}
-//			}
-//			this.previousPrediction = this.prediction;
-//			this.prediction = this.predictCoincidence(this.coincidence, this.previousCoincidence);
-//			this.purgeCorrectList();
-		}
-		if (this.coincidenceList.size() > MEMORY) {// this.getFrequencyMax() + this.buffer) {
-			this.purgeCoincidenceList();
-		}
+		count = this.coincidenceCountMap.get(c.toString());
+		count = (count == null) ? 0 : count;
+//		logger.info("coincidencCountIncrement(...) count="+count);
+		this.coincidenceCountMap.put(c.toString(), count + 1);
 	}
 
 	/**
@@ -337,11 +362,13 @@ public class Shape extends Node<Object> {
 	 */
 	@JsonIgnore
 	public void purgeCoincidenceList() {
+		logger.info("purgeCoincidencList()");
 		Coincidence c = null;
 		List<Coincidence> cList = new LinkedList<>();
 		for (int i = 0; i < this.coincidenceList.size(); i++) {
 			c = this.coincidenceList.get(i);
-			if (this.coincidenceCountMap.get(c.toString()) == null) {
+			Integer count = this.coincidenceCountMap.get(c.toString());
+			if (count == null || count <= 1) {
 				cList.add(c);
 			}
 		}
@@ -350,49 +377,6 @@ public class Shape extends Node<Object> {
 		}
 		this.coincidenceList.removeAll(cList);
 	}
-
-//	@JsonIgnore
-//	public void purgeCorrectList() {
-//		while (this.correctList.size() > 7) {
-//			this.correctList.pop();
-//		}
-//	}
-//	
-	@JsonIgnore
-	public void purgeCorrectList() {
-		while (this.correctList.size() > 7) {
-			this.correctList.pop();
-		}
-	}
-
-	@JsonIgnore
-	public double getCorrectPercentage() {
-		int oneCount = 0;
-		for (Integer i : this.correctList) {
-			oneCount += i;
-		}
-//		logger.info("getCorrectPercentage() oneCount="+oneCount);
-//		logger.info("getCorrectPercentage() this.correctList.size()="+this.correctList.size());
-		return (this.correctList.size() > 0) ? (double) oneCount / (double) this.correctList.size() : 0;
-	}
-
-//	@JsonIgnore
-//	public Coincidence getConditionalCoincidence(Coincidence b) {
-//		Coincidence coincidence = null;
-//		if (b != null) {
-//			Map<String, Double> aMap = this.coincidenceConditionalMap.get(b.toString());
-//			if (aMap != null) {
-//				double max = 0;
-//				for (Map.Entry<String, Double> entry : aMap.entrySet()) {
-//					if (entry.getValue() > max) {
-//						max = entry.getValue();
-//						coincidence = new Coincidence(entry.getKey());
-//					}
-//				}
-//			}
-//		}
-//		return coincidence;
-//	}
 
 	/**
 	 * Function builds a map of maps. Two
@@ -418,27 +402,16 @@ public class Shape extends Node<Object> {
 		total = (double) this.getTotal(this.coincidenceUnionCountMap);
 		double abProbability = (total > 0) ? (double) abCount / total : 0;
 		double aGivenB = (bProbability > 0) ? (double) abProbability / (double) bProbability : 0;
-		if (aGivenB > MEMORY) {
+		if (aGivenB > THRESHOLD) {
 //			logger.info("predictCoincidence(aCoincidence, bCoincidence) P(A|B)=" + aGivenB);
 			Map<String, Double> aMap = (this.coincidenceConditionalMap.get(b) == null) ? new HashMap<String, Double>()
 					: this.coincidenceConditionalMap.get(b);
 			aMap.put(a, aGivenB);
 			this.coincidenceConditionalMap.put(b, aMap);
 		}
-
-		return this.getConditionalCoincidence(aCoincidence);
+		Coincidence conditionalCoincidence = this.getConditionalCoincidence(aCoincidence);
+		return (conditionalCoincidence != null)?conditionalCoincidence:aCoincidence;
 	}
-
-//	@JsonIgnore
-//	public int getTotal(Map<String, Integer> map) {
-//		int sum = 0;
-//		if (map != null) {
-//			for (Integer i : map.values()) {
-//				sum += i;
-//			}
-//		}
-//		return sum;
-//	}
 
 	@JsonIgnore
 	public Coincidence getConditionalCoincidence(Coincidence b) {
@@ -455,40 +428,6 @@ public class Shape extends Node<Object> {
 				}
 			}
 		}
-		return coincidence;
-	}
-
-	@JsonIgnore
-	public Coincidence getCoincidence(Color type) {
-//		logger.info("getCoincidence("+type+")");
-		Coincidence coincidence = new Coincidence();
-		int value = 0;
-		for (int i = 0; i < this.sides + 1; i++) {
-			switch (type) {
-			case BRIGHTNESS: {
-				value = (shortConeArray[i].red + mediumConeArray[i].green + longConeArray[i].blue) / 3;
-				break;
-			}
-			case RED: {
-				value = shortConeArray[i].red;
-				break;
-			}
-			case GREEN: {
-				value = mediumConeArray[i].green;
-				break;
-			}
-			case BLUE: {
-				value = longConeArray[i].blue;
-				break;
-			}
-			default: {
-				value = 0;
-				break;
-			}
-			}
-			coincidence.addInteger(value);
-		}
-//		logger.info("getCoincidence("+type+") coincidence="+coincidence);
 		return coincidence;
 	}
 
@@ -527,4 +466,62 @@ public class Shape extends Node<Object> {
 	public String toString() {
 		return this.getX() + "," + this.getY();// (String)this.getData();//
 	}
+
+	public static <T> void printTree(Shape node, String appender) {
+//		System.out.println(appender + node.getData() + ":" + node.coincidence);
+		node.getChildren().forEach(each -> printTree(each, appender + appender));
+	}
 }
+//@JsonIgnore
+//public void purgeCorrectList() {
+//	while (this.correctList.size() > 7) {
+//		this.correctList.pop();
+//	}
+//}
+//
+//@JsonIgnore
+//public double getCorrectPercentage() {
+//	int oneCount = 0;
+//	for (Integer i : this.correctList) {
+//		oneCount += i;
+//	}
+////	logger.info("getCorrectPercentage() oneCount="+oneCount);
+////	logger.info("getCorrectPercentage() this.correctList.size()="+this.correctList.size());
+//	return (this.correctList.size() > 0) ? (double) oneCount / (double) this.correctList.size() : 0;
+//}
+
+//@JsonIgnore
+//public Coincidence getConditionalCoincidence(Coincidence b) {
+//	Coincidence coincidence = null;
+//	if (b != null) {
+//		Map<String, Double> aMap = this.coincidenceConditionalMap.get(b.toString());
+//		if (aMap != null) {
+//			double max = 0;
+//			for (Map.Entry<String, Double> entry : aMap.entrySet()) {
+//				if (entry.getValue() > max) {
+//					max = entry.getValue();
+//					coincidence = new Coincidence(entry.getKey());
+//				}
+//			}
+//		}
+//	}
+//	return coincidence;
+//}
+//@JsonIgnore
+//public int getTotal(Map<String, Integer> map) {
+//	int sum = 0;
+//	if (map != null) {
+//		for (Integer i : map.values()) {
+//			sum += i;
+//		}
+//	}
+//	return sum;
+//}
+//@JsonIgnore
+//public Rod[] rodArray;
+//@JsonIgnore
+//public Cone[] shortConeArray;
+//@JsonIgnore
+//public Cone[] mediumConeArray;
+//@JsonIgnore
+//public Cone[] longConeArray;

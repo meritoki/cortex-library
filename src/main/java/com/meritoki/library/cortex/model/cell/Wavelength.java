@@ -16,7 +16,9 @@
 package com.meritoki.library.cortex.model.cell;
 
 public enum Wavelength {
-	SHORT,
-	MEDIUM,
-	LONG
+	CONE_SHORT,
+	CONE_MEDIUM,
+	CONE_LONG,
+	CONE,
+	ROD_GRAY
 }

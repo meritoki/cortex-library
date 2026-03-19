@@ -22,10 +22,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,21 +37,23 @@ import com.meritoki.library.cortex.model.Belief;
 import com.meritoki.library.cortex.model.Binary;
 import com.meritoki.library.cortex.model.Concept;
 import com.meritoki.library.cortex.model.Mind;
-import com.meritoki.library.cortex.model.Node;
 import com.meritoki.library.cortex.model.Point;
-import com.meritoki.library.cortex.model.group.Group;
-import com.meritoki.library.cortex.model.network.Color;
+import com.meritoki.library.cortex.model.cell.Wavelength;
 import com.meritoki.library.cortex.model.network.Configuration;
+import com.meritoki.library.cortex.model.network.Level;
 import com.meritoki.library.cortex.model.network.Network;
 import com.meritoki.library.cortex.model.network.shape.Shape;
 
 @JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = Network.class), @Type(value = Group.class), })
+@JsonSubTypes({ @Type(value = Network.class), })
 public class Cortex {
+	
+	@JsonIgnore
+	protected Logger logger = Logger.getLogger(Cortex.class.getName());
 	@JsonProperty
 	public String uuid = null;
 	@JsonProperty
-	public Color type = Color.BRIGHTNESS;
+	public Wavelength[] wavelength = {Wavelength.ROD_GRAY};
 	@JsonProperty
 	public Configuration configuration = Configuration.HEXAGONAL;
 	@JsonProperty
@@ -69,12 +71,15 @@ public class Cortex {
 	@JsonProperty
 	public Map<String, Shape> shapeMap = new HashMap<>();
 	@JsonProperty
+	public Level rootLevel = new Level();
+	@JsonProperty
+	public Shape rootShape = new Shape();
+	@JsonProperty
 	public Point origin = new Point(0, 0);
 	@JsonProperty
 	public int index = 0;
 	@JsonProperty
 	public List<Belief> beliefList = new ArrayList<>();
-
 	@JsonProperty
 	public Map<String, String> conceptMap = new HashMap<>();
 	@JsonIgnore
@@ -277,7 +282,7 @@ public class Cortex {
 
 	@JsonIgnore
 	public void setOrigin(int x, int y) {
-		System.out.println("setOrigin(" + x + ", " + y + ")");
+		logger.fine("setOrigin(" + x + ", " + y + ")");
 		this.origin = new Point(x, y);
 //		this.x = x;
 //		this.y = y;
@@ -322,16 +327,15 @@ public class Cortex {
 		for (Entry<String, Shape> e : this.shapeMap.entrySet()) {
 			String key = e.getKey();
 			if (key.startsWith("0:")) {
-//				System.out.println("getSensorRedius() key="+key);
 				Shape shape = e.getValue();
-				shape.initCells();
+//				shape.initCells();
 //				shape.updatePoints();
-				double[] xPoints = shape.xpoints;
-				double[] yPoints = shape.ypoints;
-				double nPoints = shape.npoints;
-				for (int i = 0; i < nPoints; i++) {
-					double x = xPoints[i] - this.origin.x;// e.getValue().getX();
-					double y = yPoints[i] - this.origin.y;// e.getValue().getY();
+				double[] xPoints = shape.xDimension;
+				double[] yPoints = shape.yDimension;
+				double n = shape.n;
+				for (int i = 0; i < n; i++) {
+					double x = xPoints[i] - this.origin.x;
+					double y = yPoints[i] - this.origin.y;
 					double r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 					if (r > max) {
 						max = r;

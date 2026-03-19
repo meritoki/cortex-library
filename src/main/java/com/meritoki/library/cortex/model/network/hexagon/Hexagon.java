@@ -27,18 +27,18 @@ public class Hexagon extends Shape {
 	protected Logger logger = Logger.getLogger(Hexagon.class.getName());
 	
 	public Hexagon() {
-		super(6,90,0,0,new Point(0,0),1);
+		super(6,7,90,0,0,new Point(0,0),1);
 	}
 
 	public Hexagon(Hexagon hexagon) {
-		super(6,90,hexagon.getX(), hexagon.getY(), hexagon.getCenter(), hexagon.getRadius());
+		super(6,7,90,hexagon.getX(), hexagon.getY(), hexagon.getCenter(), hexagon.getRadius());
 	}
 	
 	public Hexagon(Shape shape) {
-		super(6,90,shape.getX(), shape.getY(), shape.getCenter(), shape.getRadius());
+		super(6,7,90,shape.getX(), shape.getY(), shape.getCenter(), shape.getRadius());
 	}
 
 	public Hexagon(int x, int y, Point center, int radius) {
-		super(6,90,x,y,center,radius);
+		super(6,7,90,x,y,center,radius);
 	}
 }

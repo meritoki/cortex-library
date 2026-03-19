@@ -11,13 +11,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.library.controller.node.NodeController;
+import com.meritoki.library.cortex.model.network.hexagon.Hexagonal;
+import com.meritoki.library.cortex.model.network.shape.Coincidence;
 
 public class Belief {
 
+	@JsonIgnore
+	protected Logger logger = Logger.getLogger(Hexagonal.class.getName());
 	@JsonProperty
 	public String uuid;
 	@JsonProperty
@@ -99,7 +104,7 @@ public class Belief {
 			this.relative.x += delta.x/scale;
 			this.relative.y += delta.y/scale;
 		}
-		System.out.println("setRelative("+scale+", "+origin+", "+previous+") this.relative="+relative);
+//		System.out.println("setRelative("+scale+", "+origin+", "+previous+") this.relative="+relative);
 	}
 	
 	/**
@@ -122,7 +127,7 @@ public class Belief {
 		this.global = new Point(this.origin);
 		this.global.x -= origin.x/scale;
 		this.global.y -= origin.y/scale;
-		System.out.println("setGlobal("+scale+", "+origin+") this.global="+this.global);
+//		logger.info("setGlobal("+scale+", "+origin+") this.global="+this.global);
 	}
 
 	@JsonIgnore
